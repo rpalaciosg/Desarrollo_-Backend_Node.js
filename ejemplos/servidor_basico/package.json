@@ -1,0 +1,15 @@
+{
+  "name": "servidor_basico",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "chance": "^1.0.18"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Richard Palacios G.",
+  "license": "ISC"
+}
