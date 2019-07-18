@@ -14,7 +14,7 @@ function escribeTras2Segundos(texto, callback) {
 // llamar a una función con cada elemento de un array en serie, y al terminar llamar al callback de finalización
 // también se usa la recursividad para hacer un bucle asincrono
 function serie(arr, fn, callbackFinalizacion) {
-    if (arr.length == 0) {
+    if (arr.length === 0) {
         callbackFinalizacion();
         return;
     }
