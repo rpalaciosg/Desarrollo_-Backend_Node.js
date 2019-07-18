@@ -100,3 +100,26 @@ persona.inciales.apply(programa, [2, false]);
 > Esto nos servirá luego para hacer herencia en javascript, esto es como que le pide prestado a un constructor para ejecutar los métodos sobre sus hijos.
 
 ### this -uso en constructores de objetos
+
+## Closures
+
+- Las variables en js su contexto/scope es la funcion donde son creadas.
+- No puede perder el this porque no utiliza this.
+- Siempre va a tener acceso al cotexto de donde fue creado a sus contextos superiores.
+- Jamas pierden el contexto
+- No lo llamariamos con new sino, como tiene un return solo lo ejecutamos.
+- funcion/constructor/objeto que retorna algo (funcion, objeto, array)
+
+Ejemplo:
+
+```js
+function creaClosure(valor) {
+    return function() {
+        return valor;
+    }
+}
+```
+No perderia la relacion la funcion retornada con la funcion `creaClosure`
+
+> Recordar, buena practica todos los metodos, y nombres de lo que se cree en ingles igualmente los comentarios
+
