@@ -63,3 +63,40 @@ var c = ()
 Comparaciones estrictas
 Usamos el igual estricto (===) y el distinto estricto (!==)
 Se comparan primero por su tipo y luego por su valor.
+
+>> Lo primero es hacer que la aplicación funcione y funcione bien.
+>>> Luego viene las optimizaciones del código.
+
+## this
+
+- this aveces es `undefined` y aveces nó.
+- this apunta a una funcion que construye un objeto, apunta al objeto que se esta construyendo o el que va a devolver.
+- Hace referencia al objeto propietario del método que estamos ejecutando.
+
+**Ejemplo de this**
+
+Podemos ver el ejemplo en `ejemplos\this.js`.
+
+### Como forzar para que un método no pierda el this
+
+Es usar bind
+
+```js
+const otraVariable = todoterreno.cuantasRuedas.bind(todoterreno);
+```
+
+> Cuando queramos pasar el `método` de un `OBJETO` como `callback` debemos usar el bind obligatoriamente para no perder el this.
+
+### Otras formas de asignarle this a una función
+
+Bind, devuelve otra función nueva con el this pegado.
+En cambio call y apply ejecutan la función con un this distinto.
+
+```js
+persona.iniciales.call(programa, 2, true);
+
+persona.inciales.apply(programa, [2, false]);
+```
+> Esto nos servirá luego para hacer herencia en javascript, esto es como que le pide prestado a un constructor para ejecutar los métodos sobre sus hijos.
+
+### this -uso en constructores de objetos
