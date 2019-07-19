@@ -123,3 +123,45 @@ No perderia la relacion la funcion retornada con la funcion `creaClosure`
 
 > Recordar, buena practica todos los metodos, y nombres de lo que se cree en ingles igualmente los comentarios
 
+
+## Prototipos
+
+Que es esto de los prototipos o prototype.
+Vamos a llegar a la herencia, programacion orientada aobjetos.
+    - La herencia es una caracteristicas que inos objetos de aprovechen de las funcionalidades,  métodos o propiedades de otros objetos.
+
+Javascript es un lenguaje multiparadigma donde podemos usar varios paradigamas o formas de programación.
+En la orientación a objetos que se puede usar en javascript es mas potente que las que se puede hacer en otros lenguajes, que se puede decir tiene un POO mas fuerte o freceunte.
+Podemos hacer POO de formas inimaginables.
+Un gran poder conlleva una gran responsabilidad.-
+Tenemos que hacer respetuosos con las personas que van a ver mi código en el futuro.
+
+**Que son los prototipos y porque los asociamos con la herencia**
+
+Casi todo en js es un objeto. Cada objeto tiene una propiedad interna llamada `prototype` que apunta a otro objeto.
+
+Su objeto prototipo tiene a su vez una propiedad `prototype` que apunta a otro objeto, y así sucesivamente.
+A esto se llama cadena de prototipos.
+
+Si sigues la cadena en algún momento llegarás al Objeto Object, cuyo prototipo es null.
+
+**Que beneficios nos da esto**
+
+Cuando cojemos un objeto hijo, y usar una funcionalidad de ese objeto.
+Nos permite hacer cosas muy rápidas, que en otros lenguajes no podemos hacer.
+
+*Por ejemplo:*
+
+Podemos ver el ejemplo en `ejemplos\prototipos.js`
+
+> Se recomienda leer este libro `Yo don´t know JS` https://github.com/getify/You-Dont-Know-JS para aprender mas afondo sobre estos temas.
+
+>> Hay una tecnica que se lama `Monkey patching` reabriendo clases existentes y modificando sus métodos, NO SE RECOMIENDA!! porque trae mas desventajas que ventajas
+
+```js
+//mokey pactching
+Object.prototype.despidete = function (){...}
+
+const chance = require('chance');
+
+```
