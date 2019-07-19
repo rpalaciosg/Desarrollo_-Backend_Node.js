@@ -44,3 +44,26 @@ console.log(
     smith instanceof Persona,
     smith instanceof Object
 );
+
+// Herencoa múltiple ---------------------------------------------------------------------
+
+// Se unsa un patron de diseño llamado mixin, aporta habilidades al objeto concreto
+// Se debe heredar el constructor de un solo padre legítimo, porque sino se hereda de varios constructor seria un antipatron
+
+// Mixin Superheroes
+function Superheroe(){
+    this.vuela = function() {
+        console.log(this.nombre, 'vuela');
+    }
+    this.esquivabalas = function() {
+        console.log(this.nombre, 'esquiva balas');
+    }
+}
+
+// assign hace es copiar/aplicar todas las propiedades y métodos de superheroe al prototipo del Agente
+// agente hereda tanto de superheroe como de persona
+Object.assign(Agente.prototype, new Superheroe());
+//Object.assign(Agente.prototype, Object.create(Superheroe.prototype)); esto es igual al anterior
+
+smith.vuela();
+smith.esquivabalas();
