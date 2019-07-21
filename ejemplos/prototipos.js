@@ -13,7 +13,7 @@ const manolo = new Persona('Manolo');
 
 // console.log(Persona.prototype);
 
-// El prototipo está en el constructor del prototipo
+// El prototipo está en el constructor del prototipo, es donde vive el prototype
 Persona.prototype.saluda = function() {
     console.log('Hola, me llamo', this.nombre);
 }
@@ -22,10 +22,12 @@ luis.saluda();
 // pepe.saluda();
 // manolo.saluda();
 
+// ---------------------------------- Herencia de persona ----------------------------------
 
-// Herencia de persona ---------------------------------------------------------
+// constructor de agente va a heredar de personas y vamos a heredar 2 cosas:
 
-// constructor de agentes
+// comportamiento al construirse
+// el comportamiento del objeto después de construirse (métodos y propiedades).
 function Agente(nombre) {
     // heredar el constructor de personas
     Persona.call(this, nombre);
@@ -39,18 +41,20 @@ const smith = new Agente('Smith');
 
 smith.saluda();
 
+// cadena de prototipo de un agente
 console.log(
     smith instanceof Agente, // smith es una instancia de agente
     smith instanceof Persona,
     smith instanceof Object
 );
 
-// Herencoa múltiple ---------------------------------------------------------------------
 
-// Se unsa un patron de diseño llamado mixin, aporta habilidades al objeto concreto
-// Se debe heredar el constructor de un solo padre legítimo, porque sino se hereda de varios constructor seria un antipatron
+// ---------------------------------- Herencia múltiple ----------------------------------
 
-// Mixin Superheroes
+// Se usa un patron de diseño llamado mixin, aporta habilidades al objeto concreto
+// Se debe heredar el constructor de un solo padre legítimo, porque si se hereda de varios constructores seria un antipatron.
+
+// Mixin Superheroes - objeto o constructor superheroe
 function Superheroe(){
     this.vuela = function() {
         console.log(this.nombre, 'vuela');
@@ -60,7 +64,7 @@ function Superheroe(){
     }
 }
 
-// assign hace es copiar/aplicar todas las propiedades y métodos de superheroe al prototipo del Agente
+// assign hace es Copiar/aplicar todas las propiedades y métodos de superheroe al prototipo del Agente
 // agente hereda tanto de superheroe como de persona
 Object.assign(Agente.prototype, new Superheroe());
 //Object.assign(Agente.prototype, Object.create(Superheroe.prototype)); esto es igual al anterior

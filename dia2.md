@@ -159,9 +159,13 @@ Podemos ver el ejemplo en `ejemplos\prototipos.js`
 >> Hay una tecnica que se lama `Monkey patching` reabriendo clases existentes y modificando sus métodos, NO SE RECOMIENDA!! porque trae mas desventajas que ventajas
 
 ```js
-//mokey pactching
+//monkey pactching - no recomendado, pero se puede hacer y usar
 Object.prototype.despidete = function (){...}
 
 const chance = require('chance');
 
 ```
+
+### Extender - herencia multiple
+
+Una forma es usar el patrón mixins
