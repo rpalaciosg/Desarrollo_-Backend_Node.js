@@ -169,3 +169,88 @@ const chance = require('chance');
 ### Extender - herencia multiple
 
 Una forma es usar el patrón mixins
+
+
+## Clases
+
+JS tiene una forma un poco más comoda y legible usando la sintaxis de clases.
+
+```js
+class Mascota {
+    constructor (nombre) {
+        this.nombre = nombre;
+    }
+
+    saluda() {
+        console.log(`Hola soy ${this.nombre}`);
+    }
+}
+```
+
+El método saluda() no esa dentro del constructor de Mascota, sino en el `Mascota.prototype`.
+
+### **La forma de crear objetos** con clases
+
+```js
+const mascota = new Mascota('Toby');
+mascota.saluda();
+```
+
+### Herencia usando la sintaxis de clase
+
+Se escribe un poco mas comodamente.
+
+```js
+class Perro extends Mascota {
+    constructor(nombre) {
+        super(nombre);
+    }
+}
+
+let perro = new Perro('Niebla');
+perro.saluda();
+```
+
+## Process
+
+Node.js tiene un objeto global que se llama `process` que nos sirver para muchas cosas.
+ - comunicación con web workers, usa process.
+ - clases de multiprocesos, usa process.
+
+- Tiene propiedades como `process.platform`, si estamos en osx o linux.
+- tiene un métodos como `process.exit(in)` que para node estableciendo un exit code.
+- Tiene eventos como `process.on('exit', callback)` donde podemos hacer cosas antes de salir.
+- Tiene tambien un metodo muy interesante, `process.nextTick`
+  ```js
+  processnextTick(function () {
+      console.log('Siguiente vuelta del event loop, whooouuu!');
+  });
+  ```
+  Lo que hará es colocar la función de nuestro callback al principio de la sieguiente vuelta del event loop.
+  Cuando se termine lo que se está haciendo, hace algo.
+
+## Event loop
+Node usa un solo hilo, podria ser una fortaleza, tiene un bucle interno que podemos llamar `event loop`, en ese hilo que esta preguntando si es que lo que esta ejecutando ya ha terminado.
+En cada vuelta ejecuta todo lo que tiene en esa 'fase', dejando los callbacks pendientes para otra vuelta.
+- Hay que intentar no bloquear el envent loop., podriamos hacer esto:
+
+    ```js
+    process.nextTick(function(){
+        console.log('Siguiente vuelta del event loop, whoouuu!')
+    })
+    ```
+Es como decir a node "cuando cuelvas a comprobar los callbacks finalizados haz esto"
+
+### Non blocking
+-Si node se quedara esperando hasta que temrine una query o una petición a Facebook, acumaría demasiados eventos pendientes y dejaría de antender a las siguientes peticiones, ya que como dijimos **usa un solo hilo**.
+- Por eso todos las llamadas a funciones que usan IO(por ejemplo escritura o lectura en disco, la red, bases de datos, etc) se hacen de forma asíncrona. Se aparcan para que nos avisen cuando terminen.
+
+### Events
+Nose nos proporciona una forma de manejar IO en forma de eventos.
+
+USando el `EventEmitter` podemos colgar eventos de un identificador.
+
+```js
+    eventEmitter.on('llamar telefono', suenaTelefono);
+    // suena telefono es una función
+```
