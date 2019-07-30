@@ -50,3 +50,85 @@ en Esmodules:
 
 En backend no es muy necesario los import asincronos.
 
+## Express.js
+
+Express nos dá la oportunidad de Estructurar nuestra aplicación.
+Espress es un framework web minimalista para Node.js
+
+http://expressjs.com
+
+Node permite estructurar tu aplicación que tu quieras, pero los patrones nos ayudan a que otras personas puedan entender nuestro código. Hay diversos patrones
+
+- El patrón MVC, estructuramos en 3 grupos:
+  - Modelo
+  - Vista
+  - Controlador
+
+- MVVP
+- MVVM
+
+En la documentación de express hay 5 cosas para poner vanegarla:
+- express(), como libreria como tal
+- Application, es la aplicacion que voy hacer
+- Request
+- Response
+- Router: agrupador de rutas
+
+### Web Frameworks
+
+Existen múltiples frameworks web para node.js y surgen nuevos con frecuencia, por ejemplo.
+
+- Express.js
+- Koa
+- Hapi
+- Restify
+- ...
+
+### Express generator
+
+No es express, es una herramienta que me ayuda a crear aplicaciones de express.js
+Primero instalamos express-generator:
+    ```sh
+    npm i -g express-generator
+    ```
+
+### Ejercicio:
+
+Para crear app express con express-generator:
+```sh
+express nodeapi --ejs
+```
+
+Para arrancarlo para desplegarlo en producción, usamos:
+```sh
+npm start
+```
+
+Para ejecutarlo con información de depuración:
+```sh
+DEBUG=nodeapi:* npm start
+```
+
+Modificamos el package.json y creamos un nuevo comando en el bloque scripts:
+```npm
+"scripts": {
+    "start": "node ./bin/www",
+    "dev": "DEBUG=nodeapi:* npm start"
+  },
+```
+
+Y lo corremos de la siuiente manera:
+```sh
+npm run dev
+```
+
+Luego instalamos solo en el proyecto, no de forma global:
+Esto establece las variables de entornos y se encarga de adecuarla al sistema operativo en el que estemos:
+Las variables de entorno, se establecen
+
+```sh
+npm install cross-env
+```
+
+Es una buena practica instalar esta libreria, y nos ayuda a ejecutar el proyecto en cualquier sistema operativo.
+> Los modulos deben hacer una sola cosa y hacerla bien.
