@@ -117,7 +117,7 @@ Modificamos el package.json y creamos un nuevo comando en el bloque scripts:
   },
 ```
 
-Y lo corremos de la siuiente manera:
+Y lo corremos de la siguiente manera:
 ```sh
 npm run dev
 ```
@@ -132,3 +132,13 @@ npm install cross-env
 
 Es una buena practica instalar esta libreria, y nos ayuda a ejecutar el proyecto en cualquier sistema operativo.
 > Los modulos deben hacer una sola cosa y hacerla bien.
+
+También podemos arrancar en modo Producción, agregamos o establecemos una variable e los comandos o scripts del package.json
+
+```json
+  "scripts": {
+    "start": "node ./bin/www",
+    "dev": "cross-env DEBUG=nodeapi:* npm start",
+    "prod": "cross-env NODE_ENV=production npm start"
+  },
+```
