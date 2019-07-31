@@ -142,3 +142,8 @@ También podemos arrancar en modo Producción, agregamos o establecemos una vari
     "prod": "cross-env NODE_ENV=production npm start"
   },
 ```
+
+Se puede poner elegir porque puerto va arrancar
+
+Podemos poner directamente nodemon en lugar de npm start
+    - Node mon busca un index.js, luego un package.json, busca un main sino busca un script start.
