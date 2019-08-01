@@ -147,3 +147,130 @@ Se puede poner elegir porque puerto va arrancar
 
 Podemos poner directamente nodemon en lugar de npm start
     - Node mon busca un index.js, luego un package.json, busca un main sino busca un script start.
+
+Podemos ver las vistas están en views, esta tiene unos comando
+ - __dirnam: ver la ruta actual en la que estoy
+ - __filename: me devuelve la ruta y el fichero
+
+- El motor de vistas que va a usar es ejs
+
+Con app.uses se caran midlewares, una app de express es un grupo/lista de Middlewares, que se ejecuta hasta que ha llegado a la ejecutción y decida responder una de ellas. 
+
+### Creamos un midleware en app.js
+- Analizamos el responder
+- y el next()
+
+```js
+app.use((req, res, next) => {
+  // Un midleware tiene que hacer Una de 2 cosas:
+  //  - Responder
+  //res.send('ok');
+  //  - O llamar a next
+  console.log('Peticion a', req.originalUrl);
+  next(new Error('cosa mal'));
+});
+```
+
+Si llamo a next() y le paso alguna cosa, es un middleware especial que tiene 4 parametros, los 3 parametros que tienen todos los middleware y uno mas de error.
+
+Tambien podemos lanzar un error desde el next() pasandole algun parámetro.
+```js
+next(new Error('cosa mal'));
+```
+
+**Routers**
+
+Routers es un grupo de midlewares, forma de agrupar midlewares
+
+Los midlewares los puedo poner a nivel de app y dentro de un router
+
+### Rutas
+
+HTTP pone a disposicion varios métodos
+
+- GET para pedir datos, es idempotente (se puede llamar una o mil veces y el estado siempre va a ser el mismo)(mala practica es que en este método cambie el estado o haya algún cambio en la base o algo), es decir no hay que hacer cosas, sino devolver algo
+- POST para crear un recurso
+- PUT para actualizar, es idempotente (ejm. guardar un usuario existente)
+- DELETE eliminar un recurso, es idempotente (pe. eliminar un usuario)
+
+ > idenpotente: si lo ejecutas varias veces los resultados no cambian
+
+ Por lo tanto podemos usar rutas como estas:
+
+ ```js
+ app.get('/')
+ ```
+
+ ### El orden de las rutas
+
+ ** El orden es importante
+
+ ### Rutas 
+ Express nos permite usar el app.all que es lo mismo que el app.use
+
+ ### Servir ficheros estáticos
+
+ Es un middleware
+
+ ### Recibiendo Parametros
+ Se recibiran parametros e n nuestros contraoladores de varias formas.
+
+ - en la ruta (/users/5)
+ - Con parametros en query string (/users?sort=name)
+ - En el cuerpo de la petición (POST y PUT generalmente)
+ - Tambień podemos recibirlos en la cabecera, pero esta zona solemos dejarla para información de contexto, como autenticación, formatos, etc.
+
+#### Como recibir parametros en la ruta
+
+```js
+router.get('/params/:id/piso/:piso/puerta/:puerta', (req, res, next) => {
+  console.log('req.params',req.params);
+  res.send('ok');
+});
+
+```
+
+No hay buenas practicas de si hacer queryStrings o parametros en la ruta, los query strings se usan más para cosas adicionales.
+
+Se hacer que un parámetro sea opcional, poniendo un signo de interroganción
+
+Además se puede condicionar un parámetro con una expresion regular o filtro
+
+```js
+router.get('/params/:id([0-9]+)/piso/:piso/puerta/:puerta', (req, res, next) => {
+  console.log('req.params',req.params);
+  res.send('ok');
+});
+```
+
+Express solo activará este middleware solo si cumple la expresión regular
+
+#### Podemos recibir parámetros tambien con Querystring
+
+```js
+router.get('/enquerystring', (req, res, next) => {
+  console.log('req.query', req.query);
+  res.send('ok');
+});
+```
+
+y la url seria `http://localhost:3000/enquerystring?color=rojo&talla=l&lang=it`
+
+#### Recibiendo parametros en el cuerpo de la peticion
+
+Aqui no se pede usar una petición GET ya que no usa body
+
+```js
+router.post('/rutapost', (req, res, next) => {
+  console.log('req.body', req.body);
+  res.send('ok');
+});
+```
+
+Esto no lo pruebo desde el browser, sino debo usar una herramienta que se llama postman
+
+Tener en cuenta el formato del body, nos recomienta usar el middleware multer(https://github.com/expressjs/multer) para parsear form-data en otros formatos de body
+
+form-data se suele usar para parsear ficheros
+
+Para las peticiones de tipo body usamos el formato de Body `x-www-form-urlencoded`

@@ -10,11 +10,26 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+// Middlewares
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+// app.use('/pdf', express.static(path.join(__dirname, '/mnt/sda3/images/pdfs')))
+
+app.use((req, res, next) => {
+  // Un midleware tiene que hacer Una de 2 cosas:
+  //  - Responder
+  //res.send('ok');
+  //  - O llamar a next
+  // console.log('Peticion a', req.originalUrl);
+  // next(new Error('cosa mal'));
+
+  // si da error: Cannot set headers after they are sent to the cliente
+  // Significa que has respondido 2 o más veces
+  next();
+});
 
 /**
  * Rutas de mi aplicación web
