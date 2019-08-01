@@ -274,3 +274,40 @@ Tener en cuenta el formato del body, nos recomienta usar el middleware multer(ht
 form-data se suele usar para parsear ficheros
 
 Para las peticiones de tipo body usamos el formato de Body `x-www-form-urlencoded`
+
+### Validaciones
+
+Como validamos esta información.
+Hay un modulo, que se llama `express-validator` y hay otros mas. Es muy sencillo de usar.
+
+Primero instalamos express-validator
+
+```sh
+npm install express-validator
+```
+
+vuelvo arrancar con `npm run dev`
+
+Luego cargo el módulo para usarlo
+
+> object destructuring en js
+>> Si un modulo me devuleve un objeto y quiero usar solo 2 metodos, usamos object destructuring
+>> `const { query, validationResult } = require('express-validator/check');`
+>> Esto me sirve para no traer o construir todo el objeto sino treaer las propiedades que voy a usar nada mas.
+
+#### ejemplo de validacion de un qury string
+
+```js
+// validador en query string
+router.get('/enquerystring',
+query('color').isLowercase().withMessage('must be lower case'),
+query('talla').isNumeric().withMessage('must be numeric'),
+(req, res, next) => {
+  validationResult(req).throw();// lanza excepcion si no valida
+  // si llego aquí es que los parámetros de entrada son validos
+  console.log('req.query', req.query);
+  res.send('ok');
+});
+```
+
+El throw() lo que hace es lanzarme una excepción.
