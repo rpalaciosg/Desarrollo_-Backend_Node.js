@@ -22,7 +22,7 @@ Mandando a un fichero todo lo que se escriba en la consola.
 ## Módulos
 
 Nos referimos en dividir nuestra aplicación en partes.
-Los moódulos de Node.js se basan en el estandar CommonJS.
+Los módulos de Node.js se basan en el estandar CommonJS.
 
 - Los módulos usan `exports` para exportar cosas.
 - Quien quiere usar un módulo lo carga con  `require`.
@@ -33,7 +33,7 @@ Los moódulos de Node.js se basan en el estandar CommonJS.
 
 Podemos ver esto en el ejemplo `ejemplos/ejemplo_modulos`
 
-Cualquier objeto de java script hsta que no se haga un export, es un objeto vacío
+Cualquier objeto de java script hasta que no se haga un export, es un objeto vacío
 
 Los ES Module usan un modificador de línea de comando y están aún en beta.
 Se los puede usar pero utilizando el modificador, se suelen usar mas en frontend.
@@ -67,7 +67,7 @@ Node permite estructurar tu aplicación que tu quieras, pero los patrones nos ay
 - MVVP
 - MVVM
 
-En la documentación de express hay 5 cosas para poner vanegarla:
+En la documentación de express hay 5 cosas para poner navegarla:
 - express(), como libreria como tal
 - Application, es la aplicacion que voy hacer
 - Request
