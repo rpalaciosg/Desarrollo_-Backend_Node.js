@@ -31,6 +31,9 @@ app.use((req, res, next) => {
   next();
 });
 
+//Variables globales para vistas
+app.locals.title = 'NodeAPI';
+
 /**
  * Rutas de mi aplicación web
  */

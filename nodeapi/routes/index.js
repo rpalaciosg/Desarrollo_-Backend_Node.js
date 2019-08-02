@@ -6,7 +6,21 @@ const { query, body, param, validationResult } = require('express-validator');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+  const segundo = (new Date()).getSeconds();
+
+  res.locals.valor = '<script>alert("inyeccion de codigo")</script>';
+  res.locals.condicion = {
+    segundo: segundo, 
+    estado: segundo % 2 === 0 // es par
+  };
+
+  res.locals.users = [
+    {name: 'Smith', age: 23},
+    {name: 'Jones', age: 35},
+    {name: 'Thomas', age: 21},
+  ];
+
+  res.render('index');
 });
 
 router.get('/paramenruta/:numero?', (req, res, next) => {
