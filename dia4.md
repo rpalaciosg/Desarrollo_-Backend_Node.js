@@ -251,3 +251,30 @@ Cuando se resuelven o devuleven cosas deben ser solo una cosa, es decir si se qu
 
 
 Las promesas tienen un método then y devuelve una promesa.
+
+#### Podemos encadenar promesas
+
+Un patron típico es que se quiera hacer distintas acciones de forma 
+
+el .catch() tambien devuelve una promesa, es decir que puedo poner un .then() despues del .catch()
+
+#### Objeto `Promise`
+
+Es el constructor de las promesas. y tiene
+Promise.all([p1, p2, p3]) = recibe un array de promesas y devuelve una promesa que se resuelve cuando todas esas promesas se han realizado.
+
+Promise.race([p1, p2, p3]) = recibe un array de promesas y se resuelve cuando se resuelve la primera promesa.
+
+El objeto Promise tiene un par de métodos estátios que pueden ser útiles, es decir:
+- Promise.reolve(valor) : Resuelve/crea una promesa resuelta con el valor proporcionado.
+- 
+- Promise.reject(razón): Devuelve una promessa resuelta con la razón suministrada. LA razó debería ser un error (generalmente una  instancia de objteoError).
+
+
+- Una caracteristica de las promesas es que aun se haya resuelto en el pasado, me garantiza que el .then() se ejecutará.
+
+- Tratar de no mezclar callbacks con promesas.
+
+## Async / await
+
+Las promesas nos ayudaran a llegar a esto.
