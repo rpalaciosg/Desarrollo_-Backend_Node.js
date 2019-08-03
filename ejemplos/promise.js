@@ -1,6 +1,9 @@
 'use strict';
 
-
+// usar los métodos de node que sean asincronos con promesas y no con callbacks
+const fsPromise = require('fs').promises;
+// fsPromise.open();
+// fsPromise.readFile();
 
 // función que retorna una promesa
 function sleep(ms) {
@@ -20,7 +23,8 @@ function sleep(ms) {
     });
 }
 
-
+// version de una sola línea de la funcion de arriba
+const sleep2 = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 // obtener la promesa
 const promesa = sleep(2000);
