@@ -194,3 +194,60 @@ poniendo en nuestro app.js esto
 app.set('view engine', 'html');
 app.engine('html', require('ejs').__express);
 ```
+
+## PROMESAS BASES DE DATOS API
+------------------------------
+
+### Evolución de la asincronía.
+Antes para utilizar la asincronía se usaban callbacks, pero despues aparecieron las promesas.
+Los callbacks causaban el callbaks hell, el código es mas dificil de mantener, podría causar errores.
+Ayuda a que el código no cresaca a la derecha.
+
+### Promesas
+Una promesa **es un objeto** que representa una operación que aun no se ha completado, pero que se completará más adelante.
+Ahora ya está en el lenguaje js antes se usaban librerias. Algunas de esas librerias tenias algunas funciones 
+
+#### Tiene 3 estado posibles
+
+1. Pending : puede pasar a Fullfilled o a Rejected
+2. Fullfilled(value)
+3. Rejected(reason)
+
+No pueden pasar de Fullfilled a Rejected o viceversa y no pueden volver a pending.
+
+Hay otras herramientas para hacer cosas asincronas como los **Observables**, tienen otras cosas, pero tienen una sintaxis mas compleja.
+
+#### Como se crea una promesa
+```js
+var promesa = new Promise(function(resolve, reject)){
+}
+```
+
+Y se cosume con
+
+```js
+promesa.then;
+```
+Podemos ver el ejemplo en : `ejemplos/promise.js`
+
+Como convención usar los nombres de parámetros `resolve` y `reject`
+
+>> La promesa es un objeto con un constructor llamado Promise, tiene propiedades y métodos y tiene algo especial o mágico que hay algo que esta esperando a que esa promesa se complete.
+
+Una forma para activar un escuchador de eventos para saber cuando esa promesa se complete.
+
+```js
+// consumir la promesa
+promesa.then(()=>{
+    console.log('la promesa se completó');
+});
+```
+
+A parte de resolverla, yo podría hacer que una promesa fallara.
+
+con `reject(new Error('fatal'));` esto me da un error warnign feo que dice `UnhandledPromiseRejectionWarning: Error: fatal...`. Esto sale porque el error no ha sido manejado con un .catch()
+
+Cuando se resuelven o devuleven cosas deben ser solo una cosa, es decir si se quiere resolver varias cosas se debe crear un objeto y resolver/devolver ese objeto.
+
+
+Las promesas tienen un método then y devuelve una promesa.
