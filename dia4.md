@@ -182,3 +182,15 @@ views
 #### Templates - condiciones
 
 #### Templates - iteraciones
+
+
+#### Templates - html
+
+Si quisieramos, podríamos tener las vistas con extensión .html
+
+poniendo en nuestro app.js esto
+
+```js
+app.set('view engine', 'html');
+app.engine('html', require('ejs').__express);
+```
