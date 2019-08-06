@@ -322,3 +322,29 @@ async function asincronoEnParalelo() {
 ```
 
 Esto es bastante comun cuando se inicializa apps ya sea en fronted o backend. Por ejem. se tiene que hacer al principio una llamada un webservice para obtener los valores por defecto, otra llamada para ller un fichero y cargar un .init, otra llamada a una base de datos para sacar no se cuanto y esas cosas se las puede hacer en paralelo, para no perer tiempo, se ejecutan las 3 a la vez y cuando termine la mas lenta de ellas haya terminado o se haya resuelto.
+
+
+
+## Base de Datos
+
+Es sencillo, basta con instalarse un driver(módulo), no es necesario que sea el del fabricante, hay de terceros
+
+```sh
+$ npm install mysql
+$ npm install mongoskin
+```
+
+### Base de datos MySQL
+
+un ejemplo con node y mysql
+
+1. Primero creamos una carpeta
+2. Luego en el terminal con cd entramos al directorio y luego hacemos 
+   ```shell
+   npm init -y
+   ```
+3. Luego instalamos la dependencia de mysql
+   ```shell
+   npm i mysql
+   ```
+4. Creamos un fichero index.js
