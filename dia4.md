@@ -278,3 +278,47 @@ El objeto Promise tiene un par de métodos estátios que pueden ser útiles, es 
 ## Async / await
 
 Las promesas nos ayudaran a llegar a esto.
+Lo que si puede hacer es usar promesas y async away en diferentes partes.
+
+El comando `async` hace que una funcion devuelva una promesa.
+
+```js
+// esto retorna una promesa que se resuelve con el 'hola'
+async function saluda() {
+  return 'hola'
+}
+
+saluda().then(res => console.log(res)); //hola
+```
+
+Es lo mismo que escribir ```return new Promise...```
+
+`async` consume una promesa.
+si pongo `await` a lado izquierdo de algo que devuelva una promesa, la siguiente línea no se ejecutará hasta que se resuelva esa promesa, y no tengo que encadenar nada ni poner then's ni nada . ahí está la mágina.
+
+ejemplo:
+```js
+async function salud() {
+  const nombre = await row.findName();
+  return nombre;
+}
+```
+
+Podemos ver un ejemplo en `ejemplos/asyncawait.js`
+
+`await` nos permite parar sin bloquear el eventloop, es como si las instrucciones dentro de salud esten en el then(), además nos permite hacer bucles de forma asincrona, usando el await.
+
+##### Primse.all
+
+Ejemplo de hacer cosas en paralelo
+
+```js
+async function asincronoEnParalelo() {
+  const info1 = row.findNext();
+  const info2 = row.findNext();
+  const info3 = row.findNext();
+  const list = await Promise.all([info1, info2, info3]);
+}
+```
+
+Esto es bastante comun cuando se inicializa apps ya sea en fronted o backend. Por ejem. se tiene que hacer al principio una llamada un webservice para obtener los valores por defecto, otra llamada para ller un fichero y cargar un .init, otra llamada a una base de datos para sacar no se cuanto y esas cosas se las puede hacer en paralelo, para no perer tiempo, se ejecutan las 3 a la vez y cuando termine la mas lenta de ellas haya terminado o se haya resuelto.
