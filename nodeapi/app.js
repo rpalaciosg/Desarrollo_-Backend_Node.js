@@ -19,6 +19,12 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 // app.use('/pdf', express.static(path.join(__dirname, '/mnt/sda3/images/pdfs')))
 
+/**
+ * Conexión con la base de datos
+ */
+require('./lib/connectMongoose');
+
+
 app.use((req, res, next) => {
   // Un midleware tiene que hacer Una de 2 cosas:
   //  - Responder

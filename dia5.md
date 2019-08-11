@@ -375,3 +375,49 @@ Lo busca y si lo encuentra lo modifica, no permitiendo que otro lo cambie antes 
 
 Un ejemplo es el caso de el stock negativos en una tienda online, o en entradas de cine, debo reservar butacas.
 > Esto lo tiene recien mongodb
+
+## Mongoose
+
+Mongoose es parecido a un ORM. en realidad es un ODM (Object document Mapper) porque no es relacional como un ORM.
+Es una herramiena que nos permite persistir objetos en MonoDB. Ayuda a definir esquemas y a preservar esos esquemas.
+
+### Como funciona.
+
+Instalación como siempre:
+
+```shell
+$ npm install mongoose --save
+```
+
+Cuando quiero hacer una conexion a mongodb, con mongoose no es necesario instalar el driver. Y MONGOOSE hace la conexxion y todos.
+
+### Conectar a la base de datos
+
+```js
+var mongoose = require('mongoose');
+var conn = mongoose.connection;
+
+conn.on('error', (err) =>
+    console.error('mongodb connection error', err) );
+conn.once('open', () =>
+    console.info('Connected to mongodb.') );
+
+mongoose.connect('mongodb://localhost/diccionario');
+```
+
+> Quitaron la necesidad de usar la linea para indicar la libreria de promesas.
+
+### Ejercicio mongoose
+
+Vamos a hacer que nuestra aplicación node api se conecte usando mongoose con la conexión de agentes y empezar a usarlos.
+
+Puedo verlo en `nodeapi`
+
+1. Voy a crear un módulo que va a hacer la conexión. Ya que es un patron bastante común. Y ese módulo ese va a ser encargado de hacer la conexión de base de datos. Y así hago la sintaxis de conexion una sola vez.
+   - Creo una carpeta `lib` porque vamos a meter ahí varios módulos de diversos tipos.
+   - Dentro de `lib` creamos un nuevo fichero llamado `connectMongoose.js`
+   - Luego instalamos mongoose:
+        ```shell
+        $ npm i mongoose
+        ```
+    - Lo vamos a cargar cuando carga la applicacion en `app.js`
