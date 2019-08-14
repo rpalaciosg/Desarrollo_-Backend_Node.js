@@ -421,3 +421,41 @@ Puedo verlo en `nodeapi`
         $ npm i mongoose
         ```
     - Lo vamos a cargar cuando carga la applicacion en `app.js`
+
+2. Creamos un esquema
+   - Creamos una carpeta `models`
+   - Dentro de models, creamos un fichero `Agente.js`
+
+
+    ```js
+        var mongoose = require('mongoose');
+        var agenteSchema = mongoose.Schema({
+
+        });
+    ```
+    Hay una página donde me puedo guiar de las reglas para crear el modelos. Mongoose eschema types:
+    `https://mongoosejs.com/docs/schematypes.html`
+
+3. Creamos el modelo de Agente.
+
+Mongoose hace la pluralización, del nombre del modelo Agente, y lo convierte en minúsculas para que corresponda con la colección de mongodb.
+
+Si no queremos que no haga la pluralización, tenemos que hacer esto en el eschema:
+//, {collection: 'agentes'} // para saltarse la pluralización
+En este caso 'Agente', corresponderá a la colección 'agentes' en mongodb.
+
+4. Hacemos el primer método de nuestra API
+
+- Dentro de la carpeta `routes` creamos una carpeta llamada `apiv1`
+  > Ojo: Tenemos que versionar desde el principio ya que cuando ya usen y este en producción no puedo hacer cambios, sino hacer otra version y cuando los usuarios quieras la usen o se pasen a ella. Este versionamiento de hace con `git`. Se puede hacer o tener varias ramas con varias versiones.
+
+- Dentro de la carpeta apiv1, creamos el fichero `agentes.js` en minuscula y en plural, que va a ser mi fichero de rutas, en las que voy a poner los middlewares que respondan peticiones para trabajar con agentes.
+
+- Dentro del fichero `agentes.js` creamos el middleware que respondera a la peticion de agentes, luego en `app.js` usamos la ruta del primer endpoint de nuestra api 
+
+```js
+app.use('/apiv1/agentes', require('./routes/apiv1/agentes'));
+```
+
+Si es que me llega a dar este error: 
+`TypeError: Router.use() requires a middleware function but got a Object` es por se me a olvidado exportar el router.

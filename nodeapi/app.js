@@ -23,8 +23,9 @@ app.use(express.static(path.join(__dirname, 'public')));
  * Conexión con la base de datos
  */
 require('./lib/connectMongoose');
+require('./models/Agente');
 
-
+// middleware  en app.js direto de ejemplo 
 app.use((req, res, next) => {
   // Un midleware tiene que hacer Una de 2 cosas:
   //  - Responder
@@ -37,6 +38,11 @@ app.use((req, res, next) => {
   // Significa que has respondido 2 o más veces
   next();
 });
+
+/**
+ * Rutas de mi API
+ */
+app.use('/apiv1/agentes', require('./routes/apiv1/agentes'));
 
 //Variables globales para vistas
 app.locals.title = 'NodeAPI';
