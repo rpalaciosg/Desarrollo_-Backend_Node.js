@@ -20,7 +20,11 @@ router.get('/', async (req, res, next) => {
 
     // usando promesas usando el await
     try{
-        const agentes = await Agente.find().exec();
+
+        const limit = parseInt(req.query.limit);
+        console.log(req.query);
+
+        const agentes = await Agente.find().limit(limit).exec();
         res.json({ success: true, agentes: agentes });    
     } catch (err) {
         next(err);
