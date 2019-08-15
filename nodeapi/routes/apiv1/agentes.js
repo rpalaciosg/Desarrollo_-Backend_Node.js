@@ -6,6 +6,10 @@ const router = express.Router(); // Es un constructor que funciona con closures,
 const Agente = require('../../models/Agente');
 //const Agente = mongoose.models.Agente() se podría también cargar el modelo primero cargando mongoose
 
+/**
+ * GET /agentes
+ * Devuelve una lista de agentes
+ */
 router.get('/', async (req, res, next) => {
 
     //Agente.find().then este es thenable (es un objeto que simula ser una promesa pero no lo es)
@@ -25,11 +29,30 @@ router.get('/', async (req, res, next) => {
         console.log(req.query);
 
         const agentes = await Agente.find().limit(limit).exec();
-        res.json({ success: true, agentes: agentes });    
+        res.json({ success: true, results: agentes });    
     } catch (err) {
         next(err);
     }
     
+});
+
+/**
+ * GET /agentes:id
+ * Obtiene un agente
+ */
+router.get('/:id', async (req, res, next) => {
+    try{
+        const _id = req.params.id;
+
+        const agente = await Agente.findById(_id).exec();
+        if (!agente) {
+            res.status(404).json({success: false});
+            return;
+        }
+        res.json({success: true, result: agente });
+    } catch (err) {
+        next(err);
+    }
 });
 
 module.exports = router;
