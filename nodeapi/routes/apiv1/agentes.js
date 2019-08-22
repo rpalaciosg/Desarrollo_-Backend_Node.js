@@ -9,6 +9,7 @@ const Agente = require('../../models/Agente');
 /**
  * GET /agentes
  * Devuelve una lista de agentes
+ * http://localhost:3000/apiv1/agentes?limit=2&skip=2&fields=name age -_id
  */
 router.get('/', async (req, res, next) => {
 
@@ -25,15 +26,31 @@ router.get('/', async (req, res, next) => {
     // usando promesas usando el await
     try{
 
+        const name = req.query.name;
+        const age = req.query.age;
+        const skip = parseInt(req.query.skip);
         const limit = parseInt(req.query.limit);
-        console.log(req.query);
+        const fields = req.query.fields;
+        const sort = req.query.sort;
 
-        const agentes = await Agente.find().limit(limit).exec();
+        // si quiero hacer una busqueda fulltext
+
+        const filter = {};
+
+        if (name) {
+            filter.name = name;
+        }
+
+        console.log(typeof age);
+
+        if (typeof age !== 'undefined') filter.age = age;
+
+        const agentes = await Agente.list({filter: filter, skip, limit, fields, sort});
+
         res.json({ success: true, results: agentes });    
     } catch (err) {
         next(err);
     }
-    
 });
 
 /**
@@ -54,5 +71,7 @@ router.get('/:id', async (req, res, next) => {
         next(err);
     }
 });
+
+
 
 module.exports = router;
