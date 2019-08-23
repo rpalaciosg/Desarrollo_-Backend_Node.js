@@ -91,5 +91,24 @@ router.post('/', async(req, res, next) => {
     }
 });
 
+/**
+ * PUT /agentes:id
+ * Actualiza un agente
+ */
 
+ router.put('/:id', async(req, res, next) => {
+     try {
+         const _id = req.params.id;
+         const data = req.body;
+
+         //  const agenteGuardado = await Agente.findByIdAndUpdate({_id: _id}, data).exec();//devuelve objeto antes de guardar
+         const agenteGuardado = await Agente.findOneAndUpdate({_id: _id}, data, {new: true}).exec();
+         //new:true --> hace que retorne la versión del agente guardada en la base de datos.
+         res.json({success: true, result: agenteGuardado});
+     } catch (err) {
+         next(err);
+     }
+ });
+
+ 
 module.exports = router;

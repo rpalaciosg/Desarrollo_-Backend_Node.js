@@ -22,5 +22,7 @@ Para probar esto primero vamos a cambiar el query limits del método del middlew
 
 Hay que recordar que al hacer o agregar métodos de instancia en el eschema, no debo usar `arrowFunctions` o `=>` porque después no va a funcionar, ya que mongoose pone un `this` implícito dentro del método.
 
-- Hemos hecho los filtros de un API
-- Método de creación de agentes.
+- Hemos hecho los filtros de un API GET/
+- Método de creación de agentes. POST/
+- Método de actualización de un agente PUT/
+    - Cuando se vaya a modificar un dato debemos usar `findOneAndUpdate` para que nos devuelva el objeto guardado, en consola nos saldrá un warning, para que no salga eso debemos poner mongoose.set('useFindAndModify', false);

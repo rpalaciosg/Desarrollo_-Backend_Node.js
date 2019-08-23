@@ -4,6 +4,8 @@
 const mongoose = require('mongoose');
 const conn = mongoose.connection;
 
+mongoose.set('useFindAndModify', false);
+
 // gestionar eventos de conexión
 conn.on('error', err => {
     console.log('Error de conexión', err);
