@@ -26,3 +26,15 @@ Hay que recordar que al hacer o agregar métodos de instancia en el eschema, no 
 - Método de creación de agentes. POST/
 - Método de actualización de un agente PUT/
     - Cuando se vaya a modificar un dato debemos usar `findOneAndUpdate` para que nos devuelva el objeto guardado, en consola nos saldrá un warning, para que no salga eso debemos poner mongoose.set('useFindAndModify', false);
+
+- Método para eliminar un agente.
+
+Notas Buenas práctiacas: Establecer un formato de errores estandar. Se empieza por la documentación
+    - Standard Error Format: 
+
+- cuando hablamos de `resources`, en nuestro caso hablamos del recurso de agentes.js
+
+- Hay API's como la de SWAPI (la e stars war) que detecta si se le hace una petición desde navegador o browser y en vez de devolverme json me devuelve una página. PEro si la misma peticion la pongo en un postman, esta me devuelve json.
+- Esto como lo hace si la URL es la misma? Pues esto lo hace o lo detecta por las cabeceras o Headers. El browser le dice en el request header, accept: text/html, y el servidor en vez de determinar que es una llamada de API por la URL lo ha determinado por la cabecera o header `accept` y devuelve una página. 
+
+- Hay una tecnología nueva que se llama GraphQL, la cual pasandole una especificacion en forma de json al hacer el request, de una sola request podemos pedir muchas cosas.
