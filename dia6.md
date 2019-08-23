@@ -38,3 +38,35 @@ Notas Buenas práctiacas: Establecer un formato de errores estandar. Se empieza 
 - Esto como lo hace si la URL es la misma? Pues esto lo hace o lo detecta por las cabeceras o Headers. El browser le dice en el request header, accept: text/html, y el servidor en vez de determinar que es una llamada de API por la URL lo ha determinado por la cabecera o header `accept` y devuelve una página. 
 
 - Hay una tecnología nueva que se llama GraphQL, la cual pasandole una especificacion en forma de json al hacer el request, de una sola request podemos pedir muchas cosas.
+
+## Consumir APIs de terceros
+
+Por ejemplo hacer una llamada al APi de facebook, o de google para hacer una georeferenciación inversa.
+
+Uno de los módulos más usados para esto es `request`, funciona con callbacks.
+
+`https://github.com/request/request`
+
+```shell
+npm install request --save
+```
+
+Hay una variante que se llama `request-promise` la cual usa promesas.
+-> Tambien hay otra variante que es Axios, por que se puede usar tanto en frontend como en backend, soporta promesas
+Pero tambien hay un comando en javascript `fetch`, en frondtend se puede usar bastante bien.
+
+**Ejemplo de peticiona un API usando AXIOS**
+
+El ejemplo se enceuntra en `ejemplos/ejemplo_request_axios`
+
+- Para instalar primero hacemos dentro de la carpeta `ejemplos/ejemplo_request_axios` en consola:
+  - Crear un package.json
+  ```shell
+    npm init -y 
+  ```
+
+  - Instalamos axios
+  ```shell
+    npm install axios
+  ```
+- Creamos un fichero index.js
