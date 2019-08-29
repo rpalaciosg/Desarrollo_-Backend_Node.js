@@ -20,12 +20,20 @@ Podemos ver la documentación de la clase EventEmitter en [EventEmitter](https:/
 Vamos a verlo en un ejemplo que vemos en `ejemplos/eventemitter.js`
 
 - Es bastante util, cuando se emitan eventos se los puede acompañar de información
-Trabajar con eventos es comodo para procesar flujos de datos, es mejor escribir código muy fácil de leer ante procesos de datos.
 
 - Para subscribirme a una evento puedo usar :
   - on()
   - once() : subscribirme solo la primera vez qe se lance un evento
 
+- Trabajar con eventos es comodo para procesar flujos de datos o streams, es mejor escribir código muy fácil de leer ante procesos de datos. Ejem
+
+Como vemos el método process tienen una propiedad  `stdin` que es la entrada estandar por teclado, stdin es un emisor de eventos que está heredando de un eventEmitter. Este stdin produce eventos 'data'.
+
+```js
+  process.stdin.on('data', function(data) {
+    file.write(data);
+  });
+```
 Mandando a un fichero todo lo que se escriba en la consola.
 
 //patron de suscribirse a eventos.
