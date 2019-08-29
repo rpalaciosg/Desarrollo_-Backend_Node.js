@@ -2,13 +2,29 @@
 
 ## Events
 
-**EventEmitter** Node nos proporciona una forma de manejar IO en forma eventos.
-Es un patrón típico, que se usa mucho y es importante saber como funciona.
+**EventEmitter** Node nos proporciona una forma de manejar IO (in/out) en forma eventos.
+El eventEmitter es un patrón muy típico, que se usa mucho y es importante saber como funciona.
+
+Objetivos:
+- Saber usarlo
+- Identificar un eventEmitter.
+
+El eventemitter es una clase de la documentación de node.js para que podamos comunicar distintas partes de nuestra aplicación.
+
+Node.js tiene una solo hilo y tiene un bucle, que está verificando continuamente si a saltado algún evento y si tiene un `eventHandler` subscrito a este evento, entonces se ejecuta este evento. Node.js pasa verificando eso continuamente con el `Event Loop`.
+
+Cuando algún proceso este subscrito al `Event Loop` el programa no termina, y está esperando a que salte algún evento y hace una comprobación si hay nuevos eventos.
+
+Podemos ver la documentación de la clase EventEmitter en [EventEmitter](https://nodejs.org/dist/latest-v10.x/docs/api/events.html)
 
 Vamos a verlo en un ejemplo que vemos en `ejemplos/eventemitter.js`
 
-Es bastante util, cuando se emitan enventos se los puede acompañar de información
-Trabajar con eventos es comodo para porcesar flujos de datos, es decor escribir código muy facil de leer ante procesos de datos.
+- Es bastante util, cuando se emitan eventos se los puede acompañar de información
+Trabajar con eventos es comodo para procesar flujos de datos, es mejor escribir código muy fácil de leer ante procesos de datos.
+
+- Para subscribirme a una evento puedo usar :
+  - on()
+  - once() : subscribirme solo la primera vez qe se lance un evento
 
 Mandando a un fichero todo lo que se escriba en la consola.
 
