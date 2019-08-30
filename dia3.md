@@ -45,22 +45,54 @@ Mandando a un fichero todo lo que se escriba en la consola.
 
 ## Módulos
 
-Nos referimos en dividir nuestra aplicación en partes.
-Los módulos de Node.js se basan en el estandar CommonJS.
+Hay varios estandares de hacer módulos, nos referimos en dividir nuestra aplicación en partes. Por ejm:
+- Modelos
+- Vistas
+- Controladores
+- Conexiones a la base de datos
+
+Sería dificil trabajar en un solo script.
+
+Los módulos de Node.js usamos módulos y se basan en el estandar CommonJS.
+Los ESModules son los que vienen de la parte de frontend, pero hay cosas que los ESmodules han perdido y algo de ello es simplicidad, aunque tengan mas funcionalidad.
 
 - Los módulos usan `exports` para exportar cosas.
 - Quien quiere usar un módulo lo carga con  `require`.
-- LA instruccipon `require` en `síncrona`, no hay que poner un callback
-- Un módulo es un `singleton`, hay una única instancia de eso en memoria.
+- La instruccipon `require` en `síncrona`, no hay que poner un callback
+- Un módulo es un `singleton`, significa que hay una única instancia de eso en memoria, para que no hagamos múltiples copias de eso.
+
+Cada fichero puede funcionar como un módulo.
+Cuando se hace un require de un fichero, lo que hace es ejecutarlo.
+
+Ejemplo e un módulo básico:
+
+```js
+  // modulo.js
+  console.log('Hola desde un módulo!');
+
+  // index.js
+  require('./modulo.js');
+```
+
+Node.js busca los módulo si es del core, en la carpeta node_modules local, y en la caperta node_modules global.
+
+A la hora de exportar se puede exportar de 2 formas principalmente:
 
 **¿module.exports o exports?**
 
 Podemos ver esto en el ejemplo `ejemplos/ejemplo_modulos`
 
-Cualquier objeto de java script hasta que no se haga un export, es un objeto vacío
+Cualquier fichero de javascript que se cargue con un `require`, hasta que no se haga un `export` o se exporte algo de ese fichero o de ese módulo, export siempre es un objeto vacío.
 
-Los ES Module usan un modificador de línea de comando y están aún en beta.
+Hay una sintaxis abreviada para exportar usando un alias.
+```js
+  export.resta = resta;
+```
+Tener cuidado de no pisar el export al usar el alias o la sintaxis abreviada.
+
+Los ESModules usan un modificador de línea de comando y porque están aún en beta.
 Se los puede usar pero utilizando el modificador, se suelen usar mas en frontend.
+El CommonJS es mas simple y cómodo.
 
 Los módulos se cargan una sola vez, y si quiero tener las provincias en memoria por ejemplo, debo cargar al incio las provincias.
 
