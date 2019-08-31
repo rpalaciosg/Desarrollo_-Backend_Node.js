@@ -134,59 +134,86 @@ Puedo buscar los modulos directamente en google.
 ## Express.js
 
 Express nos dá la oportunidad de Estructurar nuestra aplicación.
-Espress es un framework web minimalista para Node.js
+En node.js puedo estructura mi aplicacion como me de la gana. Podemos usar patrones de diseno y puedo dividirla en los modulos que quiera.
+
+Es un poco peligroso tener tanto poder.
+
+Espress es un framework web minimalista para Node.js. Que trata de ser sencillo para aplicaciones http.
 
 http://expressjs.com
+
+Ahora Express.js pertenece a una empresa StrongLoop de IBM para mantenerlo.
 
 Node permite estructurar tu aplicación que tu quieras, pero los patrones nos ayudan a que otras personas puedan entender nuestro código. Hay diversos patrones
 
 - El patrón MVC, estructuramos en 3 grupos:
   - Modelo
-  - Vista
-  - Controlador
+  - Vista: lo que vemos
+  - Controlador: CUando hacemos la peticion a una vista, estamos haciendo una peticion a un controlador. Aqui es donde esta la inteligencia de nuestras aplicaciones.
+
+Entre el controlador y el modelo, orquestan, y el modelo es quien decide.
+
+Hay otros patrones:
 
 - MVVP
 - MVVM
 
-En la documentación de express hay 5 cosas para poner navegarla:
-- express(), como libreria como tal
-- Application, es la aplicacion que voy hacer
-- Request
-- Response
+### Formas de moverme en la documentacion de Express.js
+
+En la documentación de express se estructura en 5 cosas para poder navegarla:
+
+- express(), como libreria como tal, para crear la app
+- Application, es la aplicacion que voy hacer, tiene metodos y en esa app tengo
+- Request: peticiones y
+- Response: respuestas
 - Router: agrupador de rutas
 
 ### Web Frameworks
 
-Existen múltiples frameworks web para node.js y surgen nuevos con frecuencia, por ejemplo.
+**Porque vemos Express.js**
+Existen múltiples frameworks web para node.js muy interesantes y surgen nuevos con frecuencia, pero la mayoria estan basados en express, por ejemplo:
 
-- Express.js
+- Express.js - es el mas utilizado
 - Koa
 - Hapi
 - Restify
 - ...
 
+
 ### Express generator
 
 No es express, es una herramienta que me ayuda a crear aplicaciones de express.js
-Primero instalamos express-generator:
-    ```sh
+Generador de aplicaciones de express.js
+
+Primero instalamos express-generator con npm:
+
+    ```npm
     npm i -g express-generator
     ```
+Esta instalacion nos da el comando express -h para crear una aplicacion de express.js
 
-### Ejercicio:
+### Ejercicio - App Basica con Express-generator
 
 Para crear app express con express-generator:
 ```sh
 express nodeapi --ejs
 ```
+Luego entramos al directorio que se creo con 
+``` cd nodeapi``` y hacemos ```npm install```.
 
-Para arrancarlo para desplegarlo en producción, usamos:
+Nos creara un fichero package.json, con un apartado `scripts`le dice a `nodemon` o a otras aplicaciones como arrancar este proyecto. Estos son comandos.
+La forma de arrancar nuestro proyecto viene muy bien inscribirlo en el apartado `scripts` del package.json, ya que sirve tambien de documentacion para los demas.
+
+Para arrancarlo y para desplegarlo en un servidor en producción, usamos:
 ```sh
 npm start
 ```
 
-Para ejecutarlo con información de depuración:
+Para ejecutarlo con información de depuración usamos lo siguiente:
+Nota: tener en cuenta aqui los que usan windows pueden tener un problema.
+
 ```sh
+//para linux o mac
 DEBUG=nodeapi:* npm start
 ```
 
@@ -203,7 +230,10 @@ Y lo corremos de la siguiente manera:
 npm run dev
 ```
 
-Luego instalamos solo en el proyecto, no de forma global:
+Aqui hay una diferente en la forma de correr el comando start que no necesita poner run con dev. Solo hay otro como start que no necesita `run` y es `test`
+
+En el caso de que se use windows, como lo que hacen los comandos dentro del bloque scripts, es crear y configurar una variable de entorno, y esto es diferente para linux, mac y windows, por lo que se tiene que usar una herremienta llamada y `cross-env`.
+Instalamos solo en el proyecto, no de forma global:
 Esto establece las variables de entornos y se encarga de adecuarla al sistema operativo en el que estemos:
 Las variables de entorno, se establecen
 
@@ -211,7 +241,7 @@ Las variables de entorno, se establecen
 npm install cross-env
 ```
 
-Es una buena practica instalar esta libreria, y nos ayuda a ejecutar el proyecto en cualquier sistema operativo.
+Es una buena practica instalar esta libreria siempre, y nos ayuda a ejecutar el proyecto en cualquier sistema operativo.
 > Los modulos deben hacer una sola cosa y hacerla bien.
 
 También podemos arrancar en modo Producción, agregamos o establecemos una variable e los comandos o scripts del package.json
@@ -221,10 +251,21 @@ También podemos arrancar en modo Producción, agregamos o establecemos una vari
     "start": "node ./bin/www",
     "dev": "cross-env DEBUG=nodeapi:* npm start",
     "prod": "cross-env NODE_ENV=production npm start"
-  },
+  }
 ```
-
+Para el comando produccion se usa una variable estandar `NODE_ENV` que es la abreviatura de environment
 Se puede poner elegir porque puerto va arrancar
+
+Se puede validar o condicionar que arrancar si es que usa dev o node_env, por ejemplo que solo envie emails cuando esta arrancado en produccion.
+
+Se puede ademas poner mas variables en los comandosde scripts separadas por espacios por ejemplo: DB_PASSWORD
+```json
+  "scripts": {
+    "start": "node ./bin/www",
+    "dev": "cross-env DEBUG=nodeapi:* DB_PASSWORD=god npm start",
+  }
+```
+Luego cuando esas variables de entorno de los comandos en escripts se pueden poner en otro modulo, y tener un juego de variables para desarrollo, otro juego para produccion, otro juego de variables para el entorno de staging o pre-produccion.
 
 Podemos poner directamente nodemon en lugar de npm start
     - Node mon busca un index.js, luego un package.json, busca un main sino busca un script start.
