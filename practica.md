@@ -1,6 +1,5 @@
 # Sobre la práctica
 
-
 ## Explicado día 6
 
 - En la parte de filtrar productos por rango de precio se debe pasar 10-50, -50, se debe validar que el primer valor debe ser menor cuando se pase 50-10, en ese caso devolver un array vacio.
