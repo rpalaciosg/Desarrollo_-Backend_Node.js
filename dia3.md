@@ -265,11 +265,31 @@ Se puede ademas poner mas variables en los comandosde scripts separadas por espa
     "dev": "cross-env DEBUG=nodeapi:* DB_PASSWORD=god npm start",
   }
 ```
-Luego cuando esas variables de entorno de los comandos en escripts se pueden poner en otro modulo, y tener un juego de variables para desarrollo, otro juego para produccion, otro juego de variables para el entorno de staging o pre-produccion.
+Luego cuando esas variables de entorno de los comandos en scripts se pueden poner en otro modulo, y tener un juego de variables para desarrollo, otro juego para produccion, otro juego de variables para el entorno de staging o pre-produccion.
+
+Ademas en los comandos de scripts de package.json podemos poner porque puerto va a arrancar.
+```json
+  "scripts": {
+    "start": "node ./bin/www",
+    "dev": "cross-env DEBUG=nodeapi:* PORT=3001 NODE_ENV=production npm start",
+  }
+```
 
 Podemos poner directamente nodemon en lugar de npm start
     - Node mon busca un index.js, luego un package.json, busca un main sino busca un script start.
 
+#### Arranca app express
+El archivo que esta en `nodeapi\bin\www` es la que arranca la aplicacion express
+Y nuestra aplicacion en si es el fichero `app.js`
+
+**create.server**
+En el metodo o linea http.createServer(app) esta heradando de un eventEmitter. Porque ha heredado lo metodos de un event emitter y es capaz de emitir eventos y subscribirse.
+
+Los eventos emitidos que tiene son evento 'error' que ejecuta el metodo onError() y el evento 'listening' que es cuando se abre un puerto y se ejecuta onListening().
+
+#### Middlewares o routers
+
+Algo recomendado en nuestra app.js es si es que se tienen variables que se usan una sola vez, como es el caso de `indexRouter` y `usersRouter`, esto es mas para que sea mas facil en caso de error, cuando anadamos nuevos middlewares o routers.
 Podemos ver las vistas están en views, esta tiene unos comando
  - __dirnam: ver la ruta actual en la que estoy
  - __filename: me devuelve la ruta y el fichero
