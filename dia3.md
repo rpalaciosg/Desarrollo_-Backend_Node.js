@@ -45,34 +45,91 @@ Mandando a un fichero todo lo que se escriba en la consola.
 
 ## Módulos
 
-Nos referimos en dividir nuestra aplicación en partes.
-Los módulos de Node.js se basan en el estandar CommonJS.
+Hay varios estandares de hacer módulos, nos referimos en dividir nuestra aplicación en partes. Por ejm:
+- Modelos
+- Vistas
+- Controladores
+- Conexiones a la base de datos, etc
+
+Sería dificil trabajar en un solo script.
+Porque trabajar varias personasen un mismo fichero, por eso en node.js trabajamos con modulos.
+
+Los módulos de Node.js usamos módulos y se basan en el estandar CommonJS.
+Los ESModules son los que vienen de la parte de frontend, pero hay cosas que los `ES modules` han perdido y algo de ello es simplicidad, aunque tengan mas funcionalidad.
 
 - Los módulos usan `exports` para exportar cosas.
 - Quien quiere usar un módulo lo carga con  `require`.
-- LA instruccipon `require` en `síncrona`, no hay que poner un callback
-- Un módulo es un `singleton`, hay una única instancia de eso en memoria.
+- La instruccipon `require` en `síncrona`, no hay que poner un callback
+- Un módulo es un `singleton`, significa que hay una única instancia de eso en memoria, para que no hagamos múltiples copias de eso.
+
+Cada fichero puede funcionar como un módulo.
+Cuando se hace un require de un fichero, lo que hace es ejecutarlo.
+
+Ejemplo e un módulo básico:
+
+```js
+  // modulo.js
+  console.log('Hola desde un módulo!');
+
+  // index.js
+  require('./modulo.js'); //ejecuta el modulo.js
+```
+
+Node.js busca los módulo si es del core, en la carpeta node_modules local, y en la caperta node_modules global.
+
+A la hora de exportar se puede exportar de 2 formas principalmente:
 
 **¿module.exports o exports?**
+Podemos exportar de varias formas. con module.export o con exports que es la forma avrebiada.
 
 Podemos ver esto en el ejemplo `ejemplos/ejemplo_modulos`
 
-Cualquier objeto de java script hasta que no se haga un export, es un objeto vacío
+Cualquier fichero de javascript que se cargue con un `require`, hasta que no se haga un `export` o se exporte algo de ese fichero o de ese módulo, export siempre es un objeto vacío.
 
-Los ES Module usan un modificador de línea de comando y están aún en beta.
-Se los puede usar pero utilizando el modificador, se suelen usar mas en frontend.
+Hay una sintaxis abreviada para exportar usando un alias.
+```js
+  export.resta = resta;
+```
 
-Los módulos se cargan una sola vez, y si quiero tener las provincias en memoria por ejemplo, debo cargar al incio las provincias.
+> Tener cuidado de no pisar o danar el alias `export` ya que al usar el alias y pasar algun valor esto daniara el alias export de la sintaxis abreviada.
 
-> Se debe seguir el principio KISS que es  Mantenlo simple, estupido.
+Los ESModules usan un modificador de línea de comando y porque están aún en beta.
+Se los puede usar pero utilizando el modificador al ejecutarlo y debe tener extension.mjs, se suelen usar mas en frontend.
+El CommonJS es mas simple y cómodo.
+
+Los módulos se cargan una sola vez, a pesar que se los llame o haga require varias veces, ya que node.js devuelve el mismos objeto que habia en `exports` la primera vez y no vuelve a crearlo, es lo que es un `singleton` por que todas las llamadas apuntan al mismo objeto.
+Ejem: y si quiero tener las provincias en memoria por ejemplo, debo cargar al inicio las provincias, estas estaran disponibles en la primera llamada del exports.
+
+> En caso de que se quiera reiniciar o volver a cargar ese objeto singleton es bastante facil, es decir invalida la cache de ese objeto para volverlo a cargar.
+
+Segun la pregunta de cual es mejor common.js o es6 modules?
+
+El mejor o peor es relativo, es mas cuestion de gustos, aunque actulamente ES6 modules esta en beta y no se puede usar sin el modificador al correrlo.
+
+> Siempre se puede o se debe seguir el `principio KISS` que significa  Mantenlo simple, estupido. Es decir mantenlo sencillo, todo lo que puedas, no compliques las cosas innecesariamente.
+
+Los imports de es6 modules, es interoperable con los exports de common.js.
 
 Usar common.js para módulos antes que ES modules, que suelen ser mas complejos. En los esmodules tengo imports sincronos y asincronos.
 
-en Esmodules:
-- modulo sincrono import asds as metodo from './ahdhad';
-- modulo asincrono import()
+en Esmodules, se puede tener imports sincronos y asincronos: EJms.
 
-En backend no es muy necesario los import asincronos.
+- modulo sincrono 
+  ```js
+  import * as metodo from './ahdhad';
+  ```
+- el unico modulo asincrono en es6 modules es 
+  ```js
+  import()
+  ```
+Un caso de uso de un import() asincrono, es porque se quiere hacer algo  despues de que se importe y mientras se importe hacer otras.
+
+En backend no es muy necesario los import asincronos sino es mas util en frontend
+
+Existe un sition llamado `npmjs.com` en donde si hago un modulo lo puedo publicar si quiero que los demas lo usen y lo puedan importar.
+
+Puedo buscar los modulos directamente en google.
+
 
 ## Express.js
 
