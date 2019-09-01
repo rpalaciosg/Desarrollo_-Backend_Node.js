@@ -9,3 +9,8 @@
 - Cada vez que hago un commit, reviso todos los cambios que estoy metiendo en el repo. Fichero por fichero, cambio por cambio que voy a meter.
 
 - Las variables que se usan una sola vez, dan que pensar de si en realidad se necesitan esas variables.
+- CRear aplicaciones que por diseno esten dentro de la ley.
+
+## Malas practicas
+
+- Seria una mala practica si en un middleware que atiende a una peticion GET, cambia el estado. Se refierea cambiar algo, x ejm. Crear un registro en la base de datos.
