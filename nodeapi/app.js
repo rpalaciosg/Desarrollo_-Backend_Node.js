@@ -17,6 +17,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+// este es otro middleware de archivos estaticos, por ejemplo para buscar imagenes en un nas que tenga. y puedo  poner
+// todos los que necesite.
 // app.use('/pdf', express.static(path.join(__dirname, '/mnt/sda3/images/pdfs')))
 
 /**

@@ -286,21 +286,62 @@ Y nuestra aplicacion en si es el fichero `app.js`
 En el metodo o linea http.createServer(app) esta heradando de un eventEmitter. Porque ha heredado lo metodos de un event emitter y es capaz de emitir eventos y subscribirse.
 
 Los eventos emitidos que tiene son evento 'error' que ejecuta el metodo onError() y el evento 'listening' que es cuando se abre un puerto y se ejecuta onListening().
+### Nuesta aplicacion App.js
 
 #### Middlewares o routers
 
 Algo recomendado en nuestra app.js es si es que se tienen variables que se usan una sola vez, como es el caso de `indexRouter` y `usersRouter`, esto es mas para que sea mas facil en caso de error, cuando anadamos nuevos middlewares o routers.
+
+#### Vistas de la aplicacion
+```js
+  app.set('views', path.join(__dirname, 'views'));
+  app.set('view engine', 'ejs');
+```
+Las viestas utiliza la libreria `path`
 Podemos ver las vistas están en views, esta tiene unos comando
  - __dirnam: ver la ruta actual en la que estoy
  - __filename: me devuelve la ruta y el fichero
 
-- El motor de vistas que va a usar es ejs
+- El motor de vistas que va a usar es `ejs`
 
-Con app.uses se caran midlewares, una app de express es un grupo/lista de Middlewares, que se ejecuta hasta que ha llegado a la ejecutción y decida responder una de ellas. 
+#### Middlewares
 
-### Creamos un midleware en app.js
-- Analizamos el responder
-- y el next()
+Con `app.use(..)` se cargan midlewares, 
+**Que es un middleware?** Una app de express es un grupo/lista de Middlewares.
+Cada peticion que llegara a ejecutar una funcion es un middleware. 
+Lo que esta entre la `peticion` y la respuesta es un `MIDDLEWARE`.
+Se ejecuta hasta que ha llegado a la ejecución y hasta que uno de esos middleware decida responder y ahi ya no se evalua ninguna mas. 
+El middleware basicamente es una funcion con 3 parametros.
+
+##### Middleware de loggin
+Usa la libreria Morgan que es para hacer log. Va escribiendo un log de la peticion que e sta recibiendo.
+`app.use(logger('dev'));` -> el dev que se pasa es el formato del log.
+La liberia `morgan` tiene diferentes formatos de logs.
+  - tiny
+  - custom(el formato que tu quieres.)
+  - combined
+
+##### Middleware cookieParser
+
+##### Middleware express.static
+Es precisamente el que se encarga de responder ficheros estaticos.
+
+##### Middleware rutas de aplicacion web
+
+##### Creamos un midleware con arrows functions en app.js
+Se caracteriza porque  esta en la lista de moddlewares con `app.use`. Un middleware recibe 3 parametros>
+- `request`
+- `response`
+- `next` - evaluar el siguiente middleware
+
+
+Un middleware tiene que ahcer 1 de 2 cosas:
+- Responder o
+- llamar a next()
+
+Despues de evaluar a un middleware y llamo a next() se evaluara el siguiente middleware. Si no llamo next() despues de evaluar a un middleware, se queda atascado ahi.
+
+Por eso en un middleware o respondemos o llamamos a next()
 
 ```js
 app.use((req, res, next) => {
@@ -308,61 +349,129 @@ app.use((req, res, next) => {
   //  - Responder
   //res.send('ok');
   //  - O llamar a next
-  console.log('Peticion a', req.originalUrl);
-  next(new Error('cosa mal'));
+  //console.log('Peticion a', req.originalUrl);
+  // next(new Error('cosa mal'));
+  next();
 });
 ```
+##### Middlewares de gestion de errores
 
-Si llamo a next() y le paso alguna cosa, es un middleware especial que tiene 4 parametros, los 3 parametros que tienen todos los middleware y uno mas de error.
+Si llamo a next() y le paso alguna cosa, es un middleware especial que tiene 4 parametros, los 3 parametros que tienen todos los middleware y uno mas de error. Y el error lo pasamos en el parametro err. Y de ahi yo  decido como voy a sacar los errores, si voy a llamar a renderizar una pagina de error o voy a responder con un json, o voy a llamar a un servicio dealmacenamiento de errores remoto, para que eso le aparezca en unas graficas a mis jefes o lo que sea. 
+Este middleware usa la libreria http-errors, el cual es una herramienta para crear errores de diferentes tipos.
 
 Tambien podemos lanzar un error desde el next() pasandole algun parámetro.
 ```js
 next(new Error('cosa mal'));
 ```
 
-**Routers**
+Al final  se renderiza la vista de error:
+```js
+res.render('error');
+```
 
-Routers es un grupo de midlewares, forma de agrupar midlewares
+El `res.locals` se usa para pasarle cosas a las vistas.
 
-Los midlewares los puedo poner a nivel de app y dentro de un router
+#### Routers
 
-### Rutas
+Es una forma de agrupar middlewares
 
-HTTP pone a disposicion varios métodos
+Un router es un grupo de midlewares, forma de agrupar midlewares
 
-- GET para pedir datos, es idempotente (se puede llamar una o mil veces y el estado siempre va a ser el mismo)(mala practica es que en este método cambie el estado o haya algún cambio en la base o algo), es decir no hay que hacer cosas, sino devolver algo
-- POST para crear un recurso
-- PUT para actualizar, es idempotente (ejm. guardar un usuario existente)
+Los midlewares los puedo poner a nivel de app y dentro de un router que estan dentro de `./routes`
+
+- Carga primero  Express simplemente para crear un router.
+- A ese router, le pone un middleware.
+
+Ejemplo:
+```js
+/* GET users listing. */
+router.get('/', function(req, res, next) {
+  res.send('respond with a resource');
+});
+```
+
+- El '/' primer parametro del middleware, es un filtro que dice que solo voy a ejecutar este middleware si es una peticion a la raiz de este router que es `/users`
+
+##### Rutas
+
+Puedo especializar los middleware con los metodos que recibiran el route:
+HTTP pone a disposicion varios métodos o tipos de peticiones:
+Las mas comunes..
+
+- GET para pedir datos, es idempotente (se puede llamar una o mil veces y el estado siempre va a ser el mismo)(mala practica es que en este método cambie el estado o haya algún cambio en la base o algo), es decir no hay que hacer cosas, sino devolver algo o informacion.
+- POST para crear un recurso, usuario o una factura
+- PUT para actualizar cosas, es idempotente (ejm. guardar un usuario existente)
 - DELETE eliminar un recurso, es idempotente (pe. eliminar un usuario)
 
- > idenpotente: si lo ejecutas varias veces los resultados no cambian
+ > **idenpotente**: si lo ejecutas varias veces los resultados no cambian
 
  Por lo tanto podemos usar rutas como estas:
 
  ```js
- app.get('/')
+ app.get('/', function(req, res){
+   res.send('Hello World!');
+ });
+
+ app.post('/', function(req, res)){
+   res.send('Guardado!');
+ }
  ```
+> Nota: estos metodos get, post, put no deben ir en la app.js/ raiz sino en las routers.
 
- ### El orden de las rutas
+ ##### El orden de las rutas
 
- ** El orden es importante
+ ** El orden es importante **
 
- ### Rutas 
- Express nos permite usar el app.all que es lo mismo que el app.use
+ El orden en que vayamos definiendo los middlewares es el orden en el que se evaluaran despues.
 
- ### Servir ficheros estáticos
+ Debemos colocar los middlewares en el orden que tenga sentido para nuestra aplicacion.
 
- Es un middleware
+ ##### Rutas app.all
 
- ### Recibiendo Parametros
- Se recibiran parametros e n nuestros contraoladores de varias formas.
+ Express nos permite tambien usar el app.all como un comodin que es lo mismo que el app.use
 
- - en la ruta (/users/5)
- - Con parametros en query string (/users?sort=name)
- - En el cuerpo de la petición (POST y PUT generalmente)
- - Tambień podemos recibirlos en la cabecera, pero esta zona solemos dejarla para información de contexto, como autenticación, formatos, etc.
+ #### Servir ficheros estáticos
+
+ Es un middleware, que nos permite servir estaticos como CSS, imagenes, ficheros javascript, etc, se especifica con un middleware llamado `express.static`
+
+ ```js
+  app.use( express.static(path.join(__dirname, 'public')));
+ ```
+ Con esto serviremos lo que haya en la carpeta public como estaticos de la raiz de la ruta.
+
+Podriamos aniadirle mas middlewares de ficheros estaticos pero tenemos que especificar en que ruta cargarlas.
+
+```js
+  app.use('/pdf', express.static(path.join(__dirname,'d:/pdfs')));
+```
+
+ ### Recibiendo Parametros en Express
+ Como recibir parametros en una aplicacion de express?
+ Se recibiran parametros en nuestros contraoladores de varias formas:
+
+ - Recibir parametros en la ruta o url (/users/5)
+ - Recibir parametros con parametros en query string (/users?sort=name) Query string en la url
+ - Recibir parametros en el cuerpo de la petición (POST y PUT generalmente)
+ - Tambień podemos recibirlos parametros en la cabecera, pero esta zona solemos dejarla para información de contexto, como autenticación, formatos, etc.
+
+#### Parametros de cabecera
+  Hay 2 cabeceras:
+  - Cabceras de la peticion 
+  - Cabecera de la respuesta
+
+Podemos recibir informacion en las cabeceras de la peticion y respondercon informacion en las cabeceras de la peticion.
 
 #### Como recibir parametros en la ruta
+Ejemplo, cuando en el url me pasan algo como esto:
+`localhost:3000/paramenruta/33`
+
+```js
+router.get('/paramenruta/:numero', (req, res,next)){
+   console.log('req.params', req.params);
+   res.send('ok');
+   //next();
+}
+```
 
 ```js
 router.get('/params/:id/piso/:piso/puerta/:puerta', (req, res, next) => {
