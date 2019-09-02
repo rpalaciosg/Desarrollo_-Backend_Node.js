@@ -473,19 +473,36 @@ router.get('/paramenruta/:numero', (req, res,next)){
 }
 ```
 
+Hay que tener cuidado con un error muy tipico que es que se responder con send() y poner next() para evaluar el siguiente middleware. En la pantalla vemos una respuesta aparemente correcta, pero en el log, vemos algo muy diferente que es el siguiente error.
+`Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client.` 
+Es decir significa que se ha respondido 2 o mas veces.
+
+Nota: Responder 2 veces esta prohibido en el protocolo http. Ya que establece que ante una peticion solo puede haber una respuesta.
+
 ```js
 router.get('/params/:id/piso/:piso/puerta/:puerta', (req, res, next) => {
   console.log('req.params',req.params);
   res.send('ok');
 });
-
 ```
 
-No hay buenas practicas de si hacer queryStrings o parametros en la ruta, los query strings se usan más para cosas adicionales.
+Esto suele pasar cuando condicionamos las 2 posibilidades de enviar respuesta o pasar a evaluar el siguiente middleware, para esto, despues de enviar respuesta con send() debemos poner un return, para que ya no se ejecute lo demas:
 
-Se hacer que un parámetro sea opcional, poniendo un signo de interroganción
+```js
+router.get('/parameter/:numero', (req, res, next )=> {
+  if (asda) {
+    res.send('ok');
+    return;
+  }
+  next();
+});
+```
 
-Además se puede condicionar un parámetro con una expresion regular o filtro
+No hay buenas practicas de si hacer queryStrings o parametros en la ruta, los query strings se usan más para cosas adicionales. Como busquedas, filtros.
+
+Se hace que un parámetro sea opcional, poniendo un signo de interroganción
+
+Además se puede condicionar un parámetro con una expresion regular o filtro.
 
 ```js
 router.get('/params/:id([0-9]+)/piso/:piso/puerta/:puerta', (req, res, next) => {
@@ -493,8 +510,33 @@ router.get('/params/:id([0-9]+)/piso/:piso/puerta/:puerta', (req, res, next) => 
   res.send('ok');
 });
 ```
+La forma de hacer una peticion en el url del middleware anterior seria:
 
-Express solo activará este middleware solo si cumple la expresión regular
+`localhost: 3000/params/33/piso/2/puerta/C`
+
+En este caso Express solo activará este middleware solo si cumple la expresión regular.
+
+Para recoger los datos o los parametros se usa `req.params` y me devuelve un objeto.
+
+**PArametro opcional** Se puede hacer que una parametros sea opcional. Si yo quiero que el numero sea opcional le agrego un signo de interrogracion despues del nombre del parametro. `/:numero?`
+Al responder correctamente a esta peticion al recoger los datos con req.params, tendremos que el numero es `undefined`.
+```js
+router.get('/parameter/:numero?', (req, res, next )=> {
+  if (asda) {
+    res.send('ok');
+    return;
+  }
+  next();
+});
+```
+
+**Otra cosa que se puede hacer** es el uso de expresiones regulares para filtros. Y el middleware se activara solo si el filtro con la expresion regular en el paramero :id se cumple. Es decir si solo es uno o mas numeros de entre el 0 al 9.
+```js
+router.get('/params/:id([0-9]+)/piso/:piso/puerta/:puerta', (req, res, next) => {
+  console.log('req.params',req.params);
+  res.send('ok');
+});
+```
 
 #### Podemos recibir parámetros tambien con Querystring
 
