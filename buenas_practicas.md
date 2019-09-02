@@ -10,6 +10,10 @@
 
 - Las variables que se usan una sola vez, dan que pensar de si en realidad se necesitan esas variables.
 - CRear aplicaciones que por diseno esten dentro de la ley.
+- Responder 2 veces esta prohibido en el protocolo http. Ya que establece que ante una peticion solo puede haber una respuesta.
+
+- En el app.js de express tener lo menos posible y subdividirlo en modulos.
+- Agurpar middlewares en routers.
 
 ## Malas practicas
 
