@@ -619,21 +619,86 @@ Como validamos esta información.
 Hay un modulo, que se llama `express-validator` y hay otros mas que hacen validaciones para express. 
 Express validator es muy sencillo de usar. `https://github.com/ctavan/express-validator`
 
-Primero instalamos express-validator
+- Primero instalamos express-validator
 ```sh
-npm install express-validator
+  $ npm install express-validator
 ```
-En el middleware usamos express validar así:
-vuelvo arrancar con `npm run dev`
+  En el middleware usamos express validatorr así:
 
-Luego cargo el módulo para usarlo
+- Vuelvo arrancar con `npm run dev`
 
-> object destructuring en js
->> Si un modulo me devuleve un objeto y quiero usar solo 2 metodos, usamos object destructuring
->> `const { query, validationResult } = require('express-validator/check');`
->> Esto me sirve para no traer o construir todo el objeto sino treaer las propiedades que voy a usar nada mas.
+Luego cargo el módulo para usarlo en index.js (router)
 
-#### ejemplo de validacion de un qury string
+### Destructuring
+el objetc destructuring es una caracteristica del lenguaje js.
+
+```js
+const check = require('express-validator')
+```
+
+Por ejemplo si el require de express-validator de la derecha me devuelve un objeto y yo de ese objeto solo quiero un par de cosas, pues no me hace falta cargar todo el objeto check.
+Es decir si no voy a utilizar el objeto y solo voy a utilizar cosas que contiene el objeto, por ejemplo: `check.query` o `check.validationResult`. Si solo quiero usar estos 2 métodos que contiene el objeto check, no hace falta cargar el objeto completo, entonces uso esto:
+
+Sabiendo que lo que esta a la derecha en require es un objeto, entonces abro el objeto y de ese objeto me creas una variable que se llame `query`,  con la propiedad *query* de ese objeto. Y así mismo de ese objeto creame la variable `validationResult` con la propiedad *validationResult* que viene de ese objeto, y así me ahorro tener una variable check que no me hace falta para nada. Y ya tengo el query y el validationResult.
+
+```js
+const { query, validationResult } = require('express-validator')
+```
+Hacer esto se llama Object destructuring en javascript, desestructurar un objeto
+Tambien se puede hacer con arrays.
+
+>> Esto me sirve para no traer o construir todo el objeto sino traer las propiedades que voy a usar nada mas.
+
+Vamos a usar la variable query, para hacer validaciones de las `query strings` 
+
+#### Validaciones de un query string
+
+La url con query string que validaremos es:
+
+ `localhost:3000/enquerystring?color=rojo&talla=l&lang=es`
+
+Usamos la variable query obtenida del modulo express-validator.
+Nos vamos a la query string:
+Como vemos podemos meter varios middlewares separados por comas. Y va activando uno tras otro, mientras no llame a next(), si lo hace ps ahi termina todo.
+```js
+router.get('/enquerystring', (req, res, next) => {
+  console.log('req.query', req.query);
+  res.send('ok');
+});
+```
+
+Aquí voy a agregar el middleware de validación que se llama query que obtuve de express-validator, o mas bien es una función que devuelve un middleware de validación:
+
+Le digo que espero que me llegue un parametro en la query string que se llame 'color' y además poniendoloe `.` me sales muchos métodos .is* que me sirven para validar un montón de cosas. En caso de que no haya un metodo que me guste, hay una en la que yo le pongo el valor de validacion.
+
+- En este caso el color voy a validar que este en minuscula. `query('color').isLowercase()`. Esta validacion de pedir solo minusculas en la url no es recomendable o buena practica, porque estaria poniendo problemas, porque debería dar igual.
+
+- Tambien puedo agregar el método `.withMessage('')` cuando falle. Es decir, cuando tenga un query string en el tenga un campo que sea 'color' y no sea LowerCase, quiero que me de un error de validacón con este mensaje `.withMessage('must be lower case')`
+```js
+router.get('/enquerystring', 
+  query('color').isLowercase().withMessage('must be lower case')
+, (req, res, next) => {
+  console.log('req.query', req.query);
+  res.send('ok');
+});
+```
+Hasta aquí tengo ya la mitad para las validaciones de campos en query strings. Ahora vamos a usar el otro middleware que tengo arriba que se llama `validationResult` que obtuvimos de express-validator.
+Este middleware es para usar el resultado de la validacion que se ha hecho con `query('color').isLowercase()` esto se lo hace dentro del middleware o router.
+
+Aqui voy a usar `validationResult()` y le voy a pasar el request para que ejecute la validación nuevamente del request `validationResult(req).throw()` y le pongo .throw, se pueden poner otras cosas pero por ahora se ve muy bien. Esto se hace para lanzar una excepción si no se valida cualquiera de las validaciones que se le hacen al query string.
+
+```js
+router.get('/enquerystring', 
+  query('color').isLowercase().withMessage('must be lower case')
+, (req, res, next) => {
+  validationResult(req).throw();
+  console.log('req.query', req.query);
+  res.send('ok');
+});
+```
+
+Tener en cuenta que puedo validar otro campo, en este caso agregamos validacion para el campoque es la talla.
+Por ejemplo validamos que sea numerico
 
 ```js
 // validador en query string
@@ -649,3 +714,16 @@ query('talla').isNumeric().withMessage('must be numeric'),
 ```
 
 El throw() lo que hace es lanzarme una excepción.
+Si es que se llega a la línea siguiente o depsues del throw(), significa que los parámetros de entrada son válidos y los guardo con req.query o req.body o req.param, etc
+Esto nos mostrará un error 500 al hacer la petición, y podriamos devolver un next('error') con un error.
+Y en app.js en el error handler le haremos unos retoques para que nos muestre bien los errores de validación.
+
+* Además si quiero validar el body, tengo validadores para body destructurando check de express-validator extraigo:
+- body: para validar el body (peticiones con body)
+- param: para validar params (queryparams)
+
+La parte del destructuring object quedaría así:
+
+```js
+const { query, body, param, validationResult } = require('express-validator');
+```
