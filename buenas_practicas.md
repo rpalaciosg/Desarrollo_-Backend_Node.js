@@ -16,6 +16,13 @@
 
 - Agrupar middlewares en routers.
 
+- Normalmente el orden para importar o hacer require de los modulos al inicio de un programa no afecta el funcionamiento del programa normalmente, pero se suelen poner o se recomienda en este orden por convencion para tener un código mas mantenible:
+    1. Primero los modulos internos del código de Node.js como `http`, etc. 
+    2. Después los modulos externos o de terceros como `express`, etc. y 
+    3. Después `mis modulos` internos, osea los que yo he hecho.
+
 ## Malas practicas
 
 - Seria una mala practica si en un middleware que atiende a una peticion GET, cambia el estado. Se refierea cambiar algo, x ejm. Crear un registro en la base de datos.
+
+- Validar que en la URL con querystring un campo se valide o se pida solo en minusculas no es recomendable porque estaria poniendo problemas. Porque debería dar igual si es mayusculas o minusculas.
