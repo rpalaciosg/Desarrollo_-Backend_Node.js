@@ -502,6 +502,13 @@ No hay buenas practicas de si hacer queryStrings o parametros en la ruta, los qu
 
 Se hace que un parámetro sea opcional, poniendo un signo de interroganción
 
+```js
+router.get('/paramenruta/:numero?', (req, res, next) => {
+  console.log('req.params',req.params);
+  res.send('ok');
+})
+```
+
 Además se puede condicionar un parámetro con una expresion regular o filtro.
 
 ```js
@@ -516,10 +523,12 @@ La forma de hacer una peticion en el url del middleware anterior seria:
 
 En este caso Express solo activará este middleware solo si cumple la expresión regular.
 
-Para recoger los datos o los parametros se usa `req.params` y me devuelve un objeto.
+Para recoger los datos o los parametros se usa `req.params` y esto me devuelve un objeto, el cual puedo leer y usar para obtener los datos recibidos.
 
-**PArametro opcional** Se puede hacer que una parametros sea opcional. Si yo quiero que el numero sea opcional le agrego un signo de interrogracion despues del nombre del parametro. `/:numero?`
-Al responder correctamente a esta peticion al recoger los datos con req.params, tendremos que el numero es `undefined`.
+**Parametro opcional** Se puede hacer que una parametros sea opcional. Si yo quiero que el numero sea opcional le agrego un signo de interrogracion despues del nombre del parametro. `/:numero?`
+
+Al responder correctamente a esta peticion y al recoger los datos con `req.params`, tendremos que el numero es `undefined`, ya que al no haber pasado dato por el signo de interrogación (opcional) no hay informacion que pueda extraer. 
+
 ```js
 router.get('/parameter/:numero?', (req, res, next )=> {
   if (asda) {
@@ -538,7 +547,7 @@ router.get('/params/:id([0-9]+)/piso/:piso/puerta/:puerta', (req, res, next) => 
 });
 ```
 
-#### Podemos recibir parámetros tambien con Querystring
+#### Podemos recibir parámetros tambien con Query string
 
 ```js
 router.get('/enquerystring', (req, res, next) => {
@@ -546,12 +555,17 @@ router.get('/enquerystring', (req, res, next) => {
   res.send('ok');
 });
 ```
+En este caso express va a parsear el querystring o los datos en `req.query` que es con lo vamos a extraer esos datos recibidos por querystring, esto nos devuelve un objeto con las variables y valores que pasemos en la url.
 
-y la url seria `http://localhost:3000/enquerystring?color=rojo&talla=l&lang=it`
+La url para probar esta querystringseria `http://localhost:3000/enquerystring?color=rojo&talla=l&lang=it`
 
-#### Recibiendo parametros en el cuerpo de la peticion
+Para pasar los parametros en la url con querystring despues del nombre del middleware ponemos el signo de interrogacion `?`, luego variable = valor (color=rojo), luego el signo anperstand `&` seguios parando la variable = valor (talla=L), y así sucesivamente `&` y variable=valor.
 
-Aqui no se pede usar una petición GET ya que no usa body
+Esto Express lo parsea en un objeto req.query y asi poder trabajar con esos datos.
+
+#### Recibiendo parametros en el cuerpo de la peticion (en el body)
+
+En esta peticion no se pede usar una petición con método `GET` ya que no usa body. Esto es estandar de http, en este caso debemos usar el método `PUT` o `POST`.
 
 ```js
 router.post('/rutapost', (req, res, next) => {
@@ -560,25 +574,56 @@ router.post('/rutapost', (req, res, next) => {
 });
 ```
 
-Esto no lo pruebo desde el browser, sino debo usar una herramienta que se llama postman
+En este caso al responder nos devuelve un objeto `req.body`, que es el que usaremos para extraer la información del body mediante un objeto.
 
-Tener en cuenta el formato del body, nos recomienta usar el middleware multer(https://github.com/expressjs/multer) para parsear form-data en otros formatos de body
+Además con los paremtros en el Body la forma de probar esta peticion cambia. Ya que esto no lo pruebo desde LA URL del browser, sino debo usar alguna herramienta especializada en este caso hay  una que se llama `POSTMAN`, o hacer en alguna pagina un formulario que haga un `POST` al servidor. 
+En este caso usaremos Postman. Es un programa para desarrollo de APIs, al final es una herramienta que te ayuda a hacer peticiones comodamente y ver las respuestas comodamente.
 
-form-data se suele usar para parsear ficheros
+##### USando Postman
+- Me creo con el + una petición
+- En el desplegable eligo la peticion POST y en la url escribo:
+  `http://localhost:3000/rutapost` , rutapost es el nombre del middleware.
 
-Para las peticiones de tipo body usamos el formato de Body `x-www-form-urlencoded`
+- Luego nos vamos a la pestaña Body, para que en el cuerpo de la petición vamos a meter algo.
+
+- Nota: Hay un error muy común, cuando escogemos el formato de Body `form-data`, si ponemos una Key con su valor, el objeto req.body {} estaría vacío, esto es porque si usamos el formato `form-data` debemos poner un middleware en app.js que parsee ese formaro `form-data`. 
+
+Hay una libreria que me podria parcear este formato `form-data` hay uno recomendado usar se llama  multer(https://github.com/expressjs/multer) es un middleware para parsear el formato `form-data` en otros formatos de body.
+
+El formato multipar form-data muchas veces se suele usar para hacer uploads de ficheros
+
+Como se usa:
+```js
+// se hace un require de multer
+var multer = require('multer')
+// despues se crea un objeto al que se le dice si viene un fichero donde tiene que guardarlo.
+var upload =  multer({ dest: 'uploads/'})
+
+// despues se usa asi, me da un middleware y me procesa ese body en el formato multipar form-data
+app.post('/profile', upload.single('avatar'), function (req, res, next) {
+  // req.file es el `avatar` file
+  // req.body will hlod the text fields, if there were any.
+})
+```
+
+
+Al crear por primera vez el proyecto de Express en los middlewares hay un `app.use(express.urlencoded({extended: false}))`, esto hace que las peticiones PUT y POST que tengan Body o parametros en el Body parcearlo al formato `urlencoded` y nos lo deja disponible en el objeto `req.body`.
+
+- Por tanto en express para las peticiones de tipo body o con parametros en el body usamos el formato de Body `x-www-form-urlencoded` y recojo el valor con `req.body`.
+
+- En el campo description puedo ir poniendo datos para generar documentacion con POSTMAN.
 
 ### Validaciones
 
 Como validamos esta información.
-Hay un modulo, que se llama `express-validator` y hay otros mas. Es muy sencillo de usar.
+Hay un modulo, que se llama `express-validator` y hay otros mas que hacen validaciones para express. 
+Express validator es muy sencillo de usar. `https://github.com/ctavan/express-validator`
 
 Primero instalamos express-validator
-
 ```sh
 npm install express-validator
 ```
-
+En el middleware usamos express validar así:
 vuelvo arrancar con `npm run dev`
 
 Luego cargo el módulo para usarlo

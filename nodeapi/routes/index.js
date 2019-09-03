@@ -49,10 +49,12 @@ query('talla').isNumeric().withMessage('must be numeric'),
   res.send('ok');
 });
 
+
 router.post('/rutapost', (req, res, next) => {
   console.log('req.body', req.body);
   res.send('ok');
 });
+
 
 module.exports = router;
  
