@@ -12,8 +12,9 @@
 - CRear aplicaciones que por diseno esten dentro de la ley.
 - Responder 2 veces esta prohibido en el protocolo http. Ya que establece que ante una peticion solo puede haber una respuesta.
 
-- En el app.js de express tener lo menos posible y subdividirlo en modulos.
-- Agurpar middlewares en routers.
+- En el app.js de express tener lo menos posible y es mejor subdividirlo en modulos.
+
+- Agrupar middlewares en routers.
 
 ## Malas practicas
 
