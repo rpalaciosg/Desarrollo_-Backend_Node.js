@@ -131,7 +131,7 @@ Podemos usar los siguientes http_status_codes:
 
 En este caso ponemos `err.status = 422`, si volver a ejecutar y vemos el NEtwork vemos que el código de estado que devuelve cuando hay error de validación es 422. Este seria el código correcto en estos casos de error de validación.
 
-Aqui ya tendriamos nuestro método de validación en el error handler para que parsee bien el mensaje lanzado de throw() en el middleware del router.
+Aqui ya tendriamos nuestro método de validación en el error handler en app.js para que parsee bien el mensaje lanzado de throw() en el middleware del router en index.js .
 
 ```js
 // error handler
@@ -152,34 +152,56 @@ app.use(function(err, req, res, next) {
 });
 ```
 
-Debemos responder co un códito de estado http:
-- 200 en adelante, 
-- 300 en adelante, es una redirección, el servidor dice, lo que me pediste no lo tengo, pero tienes que ir a pedirlo a otro sitio.
-- 400 en adelante, errores 
-  - 422, es usual en errores de validacion
-
-Si es que en un error de validación el api devuelve un eror 500 ps da mala imagen, y se nota que es de mala calidad y que no se ha dado el tiempo necesario.
+Recordar, si es que en un error de validación del api devuelve un eror 500 o uno diferente al mensaje que se muestra en la pantalla, ps da mala imagen, y se nota que es de mala calidad y que no se ha dado el tiempo necesario.
 
 ### Métodos de respuesta
 
-Hasta ahora respondiamos a todas las peticiones haciendo un `res.send()` pero hay otros métodos convenientes como:
+Hasta ahora hemos estado respondiendo a todas las peticiones haciendo un `res.send()`, con el rest.send() podriamos hacer de todo, pero hay otros métodos convenientes que nos hacen mas comodo el responder otro tipos de coss:
 
 #### Método de respuesta - send
+Con este m'etodo puedo devolver un buffer, string, un objeto o un array o un monton de cosas que express se encarga de convertirlas al formato adecuado.
+Por ejemplo si devolves un objeto, express detecta el contenido y se encarga de convertirlo a json y meter una cabecera diciendo que el content type es de tipo json, o el adecuado.
+> El content-Type 
+
 res.send() : es el metodo generico, puedo enviar buffer, string, objetos o un array
 
-#### MEtodo de respuesta - json
+#### Metodo de respuesta - json
 
-Es casi lo mismo que res.send, que ajsuta un posible null o undefined para que salga bien en JSON, ayuda a ver que en el código se esta usando jason para responder.
+Es casi lo mismo que res.send(), pero la unica diferencia es que hace que el que ha hecho la peticion piensa que lo que va a devolver es un json y le va a hacer un json.parse pero cuando le respondamos un null no le va a funcionar.
+La ventaja es que en el codigo se ve la palbra .json y se sabe que se esta respondiendo jason. 
+Usamos el .json porque queda mejor en el codigo, mas entendible.
 
-#### MEtodo de respuesta - download
-Provoca esa tipica ventana que sale en el browser, `guardar como`, pone una cabecera a la respuesta.
+Se ajusta un posible null o undefined para que salga bien en JSON, ayuda a ver que en el código se esta usando json para responder.
+
+res.json() : 
+
+#### Metodo de respuesta - download
+Tambien podemos hacer la descarga de un fichero.
+Este rest.donwload() provoca esa tipica ventana que sale en el browser, diciendo `guardar como`, cuando se le da al tipico link de descarga. Le pone una cabecera a la respuesta respondiendo que tiene un attachmend y el browser responde a esa cabecera diciendo a donde quiere guardar el fichero.
+
+Los parametros que se le pasan son, 
+
+```js
+res.donwload('/report-1234.pdf', 'report.pdf');
+```
+El primer parametro es el fichero que quieres entregar con la ruta, y el segundo parametro es como quieres que le aparezca.
 
 #### MEtodo de respuesta - redirect
+res.redirect('/foo/bar'): es para responder una redireccion con el status 302  por defecto(found) o se lo puede customizar.
 Responder una redireccion con el status code 302 por defecto (found). Es una respuesta típica cuando el que nos hace una request un browser. Respondemos una indicación diciendo, 302, ve a este sitio `/foo/bar`, si es una app android, java, o c# puede que no siga el redirect.
 
-#### Metodo de respuesta - render
+Un redirect es una respuesta tipica cuando quien nos hace una peticion es un browser. El browser interpreta los redirects automaticamente. PEro si es una aplicacion que no ejecuta los redirects, ese redirect no lo haria. El redirecto no es que nos lleva a un sitio sino que nos responde 302 ve a la direcion de aqui osea nos indica a donde debemos ir.
 
-#### MEtodo de respuesta - sendFile
+Normalmente en los APis no sueles hacer respuestas de tipo redirect, es raro hacerlo.
+
+#### Metodo de respuesta - render
+Esto lo tiene nuestro website, en index.js el primer middleware, responde con un res.render('index', {title: 'Express'}). Lo que hace es renderizar la vitsa index.html
+
+res.render('index')
+
+#### Metodo de respuesta - sendFile
+Podemos usar tambien res.sendFile(), es parecido al download, pero no pone esa cabecera expecial diciendo descargate esto. Si queremos que al usuario no le aparezca la ventana de `guardar como` sino que le aparezca directamente en el browser. Si queremos poner cabeceras ps lo podemos hacer en un objeto de opciones.
+
 Envía un fichero como si fuera un estático.
 
 Además de la ruta del fichero acepta un objeto de opciones y un calback para comprobar el resultado de la transmisión.
