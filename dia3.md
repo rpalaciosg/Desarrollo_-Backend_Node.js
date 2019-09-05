@@ -729,3 +729,4 @@ const { query, body, param, validationResult } = require('express-validator');
 ```
 
 - Hay que tener en cuenta, que no es necesario usar un modulo para las validaciones, sino que las podemos hacer nosotros perfectamente.
+

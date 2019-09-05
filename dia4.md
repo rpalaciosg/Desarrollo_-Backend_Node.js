@@ -3,8 +3,9 @@
 ## Express
 
 ### Validaciones
+- Hay que tener en cuenta, que no es necesario usar un modulo para las validaciones, sino que las podemos hacer nosotros perfectamente, solo nos sirve para ahorrarnos trabajos.
 
-PAra las validaciones podemos usar express.validator para ahorrarnos trabajo. Pero no es necesario algun middleware porque lo podemos hacer nosotros mismos. Es nuestra responsabilidad validar la información que ingresen a nuestro servidor, para reducir bugs, mejorar la calidad de la información, y para que esté lo mejor validada posible.
+Para las validaciones podemos usar express.validator para ahorrarnos trabajo. Pero no es necesario algun middleware porque lo podemos hacer nosotros mismos. Es nuestra responsabilidad validar la información que ingresen a nuestro servidor, para reducir bugs, mejorar la calidad de la información, y para que esté lo mejor validada posible.
 
 Para instalarlo hacemos
 
@@ -14,7 +15,7 @@ npm install express-validator
 
 `Express-validaor` nos da un arsenal de validaciones, como de tarjetas, email, y un monton.
 
-Los ejemplos lo tenrmos en `index.js` que validavamos el query string.
+Los ejemplos lo tenemos en `index.js` que validabamos el query string.
 
 ```js
 // validador en query string
@@ -30,12 +31,107 @@ query('talla').isNumeric().withMessage('must be numeric'),
 ```
 
 > Nota en caso de error 
-**Nota:** En caso de que la app de express nos de un error `EADDRINUSE` eso significa que hay otro proceso usando ese puerto.
+**Nota:** En caso de que la app de express nos de un error `EADDRINUSE` eso significa que hay otro proceso usando ese puerto. Esto lo podemos ver en `./bin/www` en el middleware manejador de errores.
+Esto lo podemos corregir, cambiando para que la app corra en el puerto 3001 en caso que el puerto ocupado sea el 3000 o matar el proceso que esta ocupando el puerto que necesitamos usar.
+Lo podemos tambien e linux usando el comando ps para verlo y hacerlo un kill.
 
-Lo que vamos a hacer ahora, es agregar en el middleware de errores en app.js, para que gestione bien el tipo de error que estamos lanzando y se vea con un mensaje mejor.
 
-En el error handler hacemos lo siguiente.
-El `err.array` es un método de errores de express-validator
+### Validaciones : Segunda Parte en query string
+Al validar algo con error, nos muestra en la pantalla/navegador un Error y el mensaje de error.
+
+Lo que vamos a hacer ahora, es agregar en el middleware de errores en app.js, meter la lógica necesria para que gestione bien el tipo de error que estamos lanzando y en el navegador el mensaje de error se muestre correctamente y con mejor formato.
+Porque ahora mismo nuestro middleware de errores no esta gestionando bien ese tipo de error.
+
+En este caso nos da este error por que a la talla le estamos pasando una letra cuando deberia ser numérico.
+`localhost:3000/enquerystring?color=rojo&tall=l&lang=it`
+
+Lo que pasa es que el middleware de errores o erro handler en app.js no esta gestionando bien el mensaje que estamos lanzando al validar.
+
+Nos vamos al error handler en app.js y vemos como esta actualmente. Se diferencia de los demas middlewares porque tiene un parametro adicional `err`
+
+```js
+//error handler
+app.use(function(err, req, res, next){
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  //render the error page
+  res.status(err.status || 500);
+  res.render('error');
+});
+```
+
+En el error handler haremos lo siguiente.
+
+- Comprobar el error de validación. Si es que hay un error de validación, para comprobarlo usamos lo siguiente:
+  * Comprobamos si el error tiene una propiedad array, y si la tiene es un error de validación. Se puede comprobar de otras formas, pero esta es una de ellas.
+```js
+if (err.array) {
+
+}
+```
+  Lo que queremos es que el mensaje que aparezca aquí, sea un mensaje que preparemos nosotros.
+- Primero vamos a extraer el mensjae o tambien podemos extraer todos los mensajes de errores de validación y mostrarlos todos.
+Por ejemplo vamos a sacar el primer error de validacion que haya dado y colocarlo.
+
+```js
+if (err.array) {
+  const errInfo = err.array()
+}
+```
+Tener en cuenta err.array() el array es un método al que ejecutamos, y le pedimos que filtre de un array de errores pero que nos dé `onlyFirstError: true`, esto nos devuelve un array y de ese array sacamos la propiedad 0.
+```js
+if (err.array) {
+  const errInfo = err.array({ onlyFirstError: true })[0];
+}
+```
+Este método array() de err no es un metodo de los objetos de error normales, es un método de los objetos de error de express-validator.
+
+Entonces lo que haremos ahora es formatear el err.message para el mensaje de error:
+```js
+err.message = `Not valid - ${errInfo.param} ${errInfo.msg}`
+```
+errInfor.param  = es el nombre del param que ha dado error, en este caso 'talla'
+errInfor.msg = es el mensaje que corresponde al mensaje que se pone en .withMessage('must be numeric') en el router/middleware del querystring donde hago la validación.
+
+Ahora en el navegador nos mostrará el mensaje de error que hemos formateado en el código en caso de error de validación.
+
+```js
+//error handler
+app.use(function(err, req, res, next){
+  //Comprobar error de validación
+  if (err.array) {
+    const errInfo = err.array({ onlyFirstError: true })[0];
+    err.message = `Not valid - ${errInfo.param} ${errInfo.msg}`
+  }
+  }
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  //render the error page
+  res.status(err.status || 500);
+  res.render('error');
+});
+```
+
+Hay un detalle, si abro inspeccionar y pongo en network y recargo la pagina, vemos que el resultado de esta peticion es 500, pero esto no es correcto, ya que el servidor en el navegador me dice que se le ha dado una talla mal, pero se contradice diciendo que el mismo servidor a cometido un error al pasarle la talla mal.
+
+Lo que tendria que decir es, que tú me has dado la talla mal, es culpa del cliente no del servidor. Por lo tanto no deberia devolver un error 500 sino un 400 algo.
+  - Un error 500 es cuando el servidor no ha sido capaz de procesar una solicitud, estando la solicitud correcta. y da un error 5xx
+
+Entonces vamos a cambiar el codigo de error que da el servidor, para ponerle al status un código de respuesta http. 
+Podemos usar los siguientes http_status_codes:
+  - 1xx : los 100 son mensajes de información que no son terminadoras d euna peticion
+  - 2xx : Succes, es la respuesta típica de un servidor. Ver en wipik
+  - 3xx : Redirection, es una redirección. (Lo que me has pedido no lo tengo pero puede estar en este sitio)
+  - 4xx : Errores de cliente, bad request, no autorizado, 402 payment required. 403 forbidden (sabes quien es pero esta prohibido entrar aquí o no tiene permisos). 
+  - 422 es un estado muy típico, que significa que la peticion estaba bien formada pero fue imposible procesarla, debido a errores semáticos. Es un estado relacionado con un problema de validación.
+
+En este caso ponemos `err.status = 422`, si volver a ejecutar y vemos el NEtwork vemos que el código de estado que devuelve cuando hay error de validación es 422. Este seria el código correcto en estos casos de error de validación.
+
+Aqui ya tendriamos nuestro método de validación en el error handler para que parsee bien el mensaje lanzado de throw() en el middleware del router.
 
 ```js
 // error handler
