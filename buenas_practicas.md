@@ -21,6 +21,10 @@
     2. Después los modulos externos o de terceros como `express`, etc. y 
     3. Después `mis modulos` internos, osea los que yo he hecho.
 
+- Es una buena práctica programar todo en ingles, nombres de variables, documentación. etc
+
+- Al hacer un API y validaciones de los parámetros Invertir el tiempo necesario para devolver los códigos de estado http correctos o acordes.
+
 ## Malas practicas
 
 - Seria una mala practica si en un middleware que atiende a una peticion GET, cambia el estado. Se refierea cambiar algo, x ejm. Crear un registro en la base de datos.
