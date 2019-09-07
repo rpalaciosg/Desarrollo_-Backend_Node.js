@@ -206,17 +206,29 @@ Envía un fichero como si fuera un estático.
 
 Además de la ruta del fichero acepta un objeto de opciones y un calback para comprobar el resultado de la transmisión.
 
+
 ### Middleware de terceros
 
-Podemos intalarlos como npm y cargarlos como los anteriores.
-Hay una lista de los más usados:
+Al igual que hay librerias de terceros que nos ayudan a hacer cosas como nodemon, chance. También hay middleware de terceros, una lista de los mas usados o por lo menos los mas basicos podemos verlas aqui:
 
 https://expressjs.com/en/resources/middleware.html
 
+- multer : sirve para recoger peticiones de tipo POST en el body con formato multipar form-data.
+- morgan: middleware que se uso para hacer log.
+- cors:
+- session :
+
 ```sj
-$ npm
+$ npm install cookie-parser
 ```
-- multer: nos sirve para recoger peticiones de tipo POST con formato multipar/form-data
+Y se usa asi:
+
+```js
+  var cookieParser = require('cookie-parser');
+  
+  // load the cookie parsing middleware
+  app.use(cookieParser());
+```
 
 ## Template Engines - Vistas
 
