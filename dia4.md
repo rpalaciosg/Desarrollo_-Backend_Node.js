@@ -230,27 +230,31 @@ Y se usa asi:
   app.use(cookieParser());
 ```
 
-## Template Engines - Vistas
 
-Como usar las  vista en Express? Express tiene la capacidad de gestionar las vistas. Tiene un motor de vistas que permite enchufar las vistas.
+## Vistas - Template Engines
 
-### Templates
+- Como usar las  vista en Express? Express tiene la capacidad  hacer res.render(), es decir de poder gestionar las vistas. 
+- Tiene un motor de vistas que permite enchufar otros motores de vistas.
+- Por ejemplo cuando creamos nuestra aplicacion nosotros le dijimos `ejs`. Usamos ejs en el curso aunque express por defecto monta `jade` que le cambiaron el nombre.
+- Normalmente usamos ejs porque la sintaxis es preferible antes que jade, ya que jade nos obliga aprender un lenguaje mas. Ademas ese lenguaje jade no hay muchos programadores que los conozcan, y si es que usas otro lenguaje no tan conocido es mas dificil.
+- Con ejs usas html estandar. A la hora de escribir html jade  escribes menos.
+- > No se usa mucho `Jade` ya que no muchas personas la conocen. EJS usa el html5 típico. No es que Jade tenga algo malo es muy bueno.
+- Hay otros motores de templating `Express.js supported templates engines`
+
+- A parte de `ejs` si se quiere algo mas potente a costa de tener que aprender mas cosas, se podria recomendar `handlebars` o `nunjucks` que es de mozilla (Esto es recomendacion personal de el profesor.)
+- A ejs lo conoce casi todo el mundo.
+
+### Templates - Motor de Plantillas
 
 Además sirve html estáticos.
-Express por defecto monta Jade, podemos cambiarlo fácilmente, por ejemplo a EJS que es uno de los más usados.
+El motor de plantillas que estamos usando es ejs, pero eso no significa que no podemos cambiarlo. Basta con cambiar el `view engine`
 
-> No se usa mucho `Jade` ya que no muchas personas la conocen. EJS usa el html5 típico. No es que Jade tenga algo malo es muy bueno.
+1. Para instalar un sistema de templates lo instalaremos con `npm install ejs --save` o `npm  install jade --save`
 
-Hay muchos motores de template.
-
-
-A parte de EJS, y si es que se quiere algo mas potente es handlebars, nunjucks, pero implica aprender más cosas.
-
-
-Para instalar un sistema de templates lo instalaremos con `npm install ejs --save`
-- views, es el directorio donde estan nuestras plantilass por ejemplo:
+2. Nos vamos al app.js donde tenemos el `view engine`.  `views`, es el directorio donde estan nuestras plantilass por ejemplo:
   ```js
-  app.set('views', './viewss')
+  app.set('views', './views')
+  app.set('view engine', 'jade')
   ```
 - view engine, el template engine a usar, por ejemplo:
   ```js
@@ -258,26 +262,33 @@ Para instalar un sistema de templates lo instalaremos con `npm install ejs --sav
   app.set('view engine', 'ejs')
   ```
 
+  - En los ficheros de las vistas debemos cambiar la sintaxis de acuerdo al motor de plantillas.
   Lo podemos cambiar, express lo carga automáticamente y ya podremos usarlo. Primero hay que instalar el npm del motor de vistas que queramos.
 
 --------------------------------------------------
-  Hay 2 tipos de Websites:
-  - Multipage application:
-    * es cuando hace una app de express con vistas
+
+Segun la pregunta de que es mejor para el seo, usar un api y meter todo en el front o usar vistas con un motor de plantillas en el mismo servidor.
+- Es una pregunta tipica.
+
+- Hay 2 tipos de Websites:
+  - Multipage application: Es lo que vamos a hacer ahora, una app de Express con vistas normalmente es una multipage aplication es decir cada pagina es independiente de las otras. Son distintas paginas
   
-  - Single page application:
-    * haces una peticion incial al servidor recibes un js, de ahi solo vas haciendo peticiones ajax, todo cambias por código, esto tiene algunas ventajas, xq el cambio se hace virtualmente, en muchos casos es más rápido
-    * Esto tiene una contrapuesta de que no es amigable al SEO.
-    * Tiene server side rendering, es recomendable solo si tienes experiencia en el front y en el backend, aunque le dá mucha complejidad es amigable al SEO.
-    * Serverside rendering framework:
-      * Si es que se usaría React.js puedes usar Next.js
+  - Single page application: Aplicaciones de una sola pagina, haces una peticion incial al servidor, el servidor te responder y recibes un script de js que el browser ejecuta y a partir de ahi ya no vuelver a hacer mas peticiones de cambio de pagina. sino que las siguientes peticiones se las hace como peticiones ajax para norecargar la pagina, por ejemplo si quiere ver otra pagina, todo cambias por código.\
+    - La opcion de single page application tiene algunas ventajas, xq el cambio de una pagina a otra se realiza virtualmente, esto en muchos casos es más rápido y no se tiene que cargar muchas cosas que ya estan cargadas en memoria.
+    - Esto tiene un contrapunto importante. Que normalmente cuando el browser hace esa primera peticion te descarga no una pagina sino un js con una aplicacion que al ejecutarse ese js ya va pintando cosas. Y eso para los motores o bots de indexacion por ejemplo de google yu otros motores de busqueda. Cuando hacen una peticion a nuestro site, en vez de devolver el titulo de nuestro site el cual es para indexar, devuelve un java script, cosa que el motor de indexacion no podra indexar esa pagina o site. LAs SPA no son amigables al SEO.
   
-  Recomendación: si se quiere que la pagina se indexe bien
+    - Tambien hay otras tecnica que se pueden utilizar cuando hace SPA que es el server side rendering, esto lo complica aun mas pero si cuando me hacen una peticion, yo devuelvo una sola pagina ya preconstruida. Es decir hasces lo mismo que va a hacer el cliente, pero lo haces antes en el servidor, aunque le dá mucha complejidad es amigable al SEO.
+    - El `server side rendering`, es recomendable solo si tienes mucha experiencia en el front y en el backend, sino se la tiene no es recomendable meterse con esto porque al principio es lioso. Si no tienes los conceptos muy claro del banckend en el front ps no es muy recomendable.
+    - Hay framework de Serverside rendering que te lo facilitan un poco pero aun asi tienes que tener muy claro los conecptos. Hay un par de recomendaciones de frameworks, por ejemplo:
+      * Si es que se usaría React.js puedes usar [Next.js](https://nextjs.org/)
+  
+  Recomendación: si se quiere que la pagina se indexe bien, tratar de ponerselo lo mas facil posible a los bots.
   - Si es una app web con autenticación al inicio osea con usuario y contraseña se puede hacer una Single PAge Aplication con React, Angular no es necesario indexar eso.
   - Si es la página principal de mi app web y quiero que sea Single page aplication y necesito indexar, debo hacer server side rendering, y puedo usar estos frameworks.
-    - Si uso react,js es Next.js framework para server side rendering con react.js
-    - Si uso vue.js es Nuxt.js framework para server side rendering con vue
+    - Si uso react,js es [Next.js](https://nextjs.org/) framework para server side rendering con react.js
+    - Si uso vue.js es [Nuxt.js](https://nuxtjs.org/) framework para server side rendering con vue -> le gusta mucho al instructor
 --------------------------------------------------
+- Lo bueno de ejs es que u sa html estandar.
 
 #### Como pasamos valores a las vistas.
 
