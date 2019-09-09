@@ -332,7 +332,7 @@ Luego en el middleware index.js al hacer res.render('index')
 
 - En la vista tenemos una sintaxis de `<%= title %>` esto evalua lo que este entre ese formato.
 
-##### Ejemplo escapando codigo con ejs
+##### Ejemplo no escapando codigo con ejs
 Hay otra sintaxis en ejs que es `<%- %>` sin espacapar código. Esto es para inyectar codigo al ejs que se pueda ver tal cual en el browser. 
 Normalmente el escapado de codigo es una proteccion que tienen todos los motores de plantillas.
 El <%- codigo %> se usara cuando verdaderamente quiero inyectar codigo.
@@ -425,16 +425,35 @@ Recordar que para usar los template en un archivo `.ejs` debemos usar la siguien
 - <% %> : donde pondremos codigo javascript para hacer validaciones, interaciones, etc.
 - <%= %> : donde pondremos variables gobales que hayamos definido globalmente ya sea para `app.local...` o `para res.locals...`
 
-#### Templates - html
+#### Templates de .ejs en HTML
 
 Si quisieramos, podríamos tener las vistas con extensión .html
 
-poniendo en nuestro app.js esto
+Nos vamos a nues app.js y en donde dice que nuestro `view.engine` es 'ejs' entonces lo que haremos es como medio engañarle y hacemos lo siguiente:
 
+```js
+// view engine setup
+app.set('view engine', 'ejs');
+```
+Cambiamos lo siguiente en el motor de vistas, esto al inicio html para express no siginifca nada, porque express.js se va a buscar si tienen algun modulo de un motor llamado html
+
+```js
+app.set('view engine', 'html');
+```
+Luego hacemos como si crearamos un nuevo motor de templantes y ponemos la siguiente línea:
+
+```js
+app.engine('html', require('ejs').__express);
+```
+
+El modulo ejs tiene una funcion de registro, que usa express para registrar el modulo, y queda así:
 ```js
 app.set('view engine', 'html');
 app.engine('html', require('ejs').__express);
 ```
+
+Ahora nuestras vistas deben tener la extensión .html y ya no .ejs
+
 
 ## PROMESAS BASES DE DATOS API
 ------------------------------
