@@ -289,31 +289,76 @@ Segun la pregunta de que es mejor para el seo, usar un api y meter todo en el fr
     - Si uso vue.js es [Nuxt.js](https://nuxtjs.org/) framework para server side rendering con vue -> le gusta mucho al instructor
 --------------------------------------------------
 - Lo bueno de ejs es que u sa html estandar.
+- Todo lo que se hace conlos templates de vistas se hace en el servidor, no tiene nad que ver con react.js vue.js
 
 #### Como pasamos valores a las vistas.
 
-en local puedo poner variables globales para toda mi applicación.
+- Proporcionar variables a las vistas tenemos 3 opciones:
+1.  Una es usando el metodo render y pasandole valores.
+  
+2.  OTra opcion seria usar app.locals, en local puedo poner variables globales para toda mi applicación, es decir variables globales para todas las vistas de mi app.
 
-app.locals.titulo = 'Anuncios';
+```js
+  app.locals.titulo = 'Anuncios';
+/
+```
+Puedo usar la variable titulo sin tener que pasarsela porque ya es una variables de vistas global
+
+```js
+  res.render('index');
+//
+```
 
 Esto me permite crear la variable titulo en cualquier vista.
 
-Otra forma es usando variables de respuesta.
-res.render('index', {titulo: 'Anuncios'});
+3. Otra opcion es usando variables de respuesta, con res.locals
+```js
+  res.locals.titulo = 'Anuncions';
+```
+Es decir si en esta respuesta concretamente quiero pasarle valores a la vista pues hago res.locals y paso todo  lo que quiera.
+Y se pasaria a esta vista
+```js
+  res.render('index');
+  ```
+Luego hay esta forma que es similar a la anterior:
+```js
+  res.render('index', {titulo: 'Anuncios'});
+```
 
-**Ejemplo de pasar parametros a una vista**
+#### Ejemplo de pasar parametros a una vista
 
 en el archivo `app.js` crearmos la variables global antes de las rutas: `app.locals.title = 'NodeAPI';`
 Luego en el middleware index.js al hacer res.render('index')
 
-En la vista tenemos una sintaxis de `<%= title %>` esto evalua lo que este entre ese formato.
-Hay otra sintaxis en ejs que es `<%- %>` sin espacapar código.
+- En la vista tenemos una sintaxis de `<%= title %>` esto evalua lo que este entre ese formato.
 
-#### Tamplates - include
+##### Ejemplo escapando codigo con ejs
+Hay otra sintaxis en ejs que es `<%- %>` sin espacapar código. Esto es para inyectar codigo al ejs que se pueda ver tal cual en el browser. 
+Normalmente el escapado de codigo es una proteccion que tienen todos los motores de plantillas.
+El <%- codigo %> se usara cuando verdaderamente quiero inyectar codigo.
 
-Podemos incluir el contenido de otras plantillas.
+En el router index.js hacemos lo sigueinte en el middleware de la raiz, creamos una variable global pero solo para esta respuesta:
 
+```js
+router.get('/', (req, res, next) => {
+  res.locals.valor = '<script>alert("inyeccion de codigos")</script>';
+});
+```
+Y en la vista index.ejs la variable `valor` escribimos esto 
+```ejs
+  <h2>Escapar valores</h2>
+  <p><%= valor %></p>
+```
+
+
+#### Tamplates - includes
+
+Podemos incluir el contenido de otras plantillas. Si en mi carpeta de vistas tengo una carpeta que llama a otras vistas puedo hacer un include. 
+Esto es muy util para la cabecera y el pie de pagina. Por ejemplo si tengo varias paginas en mi web site y en todas se repite la cabecera y el pie de pagina, me hago un ejs que se llamae header o cabecera, otro que se llame footer o pie de pagina y le pongo include en todas mis paginas y asi no tengo que repetir el codigo en todas y cada una de ellas.
+
+```ejs
 <% include otra/plantilla %>
+```
 
 views
   - index.js
@@ -321,9 +366,64 @@ views
     - plantilla.ejs
 
 #### Templates - condiciones
+Tambien puedo meter codigo fuente. Algo que es muy bueno porque el lenguaje que se usa en las plantilla de ejs es javascript.
 
-#### Templates - iteraciones
+##### Ejemplo de condiciones en plantillas ejs
+En el middleware de la raiz del router index.js vamos a anadir una cosa mas y lo vamos a utilizar en la vista.
+Vamos a crear una constante segundo, para obetener el segundo o segundos actuales de la fecha actual, luego lo paso al objeto res.locals.condition al atributo segundo, y en el atributo estado voy a mostrar el resultado de si es par o impar.
 
+```js
+router.get('/', (req, res, next) => {
+
+  const segundo = (new Date()).getSeconds();
+
+  res.locals.valor = '<script>alert("inyeccion de codigos")</script>';
+  res.locals.condicion = {
+    segundo: segundo,
+    estado: segundo % 2 === 0
+  };
+});
+```
+Luego en la vista  index.ejs agrego esto:
+
+```html
+  <h2>Condicionales</h2>
+  <% if (condicion.estado) { %>
+    <p><%= condicion.segundo %> es par</p>
+  <% } else { %>
+    <p><%= condicion.segundo %> es impar</p>
+  <% } %>
+
+```
+Es recomendable meter la minima cantidad de codigo en la vista, ya que aunque express muestre error por ejs, si tenemos un script muy grande, va a ser dificil encontrarlo porque no nos devuelve el numero de linea.
+
+Usar ejs-lint para evitar esto. Y el codigo ponerlo ya sea en el middleware/Controlador o incluso mejor en los modelos que se usan cuando se trabaj con base de datos, y en los modelos en donde mejor estan estas cosas, por que lo hacen reutilizable. En caso de cometer un error si el codigo lo pongo en el controlador o el modelo, me podre dar cuenta rapidamente.
+
+#### Templates - iteraciones, bucles
+##### Ejemplo interaciones en templates
+
+En index.js nos creamos una variable global solo para esta respuesta:
+```js
+res.locals.users = [
+  { name: 'Smith', age: 23 },
+  { name: 'Jones', age: 35 },
+  { name: 'Thomas', age: 21 }
+];
+```
+
+Con esto en la vista index.ejs tendre y podre usar un array de users. Luego en la vista me creo o agrego lo siguiente:
+
+```html
+  <h2>Bucles</h2>
+  <% users.forEach(user => { %>
+    <p><%= user.name %> tiene <%=user.age%> anios </p>
+  <% }) %>
+  
+```
+
+Recordar que para usar los template en un archivo `.ejs` debemos usar la siguiente sintaxis:
+- <% %> : donde pondremos codigo javascript para hacer validaciones, interaciones, etc.
+- <%= %> : donde pondremos variables gobales que hayamos definido globalmente ya sea para `app.local...` o `para res.locals...`
 
 #### Templates - html
 
