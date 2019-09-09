@@ -25,6 +25,8 @@
 
 - Al hacer un API y validaciones de los parámetros Invertir el tiempo necesario para devolver los códigos de estado http correctos o acordes.
 
+- Mientras menos codigos se ponga en las vistas mejor, poenr todo el htmls o el css que se quiera, pero el codigo ejs que sea el minimo posible.
+
 ## Malas practicas
 
 - Seria una mala practica si en un middleware que atiende a una peticion GET, cambia el estado. Se refierea cambiar algo, x ejm. Crear un registro en la base de datos.
