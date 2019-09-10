@@ -602,13 +602,25 @@ Esto no pasaba en los eventos (event emitter).
 
 - Tratar de no mezclar callbacks con promesas.
 
-## Async / await
+- El momento en que se tenga que encadenar callbacks con promesas, es incomodo
+- Si se va a migrar callbacks a promesa, migrarlo entero.
 
-Las promesas nos ayudaran a llegar a esto. Es una sintaxis que nos ayudara de forma mucho mas facil trabajar con cosas asincronas.
-Async await no 
+- Siempre se puede convertir un callback en una promesa, es muy facil.
+  - Por ejemplo una funcion que devuelve una promesa, que dentro tiene otra funcion que devuelve un callback, entonces el resolve se ejecuta cuando salte el callback y el reject se ejecuta cuando se lance el reject con el error.
+
+  ```js
+  const sleep = ms => new Promise(resolve => setTimeout(resolver, ms));
+  ```
+
+## Async / await - ECMAScript 2015 (ES6)
+
+Las promesas nos ayudaran a llegar a esto Async/await. Es una sintaxis que nos ayudara de forma mucho mas facil trabajar con cosas asincronas.
+Async await se basa en las promesas. Si has hecho una apliacion con promesas y en algunas partes quieres usar async/await lo puedes hacer perfectamente, son compatibles. Ya que sin promesas async/await no lo puedes hacer.
 Lo que si puede hacer es usar promesas y async away en diferentes partes.
 
-El comando `async` hace que una funcion devuelva una promesa.
+### Comando Async
+El comando `async` hace que una funcion devuelva una promesa. 
+Por ejemplo si creo una funcion saluda() y le coloco el comando `async` al inicio, automáticamente he convertido esta funcion saluda() en una funcion asincrona, porque lo que hace ahora aunque retorne un string 'hola' no esta devolviendo un string, sino está devolviendo una `promesa` que se resuelve con este 'hola'.
 
 ```js
 // esto retorna una promesa que se resuelve con el 'hola'
@@ -619,12 +631,16 @@ async function saluda() {
 saluda().then(res => console.log(res)); //hola
 ```
 
-Es lo mismo que escribir ```return new Promise...```
+Es lo mismo que escribir 
+```js
+return new Promise...
+```
 
-`async` consume una promesa.
-si pongo `await` a lado izquierdo de algo que devuelva una promesa, la siguiente línea no se ejecutará hasta que se resuelva esa promesa, y no tengo que encadenar nada ni poner then's ni nada . ahí está la mágina.
+Entonces donde está la magia de esto.
 
-ejemplo:
+### Comando await
+`await` consume una promesa. Por ejemplo:
+Si pongo `await` a lado izquierdo de algo que devuelva una promesa, lo que hace es que no se ejecutará  la línea siguiente, hasta que se resuelva esa promesa con await. Por lo tanto no tengo que encadenar cosas dentro de nada ni poner then's ni nada de eso. Ahí está la mágina.
 ```js
 async function salud() {
   const nombre = await row.findName();
@@ -632,13 +648,193 @@ async function salud() {
 }
 ```
 
-Podemos ver un ejemplo en `ejemplos/asyncawait.js`
+Ejemplo: podemos ver el ejemplo en `ejemplos\asyncawait.js`
 
-`await` nos permite parar sin bloquear el eventloop, es como si las instrucciones dentro de salud esten en el then(), además nos permite hacer bucles de forma asincrona, usando el await.
+Para usar el `await` con algo que nos devuelva una promesa, tiene que ir dentro de una funcion `async.
+```js
+'use strict';
 
-##### Primse.all
+// funcion que retorna una promesa.
+const sleep = ms => new Promise(resolve => setTimeout(resolve,ms));
 
-Ejemplo de hacer cosas en paralelo
+async function main(){
+  console.log('empiezo');
+  await sleep(2000);
+  console.log('sigo');
+  await sleep(2000);
+  console.log('sigo');
+  await sleep(2000);
+}
+
+main();
+```
+Aquí ya no tengo que poner `.then` sino que pongo la linea siguiente. 
+> `await` es como decir, espera a que termine esta promesa de la derecha y después ejecuta la línea siguiente.
+
+En este ejemplo vemos y hacemos de forma sincrona trabajos asincronos. Podemos usar un bucle for para no repetir el await.
+
+```js
+'use strict';
+
+// funcion que retorna una promesa.
+const sleep = ms => new Promise(resolve => setTimeout(resolve,ms));
+
+async function main(){
+  console.log('empiezo');
+  for(let i = =; i<5; i++) {
+    await sleep(2000);
+    console.log('sigo');
+  }
+  
+}
+
+main()
+```
+> `await` no ejecuta la línea siguiente hasta que se ejecute lo que tiene a la derecha.
+> `await` siempre trabajará con una promesa, si lo que tiene a lado no es una promesa simplemente sigue. Por ejemplo podrias tener una funcion en casos devuelva una promesa y en otros un texto. Con el await no debo preocuparme de eso y me funcionaría para ambos casos.
+
+- Vamos a hacer una funcion que escriba en un fichero pero que no sea asincrona a ver como se comporta el await.
+
+ ```js
+ 'use strict';
+
+ const fs = requite('fs');
+
+ const writeFile = (nombreFichero, contenido) => new Promise ((resolve, reject) => {
+  fs.writeFile(nombreFichero, contenido, (err) => {
+    // si me da error
+    if (err) {
+      reject(err);
+      return;
+    }
+
+    // Si no me ha dado error, llamo a resolver para que se termine esa promesa
+    resolve();
+  });
+ });
+
+function main(){
+  await writeFile('pepe.txt', 'hola');
+  console.log('terminado');
+}
+
+main();
+
+ ```
+Lo que hicimos es crear una funcion que devuelve una promesa, y dentro meto mi llamada con callback
+
+
+#### Como controlar posibles errores en async/await
+
+Lo que vamos hacer es hacer que la escritura de un archivo asrincronamente falle.
+
+ ```js
+ 'use strict';
+
+ const fs = requite('fs');
+
+  const writeFile = (nombreFichero, contenido) => new Promise ((resolve, reject) => {
+    fs.writeFile(nombreFichero, contenido, (err) => {
+      // si me da error
+      if (err) {
+        reject(err);
+        return;
+      }
+      // Si no me ha dado error, llamo a resolver para que se termine esa promesa
+      resolve();
+    });
+  });
+
+  async function main(){
+    await writeFile('/////pepe.txt', 'hola');
+    console.log('terminado');
+  }
+
+  main();//controlar error aqui
+ ```
+
+Aqui node.js dice que a ocurrido un reject() y no lo has gestionado. como la funcion asyncrona main() es la que llama y ejecuta ese await, si no se resuelve satisfactoriamente va a generar un reject() pero este escala a la funcion/promesa principal o que esta llamando al await() y engloba todo mi codigo en este caso main(), entonces debo gestionar el error al llamar a main() en caso de que la promesa main() llegara a terminal mal.
+
+```js
+main().catch(err => {
+  console.log('Hubo un error', err);
+});
+```
+
+Este error anterior ha sido un error asincrono, ahora vamos a hacer que se genere un error sincrono para ver que con await los podemos gestionar de la misma forma.
+
+ ```js
+ 'use strict';
+
+ const fs = requite('fs');
+
+  const writeFile = (nombreFichero, contenido) => new Promise ((resolve, reject) => {
+    fs.writeFile(nombreFichero, contenido, (err) => {
+      // si me da error
+      if (err) {
+        reject(err);
+        return;
+      }
+      // Si no me ha dado error, llamo a resolver para que se termine esa promesa
+      resolve();
+    });
+  });
+
+  async function main(){
+    await writeFile('/////pepe.txt', 'hola');
+    console.log('terminado');
+
+    JSON.parse('asdas');
+
+  }
+
+  main().catch(err => {
+    console.log('Hubo un error', err);
+  });
+
+ ```
+En este caso el error es que se intenta parsear un JSON que no es json. Vemos que no se cae la aplicación sino que esto al dar un errro sincrono, la magia de la funcion async function main() es que lo gestiona como si fuera un error asincrono. Ya que es el mimso camino, ese error sincrono hace que la promesa principal main() haga reject() con este error sincrono hacia donde se esta llamando a main() y gestionando con catch y con un único .cath casaria tanto los errores sincronos como los asincronos que ocurran dentro de mi código.
+
+Si quiero hacer algo en especifico al momento de darme un error en el awit es decir ponerle un .catch al await lo puedo hacer asi:
+
+```js
+  async function main(){
+    await writeFile('pepe.txt', 'hola')
+    .catch(err => {
+      console.log('fallo el writeFile');
+    });
+      
+    console.log('sigothen');
+
+    console.log('terminado');  
+
+  }
+```
+
+`await` nos permite parar sin bloquear el eventloop, es como si las instrucciones dentro de saluda() esten en el then(), además nos permite hacer bucles de forma asincrona, usando el await.
+Es como una pausa sin bloquear el `eventloop`
+
+```js
+async function saluda() {
+  const nombre = await row.findName();
+  return nombre;
+}
+```
+
+Tambien me deja usar el await en bucles, en codigo que no entiende de cosas asincronas, como for, while. Sin preocuparnos de tener que hacer funciones recursivas ni cosas mas raras, pero que no necesitamos. Igual sabemos hacer funciones recursivas para bucles asincronos si es que lo necesitamos:
+
+```js
+async function bucleAsincronoEnSerir() {
+  for (let i=0; i<5; i++) {
+    const info = await row.findNext();
+    console.log(info.name);
+  }
+}
+```
+
+##### Ejemplo del Promise.all
+
+Ejemplo de promise.all() para hacer cosas en paralelo, imaginesmos que tenemos una funcion findNext() que devuelve una promesa. Al ejecutar esa funcion lo que me esta devolviendo findNExt no es un registro si no me esta devolviendo una promesa que cuando consiga el registro o fichero se resolvera, y esa promesa la estoy guardando en info1 y demas, y al final hago un solo await que espere por todas las promesas, osea estoy lanzando todos en paralelo, y esperando que terminen todas.
 
 ```js
 async function asincronoEnParalelo() {
@@ -648,8 +844,9 @@ async function asincronoEnParalelo() {
   const list = await Promise.all([info1, info2, info3]);
 }
 ```
+Esto esun patron bastante comun, por ejemplo cuando se inicializa apps ya sea en fronted o backend. Por ejem. se tiene que hacer al principio una llamada un webservice para obtener los valores por defecto, otra llamada para ller un fichero y cargar un .init, o otra llamada a una base de datos para sacar no se cuanto y esas cosas se las puede hacer en paralelo, para no perder tiempo, se ejecutan las 3 a la vez y cuando termine la mas lenta de ellas haya terminado o se haya resuelto, continuo.
 
-Esto es bastante comun cuando se inicializa apps ya sea en fronted o backend. Por ejem. se tiene que hacer al principio una llamada un webservice para obtener los valores por defecto, otra llamada para ller un fichero y cargar un .init, otra llamada a una base de datos para sacar no se cuanto y esas cosas se las puede hacer en paralelo, para no perer tiempo, se ejecutan las 3 a la vez y cuando termine la mas lenta de ellas haya terminado o se haya resuelto.
+En list tendria el resultado de las 3 operaciones asyncronos, es un patron bastante comun y uitl.
 
 
 
