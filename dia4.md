@@ -556,6 +556,7 @@ Si tengo promesas encandenadas, debo hacer un return del .then interno para que 
 
 Cuando quieres ejecutar diferentes opciones una detras de otra, pero se tiene un contexto. Es decir cuando acabe una promesa y se vaya a ejecutar la siguiente, quiero saber lo que devolvio la anterior
 
+
 Un patron típico es que se quiera hacer distintas acciones de forma que vaya pasando el contexto, entonces tengo que hacer return dentro de la promesa para que el .then pueda tomar ese contexto y usar en la siguiente promesa.
 
 el .catch() tambien devuelve una promesa, es decir que puedo seguir poniendo .then() despues del .catch() tambien. Por ejemplo.
@@ -563,18 +564,41 @@ HAs esto si va bien has esto, si va bien has lo otro, y si va mal has esto otro,
 
 #### Objeto `Promise`
 
-Es el constructor de las promesas. y tiene
-Promise.all([p1, p2, p3]) = recibe un array de promesas y devuelve una promesa que se resuelve cuando todas esas promesas se han realizado.
+Es el constructor de las promesas. y tiene 2 metodos muy interesantes que son `.all` y `.race`
 
-Promise.race([p1, p2, p3]) = recibe un array de promesas y se resuelve cuando se resuelve la primera promesa.
+##### Promise.all
+
+Promise.all([p1, p2, p3]) = recibe un array de promesas y devuelve una promesa que se resuelve cuando todas esas promesas se han completado. Esto para si quieres lanzar en paralelo muchas promesas se suele usar bastante. 
+Tener en cuenta que podriamos hacer esto si es que las promesas que queremos ejecutar no consume u ocupan el mismo recurso.
+
+Y devuelve un array con todos los resultados.
+
+##### Promise.raice()
+Es un poco el menos usado.
+Promise.race([p1, p2, p3]) = recibe un array de promesas igual y se resuelve cuando se resuelve la primera promesa, la que gana. Tiene pocos usos.
+
+El instructor usao esto una vez, cuando tenia 15 servidor virtuales replicados que tenian la misma API, luego hacian la peticion a la misma API en los 4 servidorres y usaban raice para ejecutar el que respondiera mas rapido, esto para asegurar velocidad al ejecutar. Hacian 15 peticiones en paralelo y solamente usaba el primero que respondia.
+
+Tener en cuenta que lo usas cuando te puedes permitir descartar los resultados de las demas promesas.
+
+#### Promesas metodos estaticos
 
 El objeto Promise tiene un par de métodos estátios que pueden ser útiles, es decir:
+
+##### Promesas resueltas
+Pruede crear una promesa resuelta.
+- Es decir prefabricar una promesa que resuelva ya un valor.
 - Promise.reolve(valor) : Resuelve/crea una promesa resuelta con el valor proporcionado.
-- 
+  ```js
+    promise.resolve(valor);
+  ```
+##### Promesas rechazadas
+ASi mismo podemos crear promesas ya rechazadas.
 - Promise.reject(razón): Devuelve una promessa resuelta con la razón suministrada. LA razó debería ser un error (generalmente una  instancia de objteoError).
 
-
-- Una caracteristica de las promesas es que aun se haya resuelto en el pasado, me garantiza que el .then() se ejecutará.
+#### Subscribirse a una Promesa ya ejecutada en el Pasado
+Una caracteristica de las promesas es que aun se haya resuelto en el pasado, me garantiza que el .then() se ejecutará.
+Esto no pasaba en los eventos (event emitter).
 
 - Tratar de no mezclar callbacks con promesas.
 
