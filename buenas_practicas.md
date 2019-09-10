@@ -27,6 +27,14 @@
 
 - Mientras menos codigos se ponga en las vistas mejor, poenr todo el htmls o el css que se quiera, pero el codigo ejs que sea el minimo posible.
 
+- En las promesas js, en el constrtuctor `new Promise` los nombres de los atributos de la funcion por convencion deben ser `resolve` y `reject` para facilidad cuando otras personas lean el codigo.
+
+- Normalmente en errores asincronos como por ejemplo en promesas, es mas adecuado devolver el error a la funcion superior que me llama para que esta lo gestione. En caso de tener un error sincrono dentro de mi promesa puedo hacer un try y .catch para  controlar el error y en el .catch enviar el `reject(err)` para que la funcion que llama a mi promesa lo gestione. 
+
+- Las funciones superiores son las que orquestan y saben que hacer en caso de un error. Como por ejemp. 
+  - escribirlo en el log, 
+  - escalarlo a una funcion que maneje errores y los analiza o enviar un email.
+
 ## Malas practicas
 
 - Seria una mala practica si en un middleware que atiende a una peticion GET, cambia el estado. Se refierea cambiar algo, x ejm. Crear un registro en la base de datos.
