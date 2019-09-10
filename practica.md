@@ -9,7 +9,17 @@
 - PAra la parte de hacer un script para inicialización de la base de datos, puedo lerr un fichero con json con la libreria fs con el método readFile o usar require(sincrono).
   - Creo un fichero initDB.js
   - Creo una carpeta data/ y dentro uno de agentes.json
-  - Puedo hacer esto 
+  - Puedo hacer esto ya que me sirve y me devuelve un objeto ya cargado, no hace falta usar fs.readFile.
+
+    - Para leer un fichero con fs y me devuelva una promesa puedo hacer esto:
+    ```js
+        const fsPromise = require('fs').promises;
+        fsPromise.open();
+        fsPromise.readFile();
+    ```
+    Esto devuelve una promesa.
+
+  - o puedo hacer esto :
     ```js
     'use sctrict';
 
@@ -23,5 +33,3 @@
     // Hay otro método fs.createReadStream() -> 
     
     ```
-
-    Esto ya me sirve y me devuelve un objeto ya cargado, no hace falta usar fs.readFile.
