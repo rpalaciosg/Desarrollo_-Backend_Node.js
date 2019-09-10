@@ -554,9 +554,12 @@ Si tengo promesas encandenadas, debo hacer un return del .then interno para que 
 
 #### Podemos encadenar promesas
 
-Un patron típico es que se quiera hacer distintas acciones de forma 
+Cuando quieres ejecutar diferentes opciones una detras de otra, pero se tiene un contexto. Es decir cuando acabe una promesa y se vaya a ejecutar la siguiente, quiero saber lo que devolvio la anterior
 
-el .catch() tambien devuelve una promesa, es decir que puedo poner un .then() despues del .catch()
+Un patron típico es que se quiera hacer distintas acciones de forma que vaya pasando el contexto, entonces tengo que hacer return dentro de la promesa para que el .then pueda tomar ese contexto y usar en la siguiente promesa.
+
+el .catch() tambien devuelve una promesa, es decir que puedo seguir poniendo .then() despues del .catch() tambien. Por ejemplo.
+HAs esto si va bien has esto, si va bien has lo otro, y si va mal has esto otro, osea si falla cualquier de las de arriba quiero poder seguir haciendo cosas de forma asincrona y asi voy poniendo .then y .cath en medio pero sigo encadenando cosas.
 
 #### Objeto `Promise`
 
