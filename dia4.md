@@ -456,39 +456,78 @@ Ahora nuestras vistas deben tener la extensión .html y ya no .ejs
 
 
 ## PROMESAS BASES DE DATOS API
-------------------------------
+
+Todos los que usan asincronia en javascript usan callbacks, pero luego aparecieron las promesas.
+Antes con los callbacks nos sucedia algo llamado callbackhell.
 
 ### Evolución de la asincronía.
 Antes para utilizar la asincronía se usaban callbacks, pero despues aparecieron las promesas.
-Los callbacks causaban el callbaks hell, el código es mas dificil de mantener, podría causar errores.
-Ayuda a que el código no cresaca a la derecha.
+Los callbacks causaban el callbaks hell. Es decir que para cuando se querian hacer cosas encadenadas el código es mas dificil de mantener, incluso podría causar errores. Es dificl trabajar asi.
+Las promesas ayudan a organizar el codigo asincrono.
+Ayuda a que el código no cresca a la derecha sino hacia abajo.
 
 ### Promesas
-Una promesa **es un objeto** que representa una operación que aun no se ha completado, pero que se completará más adelante.
-Ahora ya está en el lenguaje js antes se usaban librerias. Algunas de esas librerias tenias algunas funciones 
+Una promesa **es un objeto** que representa una operación asincona, una operacion que aun no se ha completado, pero que se completará más adelante.
+Ahora ya está acoplada en el lenguaje js antes se usaban librerias. Algunas de esas librerias tenias algunas funciones 
 
-#### Tiene 3 estado posibles
+#### Promesas tienen 3 estado posibles
 
-1. Pending : puede pasar a Fullfilled o a Rejected
-2. Fullfilled(value)
-3. Rejected(reason)
+1. Pending : cuando se crea una promesa empieza en este estado `pending` y cuando la promesa se completa puede pasar a:
+2. Fullfilled(value) : Se ha completado satisfactoriamente o  
+3. Rejected(reason) : se ha completado insatisfactoriamente
 
-No pueden pasar de Fullfilled a Rejected o viceversa y no pueden volver a pending.
+#### Reglas de las promesas
+Una promesa no pueden pasar o transicionar de estado Fullfilled a Rejected o viceversa y no pueden volver a pending.
 
-Hay otras herramientas para hacer cosas asincronas como los **Observables**, tienen otras cosas, pero tienen una sintaxis mas compleja.
+Hay otras herramientas para hacer cosas asincronas como los **Observables**, que si son mas conplejos tienen otras cosas, pero tienen una sintaxis mas compleja. Puede transicionar a mas estados, tienen efectos colaterales.
 
 #### Como se crea una promesa
+
+Con el constructor de promesas, ha este new Promise le tengo que pasar una funcion y a esa funcion 2 argumentos, `resolve` y `reject`. Llamaremos a una o otra si queremos devolver un resultado satisfactoriamenter o devolver un resultado insatisfactoriamente.
+
 ```js
 var promesa = new Promise(function(resolve, reject)){
 }
 ```
+#### Como se consume una promesa
 
-Y se cosume con
+Y se cosume con, promesa.then
 
 ```js
-promesa.then;
+promesa.then ( function(resultado){
+..
+}).catch( function(error){
+..
+});
 ```
+
+#### Ejemplo de Promesas
+
 Podemos ver el ejemplo en : `ejemplos/promise.js`
+
+```js
+'use strict'
+// Crear funcion que devulve PROMESA
+function sleep(ms){
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+       resolve('algo'); //resuelve solo una cosa, usar un objeto si quiero devolver mas cosas
+      //reject(new Error('fatal')); //rechaza con error
+    }. ms);
+  });
+}
+
+// Obtener PROMESA
+const promesa = sleep(2000);
+console.log(promesa);
+
+// Consumir PROMESA
+promesa.then((algo) => {
+  console.log('la promesa se completo con', algo);
+}).catch(err => { // controlar rechazo para que no caiga app
+  console.log('promesa rechazada', err);
+});
+```
 
 Como convención usar los nombres de parámetros `resolve` y `reject`
 
@@ -509,8 +548,9 @@ con `reject(new Error('fatal'));` esto me da un error warnign feo que dice `Unha
 
 Cuando se resuelven o devuleven cosas deben ser solo una cosa, es decir si se quiere resolver varias cosas se debe crear un objeto y resolver/devolver ese objeto.
 
-
 Las promesas tienen un método then y devuelve una promesa.
+
+Si tengo promesas encandenadas, debo hacer un return del .then interno para que me devuelva una promesa e incluso poder escalar el erro y controlarlo en la funcion superior.
 
 #### Podemos encadenar promesas
 
