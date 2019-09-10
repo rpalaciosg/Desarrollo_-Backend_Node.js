@@ -35,6 +35,9 @@
   - escribirlo en el log, 
   - escalarlo a una funcion que maneje errores y los analiza o enviar un email.
 
+
+- Tratar de no mezclar callbacks con promesas dentro del mismo modulo o aplicacion, si se trabaja con callbacks solo con callbacks, si se trabaja con promesas solo promesas, no hay que mezclarlo.
+  
 ## Malas practicas
 
 - Seria una mala practica si en un middleware que atiende a una peticion GET, cambia el estado. Se refierea cambiar algo, x ejm. Crear un registro en la base de datos.
