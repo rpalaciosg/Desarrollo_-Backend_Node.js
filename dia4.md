@@ -604,7 +604,8 @@ Esto no pasaba en los eventos (event emitter).
 
 ## Async / await
 
-Las promesas nos ayudaran a llegar a esto.
+Las promesas nos ayudaran a llegar a esto. Es una sintaxis que nos ayudara de forma mucho mas facil trabajar con cosas asincronas.
+Async await no 
 Lo que si puede hacer es usar promesas y async away en diferentes partes.
 
 El comando `async` hace que una funcion devuelva una promesa.
