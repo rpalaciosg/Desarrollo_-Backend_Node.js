@@ -37,9 +37,20 @@
 
 
 - Tratar de no mezclar callbacks con promesas dentro del mismo modulo o aplicacion, si se trabaja con callbacks solo con callbacks, si se trabaja con promesas solo promesas, no hay que mezclarlo.
+
+- Si lo escribo y lo busco en el código de una aplicación, entonces debo crear un índice por los campos a buscar.
+- Crear un indice por los campos que suelo buscar.
+- Cada vez que escriba en mi app, código que filtre una coleccion por algún criterio, **debo crear un índice**. - Ya que en producción pueden haber miles o millones de registros en una colección.
+- Mejor hacer indices cuando los necesite, no hacer de todos los campos porque ocupan espacio en disco.
+
+- Poner en practica el principio `YAGNI` que son las siglas de (no vas a necesitarlo). Como por ejemplo guardar cosas por si acaso las vas a necesitar. O crear cosas por si acaso las vayas a necesitar en el futuro. "Si lo necesitas yá, crealo, sino nó lo crees."
+
+- No añadir complejidad innecesaria a las cosas, porque sino despues vas a tener que mantenerlo.
   
 ## Malas practicas
 
 - Seria una mala practica si en un middleware que atiende a una peticion GET, cambia el estado. Se refierea cambiar algo, x ejm. Crear un registro en la base de datos.
 
 - Validar que en la URL con querystring un campo se valide o se pida solo en minusculas no es recomendable porque estaria poniendo problemas. Porque debería dar igual si es mayusculas o minusculas.
+
+- Hacer indices de todos los campos.
