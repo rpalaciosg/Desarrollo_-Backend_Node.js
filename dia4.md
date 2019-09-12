@@ -852,7 +852,7 @@ En list tendria el resultado de las 3 operaciones asyncronos, es un patron basta
 
 ## Base de Datos
 
-Es sencillo, basta con instalarse un driver(módulo), no es necesario que sea el del fabricante, hay de terceros
+Para usar bases de datos en Node.js es sencillo, basta con instalarse un driver(módulo), por ejemplo el driver de mysql, el driver de mongodb, el driver de oracle, en el driver no es necesario que sea el del fabricante, hay de terceros.
 
 ```sh
 $ npm install mysql
@@ -861,15 +861,102 @@ $ npm install mongoskin
 
 ### Base de datos MySQL
 
-un ejemplo con node y mysql
+Hacemos un ejemplo con node y mysql: Podemos ver el ejemplo en `ejemplos/ejemplo_mysql`:
 
 1. Primero creamos una carpeta
-2. Luego en el terminal con cd entramos al directorio y luego hacemos 
+2. Luego en el terminal con cd entramos al directorio `ejemplos/ejemplo_mysql` y luego creamos un package.json 
+
    ```shell
    npm init -y
    ```
-3. Luego instalamos la dependencia de mysql
+   -y significa diciendo a todo que si.
+
+3. Luego instalamos la dependencia o driver de mysql:
+   
    ```shell
    npm i mysql
    ```
-4. Creamos un fichero index.js
+
+4. Creamos un nuevo fichero index.js
+
+5. cargo driver de Mysql
+
+```js
+'use strict';
+// cargo driver mysql
+const mysql = require('mysql');
+```
+
+6. Crear una conexion: y le pasamos un objeto de opciones, a parte se le puede pasar una URI, que es el formato tipico de las cadenas de conexion. Le pasamos una URI
+
+```js
+'use strict';
+
+const mysql = require('mysql');
+
+// creo una conexion
+const conexion = mysql.createConnection('mysql://usuariocurso:us3r@didimo.es:3306/cursonode');
+```
+
+7. Me conecto
+
+```js
+'use strict';
+
+const mysql = require('mysql');
+
+// creo una conexion
+const conexion = mysql.createConnection('mysql://usuariocurso:us3r@didimo.es:3306/cursonode');
+
+// conecto
+conexion.connect();
+```
+
+8. Lanzo una consulta:
+
+```js
+'use strict';
+
+const mysql = require('mysql');
+
+// creo una conexion
+const conexion = mysql.createConnection('mysql://usuariocurso:us3r@didimo.es:3306/cursonode');
+
+// conecto
+conexion.connect();
+
+// lanzo consulta
+conexion.query('SELECT * FROM agentes', (err, rows, fields) => {
+  if (err) {
+    console.log('Error:', err);
+    return;
+  }
+  console.log(rows);
+});
+```
+
+Este driver de mysql trabaja con CALLBACKS. Ademas del query, el metodo `connect()` tambien tiene su callback para manejo de error. 
+Hay algo que el driver de mysql hace de forma asincrona, cuando se lanza un query, solito verifica que primero se haya hecho la conexion para luego lanzar el query, pero la forma que deberia estar mejor el codigo seria que nosotros mismos controlacemos que una vez conectado y sin errores ahi se lance la consulta o query ejm:
+
+```js
+'use strict';
+
+const mysql = require('mysql');
+
+// creo una conexion
+const conexion = mysql.createConnection('mysql://usuariocurso:us3r@didimo.es:3306/cursonode');
+
+// conecto
+conexion.connect(err => {
+  // lanzo consulta
+  conexion.query('SELECT * FROM agentes', (err, rows, fields) => {
+    if (err) {
+      console.log('Error:', err);
+      return;
+    }
+    console.log(rows);
+  });
+});
+```
+
+Esto funcionaria de la misma forma que el primer ejemplo.
