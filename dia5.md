@@ -66,19 +66,43 @@ $ npm install mongodb
 ```
 
 ```js
+// cargar driver
+const { MongoClient }  = require('mongodb');
 
+// Conectarnos a la base de datos
+// una vez conectado vemos un callback
+MongoClient.connect('mongodb://localhost', function(err, client){
+    // controlamos un error
+    if (err) throw err;
+    // decimos que use la base de datos cursonode
+    const db = client.db('cursonode');
+    // voy a usar la coleccion de agentes y de ahí
+    // esto de aqui es una consulta (db.collection('agentes').find({})), equivalente a un select * from agentes.
+    // el resultado me lo paso a un array de documentos en este callback .toArray(function(err, docs))
+    db.collection('agentes').find({}).toArray(function(err, docs){
+        if(err) throw err;
+        console.dir(docs);
+        cliente.close();
+
+    });
+});
 ```
 
 ### Instalar mongodb
 
-- Ingreso a la página, descargo .tgz
-- Lo que nos hemos descargado son un monton de ejecutables, y de acuerdo a su nombre sabremos que son.
+- Ingresamos a la página de mongodb, descargo .tgz
+    - Los que usasn windows con instalar y dar siguiente siguiente lo instala y lo deja arrancado.
+    - Los que usan linux pueden descargar el .tgz, descomprimirlo y arrancarlo.
 
-### Corre mongodb
+### Arrancar mongodb
+Como vemos hay una carpeta bin de lo que nos hemos descargado.
+- Lo que nos hemos descargado son un monton de ejecutables, y de acuerdo a su nombre sabremos que son. Ejm. Mongoimport, mongoexport, mongodump, mongorestore, mongo(cliente), mongod(servidor).
 
 Los que necesitaremos son:
 - mongo (cliente)
 - mongod (daemon- servidor)
+
+Despues para conectarme a el por consola, ejecutare el cliente que es `mongo`
 
 1. Crear los siguientes directorios
 
@@ -90,11 +114,15 @@ $ sudo mkdir -p /data/db
     ```shell
     $ ./bin/mongod --dbpath ./data/db --directoryperdb
     ```
+- La opcion --dbpath: son las rutas donde se van a crear las bases de datos. En que carpeta quiero que el ponga las bases de datos, puedo ponerla a lado de la carpeta bin creamos esto ./data/db. Puedo poner la ruta que se quiera, pero la documentacion dice que se usa la ruta /data/db
 
 - La opcion --directoryperdb es para cuando se quiera crear una nueva base de datos en un fichero nuevo y no mexcle todo
 - Luego de ejecutar, me van a salir un monton de mensajes de log de servidor, y si entre eso vemos este mensaje `waiting for connections on port 27017`, esto me dice que ya está arrancado el servidor.
 
-- Como ver si el servidor mongodb esta arrancado:
+ **Comprobar si ya esta arrancado**
+
+- Como ver si el servidor mongodb esta arrancado en el caso de linux y mac:
+    Est es para ver el PID del proceso
 
 ```shell
 $ ps aux | grep mongod
@@ -105,13 +133,25 @@ como parar el servidor por linea de comandos
 $ kill 22682     (PID)
 ```
 
-3.  Luego corro el cliente de mongodb, que se conecta al servidor y desde aquí podremos ordenar cosas
+Para recordar el comando para arrancar el servidor MongoDB: Creamos un fichero README.md en nodeapi
+
+y en el Readme pongo como recordatorio el comando para arrancar mongodb en local.
+* MongoDB (to start a local server you can use ./bin/mongod --dbpath ./data/db --directorydb)
+
+-el puerto 27017 es el puerto por defecto que mongodb utiliza.
+
+
+3.  Luego corro el cliente de mongoDB, que se conecta al servidor y desde este prompt podremos ordenar cosas a ongodb
 
 ```shell
-$ ./bin/mongod 
+$ ./bin/mongo
 ```
 
-Nos aparecerá un prompt, que es la shell de mongodb
+Nos aparecerá un prompt, que es la shell de mongodb. A parte nos apareceran algunos Warnings, pero esto nos trata de decir que recordemos que tenemos el servidor sin autenticación, es decir no he creado usuarios ni nada de eso. Y explica que si lo vamos desplegar en produccion en algun momento, recomienda que controlemos las ips a las que los exponesmos, crear algunos usuarios para que no acceda todo el mundo. Ahora para desarrollar nos da igual ahora mismo.
+
+### Shell basics de MongoDB
+Ahora ya estamos en la shell de mongoDB, este el cliente que se conecta a mongodb y le podemos mandar ordenes, como lista esto. inserta lo otro, exportalo y un monto de cosas:
+
 
 - Listar Bases de Datos de mongodb
 
