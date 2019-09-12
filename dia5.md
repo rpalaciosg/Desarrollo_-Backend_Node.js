@@ -3,23 +3,44 @@
 - Hay una libreria de promisefy para convertir un callback a una promesa.
 - Hay otra libreria que se llama bluebird convert promise, que convierte a promesas. Incluso tiene un método que convierte todo los métodos a promesas.
 
-El día de ayer se vio Bases de Datos MySql
+El día de ayer se vio Bases de Datos MySql. Es bastante facil
+- Cargar el driver.
+- Conectar.
+- Hacer consulta.
+
+Para refrescar conceptos de SQL podemos revisar:
+
+[sqlteaching](https://www.sqlteaching.com/)
+
 
 ## Bases de datos - SQL ORMs
-ORM (Object Relational Maping) se encarga principlamente de:
-
+En cuanto a usr bases de datos desde codigo, en algunos casos solemos usar ORM (Object Relational Maping) se encarga principlamente de:
+- Abstraer o quitar la posible complejidad que pueda tener el lenguaje sql.
 - Convertir objetos en consultas SQL para que puedan ser persistidos en una base de datos relacional.
-- Traducir los resultados de una consulta SQL y generar objetos.
+- Traducir los resultados de objetos a  consulta SQL y generar objetos.
+
+Guardar cosas en el filesystem o un fichero plano o binario es rapido pero tiene una desventaja pero para recuperarlo rapidamente si es que tenemos varios miles es lento, porque no tienen indices.
+
+Si nosotros queremos guardar cosas en ficheros, deberiamos crearnos un indice para podernos buscar de forma mas rapida para no leer todas las lineas. 
+Es parecido al índice de un diccionario. 
+
+Un indice por ejemplo los registros que empiezan su nombre por 'A' son el 8315, el 8314 y el 2000 y me apunto eso, y en el momento que alguien me dice se busca a Alfonso, no tengo que recorrer a todos sino voy al indice y veo los que comienzan por A.
+
+Esta misma técnica anterior más evolucionada se usa en las BBDD y es la mayor ventaja de una base de datos, la velocidad con la que puedo encontrar algo igual de rapido si tuviera 500 datos a tener 5 millones de datos. Si no tuvieramos indices en una base de datos me pasara lo mismo que el diccionario desornado. 
+
+Por eso se recomienda usar motores de bases de datos, nos permitira manjear informacion rapidamente.
 
 Esto nos resultará util si el diseño de nuestra aplicación es orientado a objetos (OOP).
 
-Si nosotros queremos guardar cosas en ficheros, deberiamos crearnos un indice. Como el índice de un diccionario.
-Esta misma técnica más evolucionada es la mayor ventaja de una base de datos, la velocidad con la que puedo encontrar algo igual si tuviera 500 datos a tener 5 millones de datos.
-Por eso se recomienda usar motores de bases de datos.
+Además los ORMs son librerias que nos da la ventaja de persistir esos datos. Es decir se pasa un objeto y el se encarga de tomar las propiedades del objeto.
 
-Además los ORMs nos da la ventaja de persistir esos datos. Es decir se pasa un objeto y el se encarga de tomar las propiedades del objeto.
+### Desventaja ORM
 
-Un ORM no es muy eficiente cuando tiene que hacer muchas operaciones, ya que el hecho de que tiene que convertir cosas y comprobarla, tiene una penalizacion en rendimiento. Ejm: Se tiene un fichero con 1 millon de pedidos y quieres cargarlo en la tabla de bases de datos de pedidos, aqui un ORM no aportará mucho y demorará mucho, en este caso es mejor crear las insert en el código.
+Un ORM no es muy eficiente cuando tiene que hacer muchas operaciones seguidas. Cada operacion tiene una sobrecarga de operacion ya que el hecho de que tiene que convertir cosas y comprobarla, tiene una penalizacion en rendimiento. 
+Cuando se nota mas esa penalizacion Ejm: 
+- Se tiene un fichero con 1 millon de pedidos y quieres cargarlo en la tabla de bases de datos de pedidos, aqui es uno de los casos en que un ORM no ayudara mucho porque cada operacion de insercion y demorará mucho. En este caso mejor no usar un ORM es mejor crear las insert manualmente en el código.
+
+### ORMS - alternativas
 
 Un ORM muy usado para bases de datos SQL es sequelize:
 http://docs.sequlizejs.com/en/latest/
@@ -29,9 +50,11 @@ Sequelize tiene soporte para MySql, MAriaDB, SQLite, PostgreSQL y MSSQL.
 Otras buenas alternativas son:
 - Knex
 - Bookshelf
-- `TypeORM`, trabaja con typeScript en el framewor `nestjs` (sera bueno si es que el proyecto se usa con typescript)
+- `TypeORM`, trabaja con typeScript en el framework `nestjs` (sera bueno si es que el proyecto se usa con typescript) es bueno para personas o proyecto muy orientada a objetos.
 
-> Para cosas masivas utilzo el drive y consultas directas.
+La decicion de usar un ORM no es dificil de tomar, lo utilizo para las partes que lo aprovecho pero si debo hacer cargas o exportaciones masivas las hago con el driver.
+
+> Para cosas masivas utilzo el driver y consultas directas.
 
 ## MongoDB
 
