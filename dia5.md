@@ -300,18 +300,40 @@ Tambien lo puedo ver en robo3t
 
 > Se deben crear indices en el momento que sabes que te van a hacer falta de cara al futuro, por ejm. si estoy escribiendo código y estoy haciendo un find, debo te voy a crear un índice para que sea lo suficiente rápido como ahora.
 
-
-## Modificaciones
+## Editar documentos MongoDB - Modificaciones 
+Podemos esitar alguno de los documentos:
+Voy a tomar a Brown y voy a modificarle la edad de 24 a 25, voy a usar su objetID _id.
+    "_id" : ObjectId("5d7aa2cc8eeecd78547e20e8")
 
 Se lo hace con la suiente línea:
-```shell
-db.agentes.update (criterio_de_filtro,{ age: 25})
-db.agentes.update({ "_id" : ObjectId("5d4bfd116c854955b2be8730") }, { age:25 })
+```sh
+> db.agentes.update (criterio_de_filtro,{ age: 25})
+> db.agentes.update({ "_id" : ObjectId("5d4bfd116c854955b2be8730") }, { age:25 })
 ```
 
->> esto tiene una cascara de platano, porque loque hace la linea anterior quiere decir que pisa el objetcId  completo con age:25, es decir sustituye todo el documento. Es un error muy común.
->> no hacer cambios en caliente en Producción.
+Dentro de las primeras llaves estoy poniendo el criterio de filtro, es decir diciendo que agente son los que quiero modificar, en este caso filtro por la propiedad _id, con esto ya le digo que agente es el que quiero modificar.
 
+Despues de poner este criterio de filtro puedo modificar varios, pero en este caso es solo 1.
+db.agentes.update({"_id" : ObjectId("5d7aa2cc8eeecd78547e20e8")}, {age:25})
+
+En el segundo parametro ponemos el campo que queremos cambiar es decir la {edad:25}.
+
+### Error comun al editar
+>> Pero recordar esto tiene una cascara de platano.
+Si hacemos un find() vemos que no aparece ya `Brown`, el documento al que le modificamos la edad.
+
+```sh
+ > db.agentes.find({}).pretty()
+ ```
+> Que crees que ha pasado: Lo que ha pasado es que se ha actualizado el registro completo los campos y todo. Porque loque hace esta linea es sustituir un documento por otro.
+```sh
+> db.agentes.update({"_id" : ObjectId("5d7aa2cc8eeecd78547e20e8")}, {age:25})
+```
+Es decir le esta diciendo actualisame este objetcId y lo pisas por completo con este otro {age:25}, es decir sustituye todo el documento.
+
+>Es un error muy común. por lo que se recomienda no hacer cambios en caliente en Producción.
+
+### Como actualizar parcialmente/ correctamente
 Lo que debemos hacer para actualizar la edad de ese objeto, con una actualizacion parcial:
 
 ```shell
