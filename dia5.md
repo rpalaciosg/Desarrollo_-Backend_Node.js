@@ -200,37 +200,105 @@ Se puede usar comillas simples o comillas dobles, es indiferente.
 Nos aparecerá un mensaje diciendo que se ha insertado un documento.
 
 ## Cliente gráfico para mongodb
-Para quien no se encuentre comodo con la consola.
-- Una es MongoDB Compass
-- Otra es Robomongo o la gratis que es Robo 3T ()
 
-Si quiero ver de mejor forma en la consola puedo ejecutar el find con pretty()
+Para quien no se encuentre comodo con la consola. Mongodb tiene un propio y gratuito
+- Que es MongoDB Compass
+- Y hay otra herramienta que es Robomongo o la gratuita que es Robo 3T (), tiene pocas cosas.
+
+Ahora ya pueso gestionar mongdb desde un cliente grafico
+
+- todos los documentos mongodb van a tener un _id que lo crea automaticamente la base de datos cuando se insertan y por defecto.
+- Ademas se crea con un indice _id_ por ese campo _id. Cuando vemos el indice _id_ vemos que es un numero 1, si es 1 es ascendente y si es -1 es descendente. Es un dato de tipo ObjectId. No es comun en mongo usar un campo autoincremental.
+
+- El mismo find que esta en robo 3t lo vamos a hacer en la consola y escribimos:
+```sh
+> db.agentes.find({})
+```
+Y nos mostrara la coleccion de agentes.
+- Vamos a crearnos algunos agentes mas:
+```sh
+>db.agentes.insert({name:'Brown', age:24)
+>db.agentes.insert({name:'Jones', age:32)
+>db.agentes.find({}) --recuperamos
+```
+- Ahora vamos a demostrar que mongodb es `schemaless`, para esto creamos otro agente, pero le vamos a añadir otras propiedades:
+```sh
+>db.agentes.insert({name:'Superlopez', age: 36, address: { street:'Calle Pez', city:'Madrid' }, phone: ['699887766','916665544'] })
+```
+En caso que nos hubieramos equivocado por ejm en un corchete, va a decir que falta un cierre.
+
+Si vuelvo a dar al comando find(), como vemos mondodb no me ha puesto la mas minima traba para llenar o agregar esta coleccion, de hehco esta coleccion agentes, no tiene ningun esquema asociado como tal, y cada documento independiente puede tener un esquema distinto.
+
+**.Pretty()**
+Si quiero ver de mejor forma en la consola puedo ejecutar el find con pretty(). Esto hace que aparezca formateado e identido hacia la derecha cada objeto o documento.
+
 ```shell
 > db.agentes.find().pretty()
 ```
 
-Se recomienda hacer un índice con los campos que suelo buscar.
-Si lo escribo en el código de una aplicación, entonces debo crear un índice.
-Cada vez que escriba en una app código que filtre una coleccion por algún criterio, **debo crear un índice**. Ya que en producción pueden haber miles o millones de registros en una colección.
-
-
-## Crear indices
-
-```shell
-> db.agentes.createIndex({ age: 1p})
-> db.agentes.createIndex({ cp: 1, age: 1p})
+### Criterios de filtro
+- En Robo3t puedo ejecutar la sentencia con ctrl + r.
+- Ademas ya en la consola en el find puedo agregar una condicion, filtro o criterio. ejm:
+```sh
+>db.gteCollection('agentes').find({name: 'Smith'})
 ```
+Me mostrara los resgitros que cumplas con ese criterio.
+
+- En la consola igual, dentro del find({}) puedo ingresar un objeto con los criterios de filtro para los documentos que quiero recuperar. ejm listar todos los criterios o documentos que tengan la edad a 32
+```sh
+> db.agentes.find({ age: 32 })
+```
+
+## Indices en MongoDB
+
+Se hace incapie en los indices. A partir de que tengan 10000 o 20000 si no creo un indice para el filtro anterior voy a empezar a ver un retraso.
+Se recomienda hacer un índice por los campos que suelo buscar.
+¿Que creo, un indice por cada campo?
+
+> Si lo escribo en el código de una aplicación, entonces debo crear un índice.
+Cada vez que escriba en mi app, código que filtre una coleccion por algún criterio, **debo crear un índice**. Ya que en producción pueden haber miles o millones de registros en una colección.
+
+La base de datos se va a comportar bien si le pongo y creo los indices que debo crear.
+
+### Crear indices
+Vamos a crear un indice por edad, segun el criterio de filtro anterior.
+
+dentro del createIndex() metemos un objeto {} con los campos involucrados, es decir quiero que el indice lo hagas por {age: 1} edad ascendente, -1 es descedente.
 1 es ascendente y -1 descendente.
-Tambien se pueden crear con varios campos de busqueda
 
-PAra ver los indices usamos:
-```shell
-b.agentes.getIndexes()
+```sh
+> db.agentes.createIndex({ age: 1p})
 ```
+Tambien se pueden crear indices combinados con varios campos. Por ejm si yo en algun momento voy a hacer un busqueda y yo le digo a mongodb, buscame todos los documentos de la coleccion de agentes que tengan el codigo postal= 28022 y la edad sea 32, aqui estoy haciendo una busqueda por 2 criterios, 1ero el de codigo postal y luego el de edad, entonces aqui crearé.algo como esto:
 
-**¿Que tiene de malo crear indices por todos los campos?** No tiene de malo, la cosa es que los indices ocupan mucho espacio. `Overkill` se le llama, seria mejor hacer los indices cuando los necesite, es overenginieering = sobre ingeniería, es un caso que hacemos todos los seres humanos. Hay un efecto `YAGI` (no vas a necesitarlo) esto se nos debe venir a la mente cuando tengamos ese pensamiento por si acaso me sirva, pero si no necesito ahora no añadir ese método, porque voy a tener que mantenerlo. Limítate a cumplir lo que tienes que cumplir, porque es un añadido de tiempo y complejidad innecesario. Porque eso es un enemigo de la supervivencia de proyectos.
+```sh
+> db.agentes.createIndex({ cp: 1, age: 1})
+```
+Aqui pongo 1 o -1 si a cualquiera de los campos si quiero ordenarlos.
 
-Se deben crear indices en el momento que sabes que te van a hacer alta de cara al futuro, por ejm. si estoy escribiendo un find, debo te voy a crear un índice para que sea lo suficiente rápido como ahora.
+- Nos creamos el indice por edad.
+
+### Listar indices existentes
+
+Para ver los indices usamos:
+
+```sh
+> db.agentes.getIndexes()
+```
+Vemos que la coleccion de agentes tiene un indice por _id ascendente y un indice por age ascendente.
+Tambien lo puedo ver en robo3t
+
+>**¿Que tiene de malo crear indices por todos los campos?**
+
+ No tiene de malo, la cosa o inconveniente es que los indices ocupan espacio en disco. Si hago indices por todos los campos voy a ocupar mucho, `Overkill` se le llama, seria mejor hacer los indices cuando los necesite.
+ 
+ Es algo de `overenginieering = sobre ingeniería`, que es crear cosas por si las voy a necesitar en el futuro es un caso que hacemos todos los seres humanos. 
+ 
+ `Comentario del Instructor` Hay un efecto `YAGNI` son las siglas de (no vas a necesitarlo) esto se nos debe venir a la mente cuando tengamos ese pensamiento por si acaso me sirva, pero si no necesito ahora no añadir ese método, porque voy a tener que mantenerlo. Limítate a cumplir lo que tienes que cumplir, porque es un añadido de tiempo y complejidad innecesario. Porque eso es un enemigo de la supervivencia de proyectos.
+
+ - Cuando creas documentos, el motor de base de datos tiene que actualizar todos los indices que tiene.
+
+> Se deben crear indices en el momento que sabes que te van a hacer falta de cara al futuro, por ejm. si estoy escribiendo código y estoy haciendo un find, debo te voy a crear un índice para que sea lo suficiente rápido como ahora.
 
 
 ## Modificaciones
