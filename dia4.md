@@ -960,3 +960,13 @@ conexion.connect(err => {
 ```
 
 Esto funcionaria de la misma forma que el primer ejemplo.
+
+## Promisify 
+```js
+  Promise.promisify()
+```
+
+Hay una funcionalidad en node.js que se llama promisify para convertir una funcion con callbacks para que devuelva una promesa.
+Y hace practicamente lo mismo que hicimos en clase.
+
+Hay una libreria que se llama Bluebird que es muy buena. Esta nos ayuda a trasformar no solo una funcion sino un objeto de callbacks a promesas.
