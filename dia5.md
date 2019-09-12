@@ -150,32 +150,57 @@ $ ./bin/mongo
 Nos aparecerá un prompt, que es la shell de mongodb. A parte nos apareceran algunos Warnings, pero esto nos trata de decir que recordemos que tenemos el servidor sin autenticación, es decir no he creado usuarios ni nada de eso. Y explica que si lo vamos desplegar en produccion en algun momento, recomienda que controlemos las ips a las que los exponesmos, crear algunos usuarios para que no acceda todo el mundo. Ahora para desarrollar nos da igual ahora mismo.
 
 ### Shell basics de MongoDB
+
 Ahora ya estamos en la shell de mongoDB, este el cliente que se conecta a mongodb y le podemos mandar ordenes, como lista esto. inserta lo otro, exportalo y un monto de cosas:
 
+#### Listar Bases de Datos de mongodb
 
-- Listar Bases de Datos de mongodb
-
-```shell
-> show dbs
+```sh
+    > show dbs
 ```
 
-- Cambiarme o usar una BD
+#### Cambiarme o usar una BD
+Cambiarme o usar una base de datos que yo le diga. Ahora el contexto pasa a la base de datos admin
+
   ```shell
   > use admin
   ```
 
-- mostrar las collections de admin
-> show collections
+#### mostrar las collections de una base
+Mostrar las colecciones de la base de datos admin que es donde esta el contexto ahora.
+```sh
+    > show collections
+```
+Las colecciones son lo que en una base de datos relacional solemos llamar tablas.
 
-- Crear una BD cursonode, si hacemos un > show dbs vemos que no se a creado.
-- luego creamos o insertamos un objeto
+####  Crear una BD 
+Creamos una base de datos 'cursonode', hacemos un 
+```sh
+    > use cursonode
+```
+Vemos que ha cambiado el foco a la base de datos `cursonode`, como se ve no falla, aunque no exista. PEro sabe que los comandos que a partir de ahora te voy a decir tienen su contexto a la base de datos 'cursonode' exista o no y si te la tienes que crear la creas.
+
+Si hacemos un
+```sh
+> show collections
+```
+Ps vemos que no tiene nada. y si hacemos un > show dbs vemos que todavia no la creado.
+```sh
+> show dbs
+```
+#### Guarde un documento en una coleccion
+
+- luego creamos o insertamos un objeto entre llaves {}
 
 ```shell
 > db.agentes.insert({ name: 'Smith', age: 41})
 ```
-Nos aparecerá un mensaje de que se ha insertado.
+
+Se puede usar comillas simples o comillas dobles, es indiferente.
+Nos aparecerá un mensaje diciendo que se ha insertado un documento.
 
 ## Cliente gráfico para mongodb
+Para quien no se encuentre comodo con la consola.
 - Una es MongoDB Compass
 - Otra es Robomongo o la gratis que es Robo 3T ()
 
