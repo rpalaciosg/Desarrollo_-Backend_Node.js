@@ -450,15 +450,53 @@ El caso mas tipici es el case insensitive osea buscar por minusculas o mayuscula
 { name: { $regex: /acme.*corp/, $option } } 
 { name: {$not : } }
 
+## MongoDB queries - formas de buscar
 
+Hay otras formas tambien de buscar, bastante comunes.
+Por ejemplo:
 
-db.agentes.find({age: {$gt: 30} }) //$lt, $gte, $lte, ...
-db.agentes.find({age: {$gt: 30, $lt: 40} }); //>30 y <40, por defecto cuando se conjugan varias con comas
-db.agentes.find({ ame: { $in: [ 'Jones'], 'Brown' } }); //$nin
-db.agentes.find({ name: 'Smith', $or: [
+### Por rangos
+- Mayor que:
+```sh
+> db.agentes.find({age: {$gt: 30} }) //$lt, $gte, $lte, ...
+```
+- Menor que 
+```sh
+> db.agentes.find({age: {$lt: 30} }) //$lt, $gte, $lte, ...
+```
+- Mayor o igual que , menor o igual que
+```sh
+> db.agentes.find({age: {$gt:24, $lte:32}})
+> db.agentes.find({age: {$gt: 30, $lt: 40} }); #>30 y <40, por defecto cuando se conjugan varias con comas
+```
+> Tener en cuenta : la ',' dentro del objeto es la conjución 'and' o 'y'.
+
+### $in
+En caso de querer usar la conjucion or, podemos usar $in que filtra por nombres que esten 'en':
+```sh
+> db.agentes.find({ ame: { $in: [ 'Jones'], 'Brown' } }); //$nin
+> db.agentes.find({name: {$in: ['Jones', 'Brown']}}) //$nin
+```
+Aqui podriamos usar una expresion regular tambien.
+
+### $nin
+Así existe el metodo $nin que quiere decir que no este en o entre, es la negacion de $in
+```sh
+> db.agentes.find({name: {$nin: ['Jones', 'Brown']}})
+```
+
+### $or 
+Es un poco el patito feo, pero si quiero hacer un or, las distintas partes del or las tengo que poner entre corchetes y asignarselas a $or, es decir meterlo en el vector de $or.
+Ejemplo:
+```sh
+> db.agentes.find({ name: 'Smith', $or: [
     { age: { $lt: 30}},
-    { age: 43 } // 'Smith' and (age <30 or age = 43)
+    { age: 41 }
 ] })
+
+>db.agentes.find({name: 'Smith', $or:[{age:{$lt:30}}, {age:41]})
+```
+Es como hacer o decir o traducido en el where de sql: ` name='Smith' and (age <30 or age = 41)`
 
 **Buscar por subdocumentos**
 
