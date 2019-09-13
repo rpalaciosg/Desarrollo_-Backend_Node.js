@@ -498,22 +498,43 @@ Ejemplo:
 ```
 Es como hacer o decir o traducido en el where de sql: ` name='Smith' and (age <30 or age = 41)`
 
-**Buscar por subdocumentos**
-
-Buscar todos los documentos de la ciudad de madrid.
-
-```shell
-db.agentes.find({"address.city": "Madrid"})
-```
-
-- Buscar en un array un teléfono. no tienes que hacer nada especial, solo si es que quiere poner algo como 
+### Buscar por subdocumentos
+Como podemos buscar por subdocumentos, por ejemplo el caso del documento 'Superlopez', que tiene los subdocumentos 'address' y 'phone'. 
+**Ejm 1:** Vamos a buscar todos los documentos de la ciudad de madrid. (Nota: si estuviera escribiendo esto en el código, aprovecharia y crearia un índice.)
 
 ```shell
- db.agentes.find({ phone: '699887766' })
- db.agentes.find({bytes: [5,8,9]}) //array exact
- db.agentes.find({bytes: 5}) // array contain
- db.agentes.find({'bytes.0': 5}) //array position - p1er numero del array sea 5
+> db.agentes.find({"address.city": "Madrid"})
+> db.agentes.find({"address.city": "Madrid"})
 ```
+Tener en cuenta que las propiedades de subdocumentos al hacer un query se usan con comillas dobles "", porque se usa la propiedad punto (.) en este caso el subdocumento 'address' tienen una propiedad 'city' a la cual hago referencia con "address.city"
+
+Al ejecutar esta query me devuelve el documento de 'Superlopez'
+
+**Ejm 2:** Buscar en un array por teléfono o el subdocumento 'phone' que está en un array. Buscar en un array es muy facil, no tienes que hacer nada especial, solo si es que quiere poner algo como 
+```sh
+> db.agentes.find({ phone: '699887766' })
+```
+Esto me devuelve igual el documento de superlopez.
+
+- Como se ve para buscar en arrays no hace falta nada especial, solo quizas si a lo mejor quieres especializarcelo diciendo que quieres que el primer elemento del array sea igual a 5, esto por la posicion dentro del array, ejm:
+```sh
+ > db.agentes.find({'bytes.0': 5}) #array position - p1er numero del array sea 5
+```
+- O si quieres buscar documentos que tengan un array exactamente igual, ejm:
+
+```sh
+ > db.agentes.find({bytes: [5,8,9]}) #array exact
+```
+- O si quiero buscar en un array en la que una de sus posiciones contenga un 5, ejm:
+```sh
+ > db.agentes.find({bytes: 5}) // array contain
+```
+
+### Documentacion de mongodb para buscar colecciones y hacer querys
+[db.collection.find](https://docs.mongodb.org/manual/reference/method/db.collection.find/#db.collection.find)
+[query-documents](https://docs.mongodb.org/manual/tutorial/query-documents/)
+
+Estos links tienen mucha información util.
 
 ### Ordenar - querys
 Sespues de que busque todos los agentes que cumplan los determinados criterios, devuelvelos ordenados por age descendente
