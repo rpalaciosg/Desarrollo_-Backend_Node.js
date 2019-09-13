@@ -537,44 +537,66 @@ Esto me devuelve igual el documento de superlopez.
 Estos links tienen mucha información util.
 
 ### Ordenar - querys
-Sespues de que busque todos los agentes que cumplan los determinados criterios, devuelvelos ordenados por age descendente
 
-```shell
-db.agentes.find().sort({age: -1})
+Despues de que busque todos los agentes que cumplan los determinados criterios, y sobre esos devuelvelos ordenados `.sort()` por age `.sort({age})` y descendente `.sort({age: -1})` en este caso -1
+
+```sh
+> db.agentes.find().sort({age: -1})
 ```
 
 ### Descartar resultados
-Saltate el primero de los que me vayas a dar y me das solo 1. esto viene muy bien para hacer paginación:
 
+#### skit(), limit()
+Tambien podemos descartar algunos resultados por el orden en el que están, tambien por otras cosas.
+
+Ejemplo:
+- Podemos decirle saltate el primero de los que me vayas a dar y me das solo 1.  Esto se lo hace con `.skit()` y `.limit()`.
 ```sh
-db.agentes.find().skip(1).limit(1)
-db.agentes.findOne({name: 'Brown'}) // igual a limit(1)
+> db.agentes.find().skip(1).limit(1)
 ```
+#### findOne()
+- Otra forma de limitar por ejemplo usando `.findOne()` en lugar de `.find()`, es igual que decir:
+```sh
+> db.agentes.findOne({name: 'Brown'}) 
+```
+Esto es igual que decir .limit(1):
+ ```sh
+ > db.agentes.find({name:'Brown'}).limit(1)
+ ```
+> Esto viene muy bien para paginar o hacer paginación. Despues los vamos a probar y lo meteremos en el código para que nuestro API pueda entregar resultados paginados.
 
-Ejemplo claro es, cuando buscamos algo en google, si me da 40000 resultados, seguro que google no me da los 40000 solo veo los 10 primeros, y al fnal veo una paginación.
+
+#### Cuando hablamos de paginar
+Ejemplo claro es, cuando buscamos algo en google por ejemplo perros, si me da 40000 resultados, seguro que google no me da los 40000 solo veo los 10 primeros, y al fnal veo una paginación.
 
 - pag1 - 10 primeros
-- pag2 - saltate los 10 primeros y dame 10  skip(10).limit(10);
-- pag3 - saltate los 20 primeros y dame 10  skip(20).limit(10);
-- pag4 - saltate los 30 primeros y dame 10  skip(30).limit(10);
-- y así sucesivamente para ir paginando.
+- pag2 - saltate los 10 primeros y dame 10  `.skip(10).limit(10)`
+- pag3 - saltate los 20 primeros y dame 10  `.skip(20).limit(10)`
+- pag4 - saltate los 30 primeros y dame 10  `.skip(30).limit(10)`
+- pag5 - saltate los 40 primeros y dame 10  `.skip(40).limit(10)`
+- y así sucesivamente para ir paginando, mantendriamos los criterios de busqueda de perros pero le decimos que limite los resultados que quiere obtener 
 
-### Contar
+### Contar resultados
 
-Busca todos los documentos que tiene dreterinados criterios y dime cuantos.
-```shell
-db.agentes.find().count()  //db.agentes.count()
+Ejemplo: Busca todos los documentos que tiene dreterinados criterios y dime cuantos.
+
+```sh
+> db.agentes.find().count()  
+> db.agentes.count()
 ```
 
-Mongo db tiene muchas cosas, muchos añadidos.
+Mongo db tiene mucha funcionalidad, cosas, y muchos añadidos.
 
- > Recomendado ver mongodb university. es formación den mongodb y son gratis.
-    - MongoDB Basics
+## MongoDB University
+[MongoDB University](https://university.mongodb.com)
+Recomendado ver mongodb university. es formación den mongodb y muchos de los cursos son gratis.  
+    - MongoDB Basics -> ya las estamos viendo aqui en el curso aunque comenta algunas cosas más
+    - El curso Next Class: M220JS: MongoDB for Javascript Developers, estos temas casi los cubrimos aqui en el curso.
     - Hay un learnign path para las certificaciones.
-      - Desarrollador
+      - Desarrollador/ Developer
       - Administrador del sistema
     - La certificacion es barata, solo $150, me hago los cursos recomendados para esa certificación.
-    - Es muy buena y gratis.
+    - Es muy buena formación y gratis.
 
 ### Busqueda de texto completo - querys (busquedas tipos fulltext)
 
