@@ -331,20 +331,36 @@ Si hacemos un find() vemos que no aparece ya `Brown`, el documento al que le mod
 ```
 Es decir le esta diciendo actualisame este objetcId y lo pisas por completo con este otro {age:25}, es decir sustituye todo el documento.
 
->Es un error muy común. por lo que se recomienda no hacer cambios en caliente en Producción.
+>Es un error muy común lo que falta es el set y el campo que se quiere actualiar, se recomienda no hacer cambios en caliente en Producción. Y si los vas a hacer en caliente, usar a otra persona que ayude para que revise o de segundo para de ojos, y vaya viendo si esta bien.
 
 ### Como actualizar parcialmente/ correctamente
-Lo que debemos hacer para actualizar la edad de ese objeto, con una actualizacion parcial:
+Si es que quermos hacer una actualizacion parcial, lo que debemos hacer para actualizar la edad de ese objeto, con una actualizacion parcial es usar $set en el segundo parametro o en el segundo objeto: ejm
 
 ```shell
-> db.agentes.update({ "_id" : ObjectId("5d4bfd116c854955b2be8730") }, { $set: { name: 'Brown' } } )
+> db.agentes.update({"_id" : ObjectId("5d7aa2cc8eeecd78547e20e8")},{ $set: { age: 25 } })
 ```
 
-Recordar por en `{ $set: {} }`
-No importa el orden de los campos.
+ - Vamos a usar esto para corregir el documento de 'Brown' que dañamos
+```sh
+> db.agentes.update({ "_id" : ObjectId("5d7aa2cc8eeecd78547e20e8") }, { $set: { name: 'Brown' } } )
+```
+Luego con
+```sh
+> db.agentes.find({}).pretty()
+```
+- Recordar poner `{ $set: {} }`
+- No importa el orden de los campos.
 
+> Javascript abarca en el tipo `number` tanto números decimales como enteros.
 
-Cuando lleuemos a la parte de Mongoose le definiremos un eschema, Aunque Mongodb es `eschemaless`, yo puedo crear un schema y es bueno tener un eschema, porque hace que todos trabajemos en un mismo sentido. aunque yo tenga definido un eschema Mondodb puede seguir metiendo lo que quiera. Se crea un esquema para proteger el ingreso de datos, es en otra capa de software que mongodb no lo va a saber. 
+Cuando lleguemos a la parte de Mongoose trabajaremos en definirle un eschema, para usarlo con esquema. 
+Aunque Mongodb es `eschemaless`, yo puedo crear un schema. 
+Y es bueno tener un eschema de las cosas, porque hace que todos trabajemos en un mismo sentido y conozcamos lo que hay dentro de las colecciones anque mongodb me permite tener colecciones sin esquema aunque yo defina el esquema en otro sitio mongoDB me dejara meter ahi lo que yo quiera. 
+El esquema no se lo voy a decir a mongoDB se lo voy a decir en una capa de software mía que voy hacer para un esquema que yo voy a usar y aprovechar. aunque yo tenga definido un eschema Mondodb puede seguir metiendo lo que me de la gana desde otros sitios. 
+Por ejemplo si quiero que un usuario de nuestra aplicación llama a nuestro API y nos da los datos de un agente que queremos meter aquí, querras que de nombre y edad, pero si empieza a dar datos que nosotros no conocemos o el API conoce, ejem numeros de factura o que guarde un binario con un PDF. Pero yo no quiero que guarde eso,  por eso hacemos un esquema, para prteger los esquemas que nosotros queremos que tengan los documentos al momento de la introduccion de los datos. El motor de base de datos nos deja, pero nosotros en el software nos vamos a imponer con un esquema en las partes que queramos, para ayudarnos con esto.
+
+El esquema viene bien cuando no conosco el contenido de una coleccion.
+Se crea un esquema para proteger el ingreso de datos, es en otra capa de software que mongodb no lo va a saber. 
 El eschema nos ayuda a saber que tiene.
 
 - En caso de que quiera saber como va a funcionar una query sin hacerla.
