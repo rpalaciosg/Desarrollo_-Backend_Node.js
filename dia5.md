@@ -363,6 +363,18 @@ El esquema viene bien cuando no conosco el contenido de una coleccion.
 Se crea un esquema para proteger el ingreso de datos, es en otra capa de software que mongodb no lo va a saber. 
 El eschema nos ayuda a saber que tiene.
 
+### Borrar colecciones en mongodb
+Uso el comando drop() para borrar una coleccion o lo que conocemos como tabla en SQL.
+
+```sh
+> db.coleccion.drop()
+```
+### Borrar un documento en mondb
+Para borrar un documento o un registro en monddb o lo que conocemos como registro o tupla en sql, usamos el comando remove()
+
+```sh
+> db.agentes.remove({_id: ObjectId("217361273612786381726317dd")})
+```
 - En caso de que quiera saber como va a funcionar una query sin hacerla.
 
 ```shell
