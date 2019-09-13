@@ -375,11 +375,71 @@ Para borrar un documento o un registro en monddb o lo que conocemos como registr
 ```sh
 > db.agentes.remove({_id: ObjectId("217361273612786381726317dd")})
 ```
-- En caso de que quiera saber como va a funcionar una query sin hacerla.
 
-```shell
-b.agentes.find({ age: 32 }).explain()
+### Explicar funcionamiento de un query
+
+Este comando .explain() se usa en caso de que quiera saber como va a funcionar una query sin hacerla. Por ejemplo para saber si va a usar un indice que hayamos creado, etc.
+
+```sh
+> db.agentes.find({ age: 32 }).explain()
 ```
+En el caso de ver si esta usando un indice en la parte stage si hay un `IXSCAN` eso es bueno por que está escaneando un indice, ademas como vemos el kepattern {age: 1} por edad es ascendente. y esta usando el indice 'indexName': 'age_1'
+Si tuviese un `COLLSCAN` eso es malo, ya que se va a recorrer toda la coleccion o tabla.
+
+```sh
+> db.agentes.find({ age:32 }).explain()
+
+        "queryPlanner" : {
+                "plannerVersion" : 1,
+                "namespace" : "cursonode.agentes",
+                "indexFilterSet" : false,
+                "parsedQuery" : {
+                        "age" : {
+                                "$eq" : 32
+                        }
+                },
+                "queryHash" : "3838C5F3",
+                "planCacheKey" : "041C5DE3",
+                "winningPlan" : {
+                        "stage" : "FETCH",
+                        "inputStage" : {
+                                "stage" : "IXSCAN",
+                                "keyPattern" : {
+                                        "age" : 1
+                                },
+                                "indexName" : "age_1",
+                                "isMultiKey" : false,
+                                "multiKeyPaths" : {
+                                        "age" : [ ]
+                                },
+                                "isUnique" : false,
+                                "isSparse" : false,
+                                "isPartial" : false,
+                                "indexVersion" : 2,
+                                "direction" : "forward",
+                                "indexBounds" : {
+                                        "age" : [
+                                                "[32.0, 32.0]"
+                                        ]
+                                }
+                        }
+                },
+                "rejectedPlans" : [ ]
+        },
+        "serverInfo" : {
+                "host" : "MAPC100ASD02",
+                "port" : 27017,
+                "version" : "4.2.0",
+                "gitVersion" : "a4b751dcf51dd249c5865812b390cfd1c0129c30"
+        },
+        "ok" : 1
+}
+```
+Esto es bastante útil para saber si una consulta esta usando los indices que crees debe usar. En el caso de querer ver los indices.
+
+### Referencia de la shell de MongoDB
+
+Documentacion de MongoDB
 
 ### MongoDB queries
 
