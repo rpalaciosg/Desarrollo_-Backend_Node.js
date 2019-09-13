@@ -441,13 +441,16 @@ Esto es bastante útil para saber si una consulta esta usando los indices que cr
 
 Documentacion de MongoDB
 
-### MongoDB queries
+### MongoDB find regex queries
+ASi como en sql podemos buscar con like en mongodb, se lo debe hacer con expresiones regulares en el comando $regex. Tiene mas pontencia que en sql.
 
-- Buscar con like en mongodb, se lo debe hacer con expresiones regulares. regex
+El caso mas tipici es el case insensitive osea buscar por minusculas o mayusculas.
 
 { name: { $in: [/^acme/i, /^ack/] } }
 { name: { $regex: /acme.*corp/, $option } } 
 { name: {$not : } }
+
+
 
 db.agentes.find({age: {$gt: 30} }) //$lt, $gte, $lte, ...
 db.agentes.find({age: {$gt: 30, $lt: 40} }); //>30 y <40, por defecto cuando se conjugan varias con comas
