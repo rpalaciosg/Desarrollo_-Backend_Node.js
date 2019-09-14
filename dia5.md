@@ -742,9 +742,9 @@ LE digo bsucame por el libro el sr de los anillos y el stock sea 10, y si encunt
 
 
 ## Mongoose
-
-Mongoose es parecido a un ORM. en realidad es un ODM (Object document Mapper) porque no es relacional como un ORM.
-Es una herramiena que nos permite persistir objetos en MonoDB. Ayuda a definir esquemas y a preservar esos esquemas.
+Para trabajar con MongoDB desde código vamos autilizar mongoose.
+Mongoose es parecido a un ORM, quizas en realidad es un ODM (Object document Mapper) porque no es relacional como un ORM.
+Es una herramiena que nos permite definir esquemas, persistir objetos en MongoDB. Ayuda a definir esquemas y ayudarnos a preservar esos esquemas, a que se cumplan.
 
 ### Como funciona.
 
@@ -759,18 +759,21 @@ Cuando quiero hacer una conexion a mongodb, con mongoose no es necesario instala
 ### Conectar a la base de datos
 
 ```js
-var mongoose = require('mongoose');
-var conn = mongoose.connection;
+    var mongoose = require('mongoose');
+    var conn = mongoose.connection;
 
-conn.on('error', (err) =>
-    console.error('mongodb connection error', err) );
-conn.once('open', () =>
-    console.info('Connected to mongodb.') );
+    conn.on('error', (err) =>
+        console.error('mongodb connection error', err) );
+    conn.once('open', () =>
+        console.info('Connected to mongodb.') );
 
-mongoose.connect('mongodb://localhost/diccionario');
+    mongoose.connect('mongodb://localhost/diccionario');
 ```
 
 > Quitaron la necesidad de usar la linea para indicar la libreria de promesas.
+```js
+
+```
 
 ### Ejercicio mongoose
 
