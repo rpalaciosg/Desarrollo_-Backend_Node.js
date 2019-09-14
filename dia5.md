@@ -712,19 +712,34 @@ db.productos.find({
 
 ## Transacciones en MongoDB
 
-`findAndModify` es una operacion atómica, lo que nos dará un pequeño respiro transaccional.
+Para hacer transacciones tenemos `findAndModify` que es una operacion atómica, lo que nos dará un pequeño respiro transaccional.
+Cuando puedo necesitar hacer un transaccion o para que sirven las transacciones. Ejm
+- Imagina que tenemos una tienda online en la que vendo libros, y de cada libro que tengo en el almacen nuestra base de datos, tengo anotado cuanto stock queda de ese libro. El ibro del sr. de los anillos en nuestra base de datos quedan 10 unidades.
+Y en nuestra tienda online llegan usuarios ahi ven los libros que hay y deciden comprarlos. En el momento que van a comprarlos ps hacen el tipico carrito de compra, y en el momento que ya van a hacer el pedido, ahi yo voy a la base de datos y voy a decir de los 10 que tengo reservame uno para este cliente. Entonces imagina el caso en que 10 usuarios virtualmente a la vez (muy poisble) quieren comprar 10 ejemplares del sr de los anillos, bueno o que quieran comprar una cantidad similar u overbooking (que vendes mas de lo que tienes). Entonces mi aplicacion podria hacer, pregunta a la base de datos, ¿oye cuantos libros quedan?, quiero vender 10, este usuario me ha pedido 10 libros, ¿Cuantos quedan?, entonces la Base de Datos me dice quedan 10, entonces estupendo!, pero a la vez antes de que decirle a la base de datos, ps reservamelos, a la vez otro usuario que le ha dado casi al mismo tiempo a comprar, ps està ahciendo lo mismo y llegan casi a la vez esas 2 peticiones de consulta la base de datos, y las 2 consultas van a devolver a los 2 procesos que quedan 10 libros. Y los 2 le van a decir a la base de datos, ps reservamelos y el primero que llega los va a reservar pero el otro que llega va a dejar el stock en -10 y !eso es una fatalidad!, porque yo no puedo tener un stock de -10 libros fìsicamente. Despues que me invente alguna lògica de logistica para resolver eso ps vale, pero no puede haber numeros negativos de stock. Entonces necesito un mecanismo de hacer las 2 operaciones de busqueda y actualizacion (.find and .modify)
 
-```shell
-db.agentes.findAndModify({
-    query: {name: "Brown"},
-    update: { $inc: { age: 1 } }
-})
+```sh
+> db.agentes.findAndModify({
+     query: {name: "Brown"},
+     update: { $inc: { age: 1 } }
+ })
+
+> db.agentes.findAndModify({ query: {name: "Brown"}, update: { $inc: { age: 1}}})
 ```
+
+Buscame todos aquellos documetos cuyo nombre sea Brown y me los actualizas incrementando su edad en 1.
+
 Necesito una operacion de busqueda y actualizacion:
 Lo busca y si lo encuentra lo modifica, no permitiendo que otro lo cambie antes de modificarlo.
 
-Un ejemplo es el caso de el stock negativos en una tienda online, o en entradas de cine, debo reservar butacas.
+Un ejemplo es el caso de el stock negativos en una tienda online de los libros del sr de los anillos, o en entradas de cine, debo reservar butacas. Ejm: Sr. de los Anillos.
+
+LE digo bsucame por el libro el sr de los anillos y el stock sea 10, y si encuntra deja actualizando el stock disminuyendo en 10. Asì si entra otra peticion, ya no va a encontrar es decir le devolverà un array vacio, por que la primera peticion que entra es la que disminuye y resrva el stock de libros. Y asi los siguientes no se ven engañados por un falso stock negativo.
+
+- Sirve para ahcer varias operaciones atómicas. Al final en una tienda online esto es necesario.
+- a APrte tambien han añadido transacciones mas parecidas a las que realizas en las bases de datos transaccionales. Puedo decir con un comando `Iniciame una transaccion` y todo lo que te diga de aqui en adelante es una transaccion. Se puede insertar, borrar, modificar. Y al final si no ha dado error ninguna de las transacciones es decir si ha hecho todas, debes hacer estas cosas permanentes. Si una de esas operaciones me huviese dado erro, me la deshaces todas.
+
 > Esto lo tiene recien mongodb
+
 
 ## Mongoose
 
