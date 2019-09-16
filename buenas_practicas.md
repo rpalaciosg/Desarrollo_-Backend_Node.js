@@ -46,6 +46,10 @@
 - Poner en practica el principio `YAGNI` que son las siglas de (no vas a necesitarlo). Como por ejemplo guardar cosas por si acaso las vas a necesitar. O crear cosas por si acaso las vayas a necesitar en el futuro. "Si lo necesitas yá, crealo, sino nó lo crees."
 
 - No añadir complejidad innecesaria a las cosas, porque sino despues vas a tener que mantenerlo.
+
+- Al crear o desarrollar un API se debe versionar desde el principio usando un Versionador como GIT, esto se lo podria hacer creando ramas para las diferentes versiones del API.
+
+- Documentar mientras se va desarrollando es una practica muy sana. Segun vaya metiendo o creando cosas, meterlas en el readme
   
 ## Malas practicas
 
