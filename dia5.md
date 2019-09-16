@@ -887,18 +887,109 @@ En este caso 'Agente', corresponderá a la colección 'agentes' en mongodb.
 ##### Agregar modelo para que se ejecute en app.js
 Ya tengo mi modelo. Ahora en app.js debajo de la conexiòn de la base de datos agrego los modelos(hago que se ejecute).
 
-4. Hacemos el primer método de nuestra API
+#### 4. Hacemos el primer método de nuestra API
+
+El primer método del APi es que haga una consulta a los Agentes, y nos los devuelva.
 
 - Dentro de la carpeta `routes` creamos una carpeta llamada `apiv1`
-  > Ojo: Tenemos que versionar desde el principio ya que cuando ya usen y este en producción no puedo hacer cambios, sino hacer otra version y cuando los usuarios quieras la usen o se pasen a ella. Este versionamiento de hace con `git`. Se puede hacer o tener varias ramas con varias versiones.
+  > Ojo: Cuando creamos un API tenemos que versionar desde el principio ya que cuando estoy haciendo la primera version es facil hacer cambios por que no hay nadie utiliandolo, pero en cuando publique esto en producción y haya 3000 ususarios conectado a ese API ps en la nueva evolucion ya no puedo cambiar cosas tan facilmente. Lo que se debe hacer es crear otra version y mantener la version anterior para que los usuarios cambien a la siguiente version cuando ellos quieran o cuando les parezca bien. Con lo cual tenemos que versionar desde el principio.
 
-- Dentro de la carpeta apiv1, creamos el fichero `agentes.js` en minuscula y en plural, que va a ser mi fichero de rutas, en las que voy a poner los middlewares que respondan peticiones para trabajar con agentes.
+  - Hay 2 formas de versionar entre otras principalmente: 
+    - La forma correcta es el versionamiento que se hace con `git`. Se puede hacer o tener varias ramas con varias versiones.
+    - Forma manual con una carpeta por version, forma incorrecta.
 
-- Dentro del fichero `agentes.js` creamos el middleware que respondera a la peticion de agentes, luego en `app.js` usamos la ruta del primer endpoint de nuestra api 
+- Dentro de la carpeta apiv1, creamos el fichero `agentes.js` en minuscula y en plural, que va a ser mi fichero de rutas, en las que voy a poner los middlewares que respondan a peticiones para trabajar con agentes. Este fichero serà nuestro controlador.
+
+- Dentro del fichero `agentes.js` creamos el middleware que respondera a la peticion de agentes, luego en `app.js` usamos la ruta del primer endpoint de nuestra api, y lo ponemos en la seccion `rutas de mi aplicacion web`
+Cundo usaba `app.locals` es porque estaba pasando inforamcion a las vistas, pero con el api lo que voy a devolver son jsons entonces creao una seccion de `rutas para mi API`
 
 ```js
 app.use('/apiv1/agentes', require('./routes/apiv1/agentes'));
 ```
+No es necesario que coincida la ruta del middleware con la ruta del filesystem donde esta ese modulo, no es obligatorio pero es recomendable, ya que asì sera facil encontrarlas en el fylesystem donde estan esos modulos y lo hace bastante mas manejable.
+
+En este middleware o controlador, vamos a hacer que nos devuelva una lista de agentes.
+
+El usar o devolver un {success: true} es una forma de diseño pero no es una buena practica simplemente es opciona, y ayuda a que sea mas grafico. 
+
+- Cargamos el modelo de agentes:
+```js
+// podemos hacerlo asi 
+const Agente = require('../../models/Agente');
+// o cargar mongoose
+const Agente = mongoose.models.Agente;
+```
 
 Si es que me llega a dar este error: 
 `TypeError: Router.use() requires a middleware function but got a Object` es por se me a olvidado exportar el router.
+
+Al no exportar el router, en el app.js usa un objeto vacio. Dice que Router.use() requiere un middleware o un router que es un conjunto de middlewares.
+
+Dentro del middleware hacemos esto:
+```js
+router.get('/', (req, res, next) => {
+    Agente.find().exec()
+    res.json({success: true});
+});
+```
+
+El .find() tiene un .then() que automaticamente hace que funcione como una promesa. A esto se le llama `thenable` es un objeto que simula ser una promesa pero no lo es. PAra conveniencia que en algunos caso usarlos como una promesa.
+A pesar de no ser una promesa, es una operacion asincrona.
+
+El .find().exec() es un callback, pero si devuelve una promesa.
+
+##### Ejemplo version con callbacks.
+```js
+router.get('/', (req, res, next) => {
+    Agente.find().exec((err, agentes) => {
+        res.json({success: true, agentes: agentes});
+    });
+});
+```
+
+cuando termine de obtener de la base de datos, ahi respondo succes:true, esto me da una lista de agentes. 
+Pero le falta una cosa importante que se debe controlar, que son los erros, activando next(algo), para escalar el error al gestor de errores.
+
+```js
+router.get('/', (req, res, next) => {
+    Agente.find().exec((err, agentes) => {
+        if (err) {
+            next(err);
+            return;
+        }
+        res.json({success: true, agentes: agentes});
+    });
+});
+```
+
+##### Ejemplo version con promesas y con async/await
+```js
+router.get('/', (req, res, next) => {
+    const agentes = await Agente.find().exec()
+    res.json({success: true, agentes: agentes});
+});
+```
+Aqui pudiera usar el .find().exec() a secas o usar .find().exec().then(), porque ya sabemos que es `thenable` ya que tiene el metodo .then() que lo hace funcionar y devuelve una promesa, da un poco igual.
+
+Esto devuelve una promesa que se resuelve a un document[] array.
+Entonces donde obetengo la lista de agentes, ps cuando la promesa recibida en el await se resuelva.
+
+- Como controlo el error en el await o promesa rechazada, ya no se ejcuta la siguiente linea, y hacia que la funciona que la contenia hace que devuelva tambien una promesa rechazada. Nos devolveria un reject() no controlado.
+
+Como hacemos apra controlar ese posible error aqui:
+
+```js
+router.get('/', (req, res, next) => {
+    try {
+        const agentes = await Agente.find().exec()
+        res.json({success: true, agentes: agentes});
+    } catch (err) {
+        next(err);
+    }
+});
+```
+Hay otra opción, es haciendo una funcion que reciba una promesa, y si esa promesa esta rechazada llame a next(err) y ni no esta rechazada no haga nada. Y envolver el middleware con esa funcion
+
+## Extensiones para VSC recomendadas
+- PathIntellisense
+- npm Intellisense
