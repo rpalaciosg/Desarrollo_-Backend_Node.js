@@ -3,23 +3,44 @@
 - Hay una libreria de promisefy para convertir un callback a una promesa.
 - Hay otra libreria que se llama bluebird convert promise, que convierte a promesas. Incluso tiene un método que convierte todo los métodos a promesas.
 
-El día de ayer se vio Bases de Datos MySql
+El día de ayer se vio Bases de Datos MySql. Es bastante facil
+- Cargar el driver.
+- Conectar.
+- Hacer consulta.
+
+Para refrescar conceptos de SQL podemos revisar:
+
+[sqlteaching](https://www.sqlteaching.com/)
+
 
 ## Bases de datos - SQL ORMs
-ORM (Object Relational Maping) se encarga principlamente de:
-
+En cuanto a usr bases de datos desde codigo, en algunos casos solemos usar ORM (Object Relational Maping) se encarga principlamente de:
+- Abstraer o quitar la posible complejidad que pueda tener el lenguaje sql.
 - Convertir objetos en consultas SQL para que puedan ser persistidos en una base de datos relacional.
-- Traducir los resultados de una consulta SQL y generar objetos.
+- Traducir los resultados de objetos a  consulta SQL y generar objetos.
+
+Guardar cosas en el filesystem o un fichero plano o binario es rapido pero tiene una desventaja pero para recuperarlo rapidamente si es que tenemos varios miles es lento, porque no tienen indices.
+
+Si nosotros queremos guardar cosas en ficheros, deberiamos crearnos un indice para podernos buscar de forma mas rapida para no leer todas las lineas. 
+Es parecido al índice de un diccionario. 
+
+Un indice por ejemplo los registros que empiezan su nombre por 'A' son el 8315, el 8314 y el 2000 y me apunto eso, y en el momento que alguien me dice se busca a Alfonso, no tengo que recorrer a todos sino voy al indice y veo los que comienzan por A.
+
+Esta misma técnica anterior más evolucionada se usa en las BBDD y es la mayor ventaja de una base de datos, la velocidad con la que puedo encontrar algo igual de rapido si tuviera 500 datos a tener 5 millones de datos. Si no tuvieramos indices en una base de datos me pasara lo mismo que el diccionario desornado. 
+
+Por eso se recomienda usar motores de bases de datos, nos permitira manjear informacion rapidamente.
 
 Esto nos resultará util si el diseño de nuestra aplicación es orientado a objetos (OOP).
 
-Si nosotros queremos guardar cosas en ficheros, deberiamos crearnos un indice. Como el índice de un diccionario.
-Esta misma técnica más evolucionada es la mayor ventaja de una base de datos, la velocidad con la que puedo encontrar algo igual si tuviera 500 datos a tener 5 millones de datos.
-Por eso se recomienda usar motores de bases de datos.
+Además los ORMs son librerias que nos da la ventaja de persistir esos datos. Es decir se pasa un objeto y el se encarga de tomar las propiedades del objeto.
 
-Además los ORMs nos da la ventaja de persistir esos datos. Es decir se pasa un objeto y el se encarga de tomar las propiedades del objeto.
+### Desventaja ORM
 
-Un ORM no es muy eficiente cuando tiene que hacer muchas operaciones, ya que el hecho de que tiene que convertir cosas y comprobarla, tiene una penalizacion en rendimiento. Ejm: Se tiene un fichero con 1 millon de pedidos y quieres cargarlo en la tabla de bases de datos de pedidos, aqui un ORM no aportará mucho y demorará mucho, en este caso es mejor crear las insert en el código.
+Un ORM no es muy eficiente cuando tiene que hacer muchas operaciones seguidas. Cada operacion tiene una sobrecarga de operacion ya que el hecho de que tiene que convertir cosas y comprobarla, tiene una penalizacion en rendimiento. 
+Cuando se nota mas esa penalizacion Ejm: 
+- Se tiene un fichero con 1 millon de pedidos y quieres cargarlo en la tabla de bases de datos de pedidos, aqui es uno de los casos en que un ORM no ayudara mucho porque cada operacion de insercion y demorará mucho. En este caso mejor no usar un ORM es mejor crear las insert manualmente en el código.
+
+### ORMS - alternativas
 
 Un ORM muy usado para bases de datos SQL es sequelize:
 http://docs.sequlizejs.com/en/latest/
@@ -29,9 +50,11 @@ Sequelize tiene soporte para MySql, MAriaDB, SQLite, PostgreSQL y MSSQL.
 Otras buenas alternativas son:
 - Knex
 - Bookshelf
-- `TypeORM`, trabaja con typeScript en el framewor `nestjs` (sera bueno si es que el proyecto se usa con typescript)
+- `TypeORM`, trabaja con typeScript en el framework `nestjs` (sera bueno si es que el proyecto se usa con typescript) es bueno para personas o proyecto muy orientada a objetos.
 
-> Para cosas masivas utilzo el drive y consultas directas.
+La decicion de usar un ORM no es dificil de tomar, lo utilizo para las partes que lo aprovecho pero si debo hacer cargas o exportaciones masivas las hago con el driver.
+
+> Para cosas masivas utilzo el driver y consultas directas.
 
 ## MongoDB
 
@@ -711,24 +734,39 @@ Va a usar el indice geografico, para hacer la busqueda muy rapido, yme la da ord
 
 ## Transacciones en MongoDB
 
-`findAndModify` es una operacion atómica, lo que nos dará un pequeño respiro transaccional.
+Para hacer transacciones tenemos `findAndModify` que es una operacion atómica, lo que nos dará un pequeño respiro transaccional.
+Cuando puedo necesitar hacer un transaccion o para que sirven las transacciones. Ejm
+- Imagina que tenemos una tienda online en la que vendo libros, y de cada libro que tengo en el almacen nuestra base de datos, tengo anotado cuanto stock queda de ese libro. El ibro del sr. de los anillos en nuestra base de datos quedan 10 unidades.
+Y en nuestra tienda online llegan usuarios ahi ven los libros que hay y deciden comprarlos. En el momento que van a comprarlos ps hacen el tipico carrito de compra, y en el momento que ya van a hacer el pedido, ahi yo voy a la base de datos y voy a decir de los 10 que tengo reservame uno para este cliente. Entonces imagina el caso en que 10 usuarios virtualmente a la vez (muy poisble) quieren comprar 10 ejemplares del sr de los anillos, bueno o que quieran comprar una cantidad similar u overbooking (que vendes mas de lo que tienes). Entonces mi aplicacion podria hacer, pregunta a la base de datos, ¿oye cuantos libros quedan?, quiero vender 10, este usuario me ha pedido 10 libros, ¿Cuantos quedan?, entonces la Base de Datos me dice quedan 10, entonces estupendo!, pero a la vez antes de que decirle a la base de datos, ps reservamelos, a la vez otro usuario que le ha dado casi al mismo tiempo a comprar, ps està ahciendo lo mismo y llegan casi a la vez esas 2 peticiones de consulta la base de datos, y las 2 consultas van a devolver a los 2 procesos que quedan 10 libros. Y los 2 le van a decir a la base de datos, ps reservamelos y el primero que llega los va a reservar pero el otro que llega va a dejar el stock en -10 y !eso es una fatalidad!, porque yo no puedo tener un stock de -10 libros fìsicamente. Despues que me invente alguna lògica de logistica para resolver eso ps vale, pero no puede haber numeros negativos de stock. Entonces necesito un mecanismo de hacer las 2 operaciones de busqueda y actualizacion (.find and .modify)
 
-```shell
-db.agentes.findAndModify({
-    query: {name: "Brown"},
-    update: { $inc: { age: 1 } }
-})
+```sh
+> db.agentes.findAndModify({
+     query: {name: "Brown"},
+     update: { $inc: { age: 1 } }
+ })
+
+> db.agentes.findAndModify({ query: {name: "Brown"}, update: { $inc: { age: 1}}})
 ```
+
+Buscame todos aquellos documetos cuyo nombre sea Brown y me los actualizas incrementando su edad en 1.
+
 Necesito una operacion de busqueda y actualizacion:
 Lo busca y si lo encuentra lo modifica, no permitiendo que otro lo cambie antes de modificarlo.
 
-Un ejemplo es el caso de el stock negativos en una tienda online, o en entradas de cine, debo reservar butacas.
+Un ejemplo es el caso de el stock negativos en una tienda online de los libros del sr de los anillos, o en entradas de cine, debo reservar butacas. Ejm: Sr. de los Anillos.
+
+LE digo bsucame por el libro el sr de los anillos y el stock sea 10, y si encuntra deja actualizando el stock disminuyendo en 10. Asì si entra otra peticion, ya no va a encontrar es decir le devolverà un array vacio, por que la primera peticion que entra es la que disminuye y resrva el stock de libros. Y asi los siguientes no se ven engañados por un falso stock negativo.
+
+- Sirve para ahcer varias operaciones atómicas. Al final en una tienda online esto es necesario.
+- a APrte tambien han añadido transacciones mas parecidas a las que realizas en las bases de datos transaccionales. Puedo decir con un comando `Iniciame una transaccion` y todo lo que te diga de aqui en adelante es una transaccion. Se puede insertar, borrar, modificar. Y al final si no ha dado error ninguna de las transacciones es decir si ha hecho todas, debes hacer estas cosas permanentes. Si una de esas operaciones me huviese dado erro, me la deshaces todas.
+
 > Esto lo tiene recien mongodb
 
-## Mongoose
 
-Mongoose es parecido a un ORM. en realidad es un ODM (Object document Mapper) porque no es relacional como un ORM.
-Es una herramiena que nos permite persistir objetos en MonoDB. Ayuda a definir esquemas y a preservar esos esquemas.
+## Mongoose
+Para trabajar con MongoDB desde código vamos autilizar mongoose.
+Mongoose es parecido a un ORM, quizas en realidad es un ODM (Object document Mapper) porque no es relacional como un ORM.
+Es una herramiena que nos permite definir esquemas, persistir objetos en MongoDB. Ayuda a definir esquemas y ayudarnos a preservar esos esquemas, a que se cumplan.
 
 ### Como funciona.
 
@@ -741,20 +779,24 @@ $ npm install mongoose --save
 Cuando quiero hacer una conexion a mongodb, con mongoose no es necesario instalar el driver. Y MONGOOSE hace la conexxion y todos.
 
 ### Conectar a la base de datos
+Que nuestra app Nodeapi se conecte a MongoDB usando Mongoose que tenemos creada ya con la coleccion de agentes.
 
 ```js
-var mongoose = require('mongoose');
-var conn = mongoose.connection;
+    var mongoose = require('mongoose');
+    var conn = mongoose.connection;
 
-conn.on('error', (err) =>
-    console.error('mongodb connection error', err) );
-conn.once('open', () =>
-    console.info('Connected to mongodb.') );
+    conn.on('error', (err) =>
+        console.error('mongodb connection error', err) );
+    conn.once('open', () =>
+        console.info('Connected to mongodb.') );
 
-mongoose.connect('mongodb://localhost/diccionario');
+    mongoose.connect('mongodb://localhost/diccionario');
 ```
 
 > Quitaron la necesidad de usar la linea para indicar la libreria de promesas.
+```js
+
+```
 
 ### Ejercicio mongoose
 
@@ -762,49 +804,214 @@ Vamos a hacer que nuestra aplicación node api se conecte usando mongoose con la
 
 Puedo verlo en `nodeapi`
 
-1. Voy a crear un módulo que va a hacer la conexión. Ya que es un patron bastante común. Y ese módulo ese va a ser encargado de hacer la conexión de base de datos. Y así hago la sintaxis de conexion una sola vez.
+#### 1. Crear modulo para conexion a la base de datos
+Voy a crear un módulo que va a hacer la conexión. Ya que es un patron bastante común. Y ese módulo ese va a ser encargado de hacer la conexión de base de datos. Y así hago la sintaxis de conexion una sola vez.
    - Creo una carpeta `lib` porque vamos a meter ahí varios módulos de diversos tipos.
-   - Dentro de `lib` creamos un nuevo fichero llamado `connectMongoose.js`
+   - Dentro de `lib` creamos un nuevo fichero llamado `connectMongoose.js` el nombre da igual.
    - Luego instalamos mongoose:
         ```shell
         $ npm i mongoose
         ```
+        Y vemos que lo ha instalado en el package.json
     - Lo vamos a cargar cuando carga la applicacion en `app.js`
 
-2. Creamos un esquema
-   - Creamos una carpeta `models`
-   - Dentro de models, creamos un fichero `Agente.js`
+    - Es bastante habitual que en el conn.on(), si da un error poner un `process.exit(1)`, aqui podemos hacer un catalogo de còdigos de error. Ejm:
+        - 1, error de conexion a la base de datos. Es impresidible que haya conexion, por tanto si no me conecto paro la aplicaciòn en este caso. En otros casos se podria hacer una lógica de reintentos.
+        - 2, no se que
 
+    - Aparte otro evento conn.once('open', ()), la primera vez que ocurra el evento open me dira el mensaje 'Coenctado a mongoDB en, mongoose.connection.name'
+
+Esta es la logica que usamos en el eventEmitter.
+    - Conexion: decimos donde nos queremos conectar, hay varias opciones, la que vamos ausar en principio serìa la URI, y opcionalmente un objeto de opciones. LAS cadenas de conexion normalmente es una URL, es un patron tipico, que tiene un protocolo, el dominio, en este caso el protocolo es mongodb. Si feura un puerto especial pondria esto:
+
+```js
+// conectar
+mongoose.connect('mongodb://localhost:21735/cursonode')
+```
+Protocolo://ip:puerto/baseDatosAConectar
+
+- Exportar la conexiòn por si en algun otro sitio lo queremos utilizar.
+```js
+module.exports = conn;
+```
+#### configurar para que la base de datos arrance al inicio de la aplicacion
+
+- Tenemos el modulo de conexion a la base, y lo vamos a cargar cuando arranque la aplicaciòn. Esto es en el app.js, podria ser antes de crear la aplicacion de express o podria ser despues.
+ - Segun una pregunta que hicieron si estaba bien ponerlo en el /bin/www, està bien pero el instructor dijo que suele dejarlo al margen de las dependencias de la applicacion. Digamos que www no sepa que dependencias tienen app.js y sea el propio app.js que resuelva sus propias dependencias, pero es una forma de hacerlo. Al arrancar la aplicacion en app.js de eta configurando la applicacion. Arrancar la app va a ocurrir una vez cada 3 meses, y si la app es estable talvez arranque una vez cada 3 años.
+
+ - Despues veremos como hacer arranques o reinicios sin tener perdidas de servicio.
+ > No gastar mucho tiempo en los middlewares. 
+
+En este caso los pondria despues de los middlewares. PAra hacer la conexcion con la base de datos tengo que hacer un require del connect en la conexion de mongoose. Como vemos esto automaticamente se va a conectar y me va a devolver la conexion.
+Aqui en app.js como no voy a necesitar la conexxion para darsela a alguien por ahora no la voy a guardar en ninguna variable.
+
+```js
+/**
+ * Conexion con la base de datos
+ */
+require('./lib/connectMoongose');
+```
+Entonces volvemos a ejecutar `npm run dev`, si vemos que nos aparece un warning no preocuparse, esto es porque han cambiado la forma de conectar, y para eso han deprecado algunas cosas, en caso de querer quitar el warning lo podemos hacer de 2 formas:
+- Agregando la opcion que da el warning de agregar `{ useNewUrkParser: true } a MongoClient.connect` en el modulo que hacemos la conexion a la base, y asì nos libramos de ese warning.
+```js
+mongoose.connect('mongodb://localhost/nodepop', { useNewUrlParser: true });
+```
+- Si nos damos cuenta si ponemos en la conexion una base de datos que no existe, la conexion no falla. En caso de buscar colecciones en una base de datos que no existe tampoco falla sino que devuelve arrays vacios.
+
+#### 2. Creamos un Esquema
+Luego de que nuestra aplicacion ya se conecta a la base de datos, ahora creamos un modelo. Usamos mongoose tambien, usamos el costructor de esquemas `mongoose.Schema`, donde le paso un objeto con la definicion del esquema. y luego con ese esquema creo el modelo.
+
+- Creando un esquema
+   - Creamos una carpeta `models`
+   - Dentro de models, creamos un fichero `Agente.js` con la `A` mayuscula, no es imprecindible para que funcione pero es una convenciòn, los modelos con la primera letra en mayuscula.
+   - Ademas tambien nos servirá para despues en las rutas, creemos un archivo de rutas/routes ahi si se lo debe crear con la `a` minuscula y lo pondremos en plural para que se diferencie.
 
     ```js
-        var mongoose = require('mongoose');
+        const mongoose = require('mongoose');
         var agenteSchema = mongoose.Schema({
-
+            name: String,
+            age: Number,
+            email: {
+                type: String,
+                index: true,
+                unique: true,
+                default: ''
+            }
         });
     ```
+    - No debemos preocuparnos muchos de si la conexion se ha establecido o nó, porque mongoose se encarga de eso. mira si el mongoose.connection  de la conexion interna esta establecida o no, y sino espera hasta que esta se conecte.
+
+    - Al crear un esquema es definir las restricciones que queremos que se cumplan al intentar guardar. En caso que la base tenga otra estructura, no va a colisionar.
+
     Hay una página donde me puedo guiar de las reglas para crear el modelos. Mongoose eschema types:
     `https://mongoosejs.com/docs/schematypes.html`
 
-3. Creamos el modelo de Agente.
+#### 3. Creamos el modelo de Agente.
+Con el esquema que creamos vamos a crear un modelo. Creamos el modelo de AGente:
+```js
+const Agente = mongoose.model('Agente', agenteSchema);
+```
+Esto ya internamente hace que mongoose registre ese esquema, y poderlo usar desde donde yo quiera.
+La exportacion es igual opcional, ya que puedo recuperarlo de mongoose.model.
 
-Mongoose hace la pluralización, del nombre del modelo Agente, y lo convierte en minúsculas para que corresponda con la colección de mongodb.
+Cuando se crea un modelo, el nombre que va entre comillas simples 'Agente' es el nombre que corresponderà al nombre de la coleccion que se usa en la consola en este caso `agentes`, si està en minusculas y en plural.
 
-Si no queremos que no haga la pluralización, tenemos que hacer esto en el eschema:
+##### Pluralizaciòn en mongoose
+Mongoose hace la operacion de pluralización, lo que pongamos en el nombre del modelo lo va a prularizar, en este caso 'Agente', y lo convierte en minúsculas y en plural 'agentes' para que corresponda con la colección de mongodb.
+
+Si no queremos que no haga la pluralización, hay una forma de decirle en el eschema el nombre de la colecciòn que quieres que use. Le pasamos un dato adicional con el nombre de la colección:
 //, {collection: 'agentes'} // para saltarse la pluralización
+```js
+var dataSchema = new Schema({..}, {collection: 'data'})
+```
 En este caso 'Agente', corresponderá a la colección 'agentes' en mongodb.
 
-4. Hacemos el primer método de nuestra API
+##### Agregar modelo para que se ejecute en app.js
+Ya tengo mi modelo. Ahora en app.js debajo de la conexiòn de la base de datos agrego los modelos(hago que se ejecute).
+
+#### 4. Hacemos el primer método de nuestra API
+
+El primer método del APi es que haga una consulta a los Agentes, y nos los devuelva.
 
 - Dentro de la carpeta `routes` creamos una carpeta llamada `apiv1`
-  > Ojo: Tenemos que versionar desde el principio ya que cuando ya usen y este en producción no puedo hacer cambios, sino hacer otra version y cuando los usuarios quieras la usen o se pasen a ella. Este versionamiento de hace con `git`. Se puede hacer o tener varias ramas con varias versiones.
+  > Ojo: Cuando creamos un API tenemos que versionar desde el principio ya que cuando estoy haciendo la primera version es facil hacer cambios por que no hay nadie utiliandolo, pero en cuando publique esto en producción y haya 3000 ususarios conectado a ese API ps en la nueva evolucion ya no puedo cambiar cosas tan facilmente. Lo que se debe hacer es crear otra version y mantener la version anterior para que los usuarios cambien a la siguiente version cuando ellos quieran o cuando les parezca bien. Con lo cual tenemos que versionar desde el principio.
 
-- Dentro de la carpeta apiv1, creamos el fichero `agentes.js` en minuscula y en plural, que va a ser mi fichero de rutas, en las que voy a poner los middlewares que respondan peticiones para trabajar con agentes.
+  - Hay 2 formas de versionar entre otras principalmente: 
+    - La forma correcta es el versionamiento que se hace con `git`. Se puede hacer o tener varias ramas con varias versiones.
+    - Forma manual con una carpeta por version, forma incorrecta.
 
-- Dentro del fichero `agentes.js` creamos el middleware que respondera a la peticion de agentes, luego en `app.js` usamos la ruta del primer endpoint de nuestra api 
+- Dentro de la carpeta apiv1, creamos el fichero `agentes.js` en minuscula y en plural, que va a ser mi fichero de rutas, en las que voy a poner los middlewares que respondan a peticiones para trabajar con agentes. Este fichero serà nuestro controlador.
+
+- Dentro del fichero `agentes.js` creamos el middleware que respondera a la peticion de agentes, luego en `app.js` usamos la ruta del primer endpoint de nuestra api, y lo ponemos en la seccion `rutas de mi aplicacion web`
+Cundo usaba `app.locals` es porque estaba pasando inforamcion a las vistas, pero con el api lo que voy a devolver son jsons entonces creao una seccion de `rutas para mi API`
 
 ```js
 app.use('/apiv1/agentes', require('./routes/apiv1/agentes'));
 ```
+No es necesario que coincida la ruta del middleware con la ruta del filesystem donde esta ese modulo, no es obligatorio pero es recomendable, ya que asì sera facil encontrarlas en el fylesystem donde estan esos modulos y lo hace bastante mas manejable.
+
+En este middleware o controlador, vamos a hacer que nos devuelva una lista de agentes.
+
+El usar o devolver un {success: true} es una forma de diseño pero no es una buena practica simplemente es opciona, y ayuda a que sea mas grafico. 
+
+- Cargamos el modelo de agentes:
+```js
+// podemos hacerlo asi 
+const Agente = require('../../models/Agente');
+// o cargar mongoose
+const Agente = mongoose.models.Agente;
+```
 
 Si es que me llega a dar este error: 
 `TypeError: Router.use() requires a middleware function but got a Object` es por se me a olvidado exportar el router.
+
+Al no exportar el router, en el app.js usa un objeto vacio. Dice que Router.use() requiere un middleware o un router que es un conjunto de middlewares.
+
+Dentro del middleware hacemos esto:
+```js
+router.get('/', (req, res, next) => {
+    Agente.find().exec()
+    res.json({success: true});
+});
+```
+
+El .find() tiene un .then() que automaticamente hace que funcione como una promesa. A esto se le llama `thenable` es un objeto que simula ser una promesa pero no lo es. PAra conveniencia que en algunos caso usarlos como una promesa.
+A pesar de no ser una promesa, es una operacion asincrona.
+
+El .find().exec() es un callback, pero si devuelve una promesa.
+
+##### Ejemplo version con callbacks.
+```js
+router.get('/', (req, res, next) => {
+    Agente.find().exec((err, agentes) => {
+        res.json({success: true, agentes: agentes});
+    });
+});
+```
+
+cuando termine de obtener de la base de datos, ahi respondo succes:true, esto me da una lista de agentes. 
+Pero le falta una cosa importante que se debe controlar, que son los erros, activando next(algo), para escalar el error al gestor de errores.
+
+```js
+router.get('/', (req, res, next) => {
+    Agente.find().exec((err, agentes) => {
+        if (err) {
+            next(err);
+            return;
+        }
+        res.json({success: true, agentes: agentes});
+    });
+});
+```
+
+##### Ejemplo version con promesas y con async/await
+```js
+router.get('/', (req, res, next) => {
+    const agentes = await Agente.find().exec()
+    res.json({success: true, agentes: agentes});
+});
+```
+Aqui pudiera usar el .find().exec() a secas o usar .find().exec().then(), porque ya sabemos que es `thenable` ya que tiene el metodo .then() que lo hace funcionar y devuelve una promesa, da un poco igual.
+
+Esto devuelve una promesa que se resuelve a un document[] array.
+Entonces donde obetengo la lista de agentes, ps cuando la promesa recibida en el await se resuelva.
+
+- Como controlo el error en el await o promesa rechazada, ya no se ejcuta la siguiente linea, y hacia que la funciona que la contenia hace que devuelva tambien una promesa rechazada. Nos devolveria un reject() no controlado.
+
+Como hacemos apra controlar ese posible error aqui:
+
+```js
+router.get('/', (req, res, next) => {
+    try {
+        const agentes = await Agente.find().exec()
+        res.json({success: true, agentes: agentes});
+    } catch (err) {
+        next(err);
+    }
+});
+```
+Hay otra opción, es haciendo una funcion que reciba una promesa, y si esa promesa esta rechazada llame a next(err) y ni no esta rechazada no haga nada. Y envolver el middleware con esa funcion
+
+## Extensiones para VSC recomendadas
+- PathIntellisense
+- npm Intellisense
