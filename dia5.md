@@ -757,6 +757,7 @@ $ npm install mongoose --save
 Cuando quiero hacer una conexion a mongodb, con mongoose no es necesario instalar el driver. Y MONGOOSE hace la conexxion y todos.
 
 ### Conectar a la base de datos
+Que nuestra app Nodeapi se conecte a MongoDB usando Mongoose que tenemos creada ya con la coleccion de agentes.
 
 ```js
     var mongoose = require('mongoose');
@@ -781,36 +782,110 @@ Vamos a hacer que nuestra aplicación node api se conecte usando mongoose con la
 
 Puedo verlo en `nodeapi`
 
-1. Voy a crear un módulo que va a hacer la conexión. Ya que es un patron bastante común. Y ese módulo ese va a ser encargado de hacer la conexión de base de datos. Y así hago la sintaxis de conexion una sola vez.
+#### 1. Crear modulo para conexion a la base de datos
+Voy a crear un módulo que va a hacer la conexión. Ya que es un patron bastante común. Y ese módulo ese va a ser encargado de hacer la conexión de base de datos. Y así hago la sintaxis de conexion una sola vez.
    - Creo una carpeta `lib` porque vamos a meter ahí varios módulos de diversos tipos.
-   - Dentro de `lib` creamos un nuevo fichero llamado `connectMongoose.js`
+   - Dentro de `lib` creamos un nuevo fichero llamado `connectMongoose.js` el nombre da igual.
    - Luego instalamos mongoose:
         ```shell
         $ npm i mongoose
         ```
+        Y vemos que lo ha instalado en el package.json
     - Lo vamos a cargar cuando carga la applicacion en `app.js`
 
-2. Creamos un esquema
-   - Creamos una carpeta `models`
-   - Dentro de models, creamos un fichero `Agente.js`
+    - Es bastante habitual que en el conn.on(), si da un error poner un `process.exit(1)`, aqui podemos hacer un catalogo de còdigos de error. Ejm:
+        - 1, error de conexion a la base de datos. Es impresidible que haya conexion, por tanto si no me conecto paro la aplicaciòn en este caso. En otros casos se podria hacer una lógica de reintentos.
+        - 2, no se que
 
+    - Aparte otro evento conn.once('open', ()), la primera vez que ocurra el evento open me dira el mensaje 'Coenctado a mongoDB en, mongoose.connection.name'
+
+Esta es la logica que usamos en el eventEmitter.
+    - Conexion: decimos donde nos queremos conectar, hay varias opciones, la que vamos ausar en principio serìa la URI, y opcionalmente un objeto de opciones. LAS cadenas de conexion normalmente es una URL, es un patron tipico, que tiene un protocolo, el dominio, en este caso el protocolo es mongodb. Si feura un puerto especial pondria esto:
+
+```js
+// conectar
+mongoose.connect('mongodb://localhost:21735/cursonode')
+```
+Protocolo://ip:puerto/baseDatosAConectar
+
+- Exportar la conexiòn por si en algun otro sitio lo queremos utilizar.
+```js
+module.exports = conn;
+```
+#### configurar para que la base de datos arrance al inicio de la aplicacion
+
+- Tenemos el modulo de conexion a la base, y lo vamos a cargar cuando arranque la aplicaciòn. Esto es en el app.js, podria ser antes de crear la aplicacion de express o podria ser despues.
+ - Segun una pregunta que hicieron si estaba bien ponerlo en el /bin/www, està bien pero el instructor dijo que suele dejarlo al margen de las dependencias de la applicacion. Digamos que www no sepa que dependencias tienen app.js y sea el propio app.js que resuelva sus propias dependencias, pero es una forma de hacerlo. Al arrancar la aplicacion en app.js de eta configurando la applicacion. Arrancar la app va a ocurrir una vez cada 3 meses, y si la app es estable talvez arranque una vez cada 3 años.
+
+ - Despues veremos como hacer arranques o reinicios sin tener perdidas de servicio.
+ > No gastar mucho tiempo en los middlewares. 
+
+En este caso los pondria despues de los middlewares. PAra hacer la conexcion con la base de datos tengo que hacer un require del connect en la conexion de mongoose. Como vemos esto automaticamente se va a conectar y me va a devolver la conexion.
+Aqui en app.js como no voy a necesitar la conexxion para darsela a alguien por ahora no la voy a guardar en ninguna variable.
+
+```js
+/**
+ * Conexion con la base de datos
+ */
+require('./lib/connectMoongose');
+```
+Entonces volvemos a ejecutar `npm run dev`, si vemos que nos aparece un warning no preocuparse, esto es porque han cambiado la forma de conectar, y para eso han deprecado algunas cosas, en caso de querer quitar el warning lo podemos hacer de 2 formas:
+- Agregando la opcion que da el warning de agregar `{ useNewUrkParser: true } a MongoClient.connect` en el modulo que hacemos la conexion a la base, y asì nos libramos de ese warning.
+```js
+mongoose.connect('mongodb://localhost/nodepop', { useNewUrlParser: true });
+```
+- Si nos damos cuenta si ponemos en la conexion una base de datos que no existe, la conexion no falla. En caso de buscar colecciones en una base de datos que no existe tampoco falla sino que devuelve arrays vacios.
+
+#### 2. Creamos un Esquema
+Luego de que nuestra aplicacion ya se conecta a la base de datos, ahora creamos un modelo. Usamos mongoose tambien, usamos el costructor de esquemas `mongoose.Schema`, donde le paso un objeto con la definicion del esquema. y luego con ese esquema creo el modelo.
+
+- Creando un esquema
+   - Creamos una carpeta `models`
+   - Dentro de models, creamos un fichero `Agente.js` con la `A` mayuscula, no es imprecindible para que funcione pero es una convenciòn, los modelos con la primera letra en mayuscula.
+   - Ademas tambien nos servirá para despues en las rutas, creemos un archivo de rutas/routes ahi si se lo debe crear con la `a` minuscula y lo pondremos en plural para que se diferencie.
 
     ```js
-        var mongoose = require('mongoose');
+        const mongoose = require('mongoose');
         var agenteSchema = mongoose.Schema({
-
+            name: String,
+            age: Number,
+            email: {
+                type: String,
+                index: true,
+                unique: true,
+                default: ''
+            }
         });
     ```
+    - No debemos preocuparnos muchos de si la conexion se ha establecido o nó, porque mongoose se encarga de eso. mira si el mongoose.connection  de la conexion interna esta establecida o no, y sino espera hasta que esta se conecte.
+
+    - Al crear un esquema es definir las restricciones que queremos que se cumplan al intentar guardar. En caso que la base tenga otra estructura, no va a colisionar.
+
     Hay una página donde me puedo guiar de las reglas para crear el modelos. Mongoose eschema types:
     `https://mongoosejs.com/docs/schematypes.html`
 
-3. Creamos el modelo de Agente.
+#### 3. Creamos el modelo de Agente.
+Con el esquema que creamos vamos a crear un modelo. Creamos el modelo de AGente:
+```js
+const Agente = mongoose.model('Agente', agenteSchema);
+```
+Esto ya internamente hace que mongoose registre ese esquema, y poderlo usar desde donde yo quiera.
+La exportacion es igual opcional, ya que puedo recuperarlo de mongoose.model.
 
-Mongoose hace la pluralización, del nombre del modelo Agente, y lo convierte en minúsculas para que corresponda con la colección de mongodb.
+Cuando se crea un modelo, el nombre que va entre comillas simples 'Agente' es el nombre que corresponderà al nombre de la coleccion que se usa en la consola en este caso `agentes`, si està en minusculas y en plural.
 
-Si no queremos que no haga la pluralización, tenemos que hacer esto en el eschema:
+##### Pluralizaciòn en mongoose
+Mongoose hace la operacion de pluralización, lo que pongamos en el nombre del modelo lo va a prularizar, en este caso 'Agente', y lo convierte en minúsculas y en plural 'agentes' para que corresponda con la colección de mongodb.
+
+Si no queremos que no haga la pluralización, hay una forma de decirle en el eschema el nombre de la colecciòn que quieres que use. Le pasamos un dato adicional con el nombre de la colección:
 //, {collection: 'agentes'} // para saltarse la pluralización
+```js
+var dataSchema = new Schema({..}, {collection: 'data'})
+```
 En este caso 'Agente', corresponderá a la colección 'agentes' en mongodb.
+
+##### Agregar modelo para que se ejecute en app.js
+Ya tengo mi modelo. Ahora en app.js debajo de la conexiòn de la base de datos agrego los modelos(hago que se ejecute).
 
 4. Hacemos el primer método de nuestra API
 
