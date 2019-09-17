@@ -1,4 +1,13 @@
 # Día 6 
+Cuando quiero crear o retornar una promesa, debo usar:
+```js
+return new Promise ((resolve, reject) => { 
+  resolve('algo');
+});
+```
+
+- 'Await' consume la promesa, que resulve la expresiòn que tiene a la derecha. exec() devuelve una promesa.
+- Puedo usar el return new Promise o poner async a la funciòn, La funcion que tiene async tiene un return de algo, ese algo se envuelve en la promesa.
 
 Un buen lugar para tener los middlewares de errores es el app.js
 
