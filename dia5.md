@@ -623,74 +623,95 @@ Recomendado ver mongodb university. es formación den mongodb y muchos de los cu
 
 ### Busqueda de texto completo - querys (busquedas tipos fulltext)
 
-**Full text Search**
+#### Full text Search
+LAs busquedas de tipo full text, es como buscas en un buscador, pones unos temrinos de busqueda y el motor busca en las propiedades que tu has definido, pero no busca por igual sino busca que los documentos tengan uno de esos terminos.
 
-Crear índice conformado por los campos de texto involucrado, en este caso title, lead, body.
-
-```shell
+1.- Se debe crear un índice de tipo fulltext que se crea de esta forma.
+```sh
     > db.agentes.createIndex({title: 'text', lead: 'text', body: 'text'});
 ```
+Es como crear un indice con `createIndex` pero  cuando creamos el indice con el campo que le das pero en lugar de poner un '1' se le pone el tipo `text` y así irá conformado por los campos de texto involucrados, en este caso title, lead, body. Es decir esta creando un indice por la propiedad title, lead y body de los documentos. Es un indice en conjunto con esas 3 propiedades, va a buscar en las 3 a lavez en tipo text
 
 En este caso el indice es de tipo texto, y al crear el indice a la propiedad a indexar se le dá 'text'
 
-Para hacer la busqueda usar:
+#### Para hacer la busqueda usar:
 
-```shell
->db.agentes.find({$text : {$search: 'smith jones'} });
+```sh
+> db.agentes.find({$text : {$search: 'smith jones'}})
+> db.agentes.find({$text : {$search: 'smith jones'}})
 ```
-Lo que hace esta query es: busca smith y jones, buscara todos aquellos documentos de la colección de agentes, que tengan o bien en su propiedad title, lead o body, o la palabra 'smith' o 'jones'.
+Lo que hace esta query es: busca smith y jones.
+Buscara todos aquellos documentos de la colección de agentes, que tengan o bien en su propiedad title, lead o body, o la palabra 'smith' o la palabra 'jones'. Cualquiera de los terminos que pongo en la busqueda. Es mas o menos como se hac en google que pones una varias palabras y busca todos aquellos documentos que tengan una de esas palabras.
 
-**Full text Search - Frase exacta** 
-```shell
-db.agentes.find({$text: {$search: 'smith jones "el elegido"'}})
+#### Frase Exacta
+Igual que en los motores de busqueda si pongo una o mas palabras entre comillas como si fuera un solo toquen o todo junto, por ejemplo
+
+```sh
+> db.agentes.find({$text: {$search: 'smith jones "el elegido"'}})
 ```
+Usamos las comillas para indicar que queremos buscar exactamente una frase dentro de esos terminos.
 
-Usamos las comillas para indicar que queremos buscar exactamente una frase.
+#### Excluir un término
+Así mismo podemos excluir un termino en una busqueda full text, ejmplo:
 
-**Full text Search - Excluir un termino** 
-
-```shell
-db.agentes.find({$text:{$search:'smith jones -mister'});
+```sh
+> db.agentes.find({ $text: {$search: 'smith jones -mister'} })
 ```
+En este ejemplo buscara todos los docuemntos que tengan la palabra smith, jones pero menos la palabra 'mister'.
 
-Con esto en caso de querer implementar la funcionalidad de busqueda de texto, ya podria usar una busqueda muy potente.
-Más info:
-https://docs.mongodb.com/v3.2/text-search/
-https://docs.mongodb.com/v3.2/tutorial/specify-language-for-text-index/
+Con esto en caso de querer implementar la funcionalidad de busqueda de texto, ya podria usar una busqueda muy potente y en 2 patadas.
 
-### Bases de Datos - MongoDB Geo (Busquedas feográficas)
+#### links busqueda full text en mongodb
+Más info para ver las demas opciones que tiene.
+[text-search](https://docs.mongodb.com/v3.2/text-search/)
+[specify language for text index](https://docs.mongodb.com/v3.2/tutorial/specify-language-for-text-index/)
+
+
+### MongoDB Geo (Busquedas geográficas)
 
 Otro tipo de busqueda que se puede hacer son las busquedas geográficas.
 
-https://docs.mongodb.com/manual/applications/geospatial-indexes/
+[geospatial-indexes](https://docs.mongodb.com/manual/applications/geospatial-indexes/)
 
 Las busquedas geograficas son busquedas especiales que usan algoritmos geoespaciales.
-
-Una busqueda típica es las tiendas mas cercanas:
+Por ejemplo: Una típica búsqueda geográfica es buscar las tiendas mas cercanas, osea dime tu ubicacion y te pinto en el mapa las tiendas mas cercanas.
 
 #### Como creo los indices
-- Creamos un indice de tipo '2dsphere', hay otros tipos de busqueda
+- Creamos un indice de tipo `2dsphere`, hay otros tipos de busqueda
 
 ```shell
->db.productos.createIndex({location: '2dsphere'})
+> db.productos.createIndex({location: '2dsphere'})
 ```
+Creamos un indice tipo `2dsphere` sobre la propiedad `location`
+
+Los indices geoespaciales son de tipo `2dsphere`, a parte de este hay otros tipos de indices de busqueda geoespacial.
+
+Aqui busca todos aquellos productos que en su propiedad location tengan las coordenadas cercanas a las que yo le doy.
 
 #### Como insertamos los documentos
 
-- Asi añadimos los documentos en esa coleccion:
+Asi es como añadiriamos los documentos en esta coleccion productos:
 
-```shell
-db.productos.insert({
-    "location": {
-    "coordinates":[ -73.856077, 40.848447 ],
-    "type": "Point"
-    }
-})
+```sh
+> db.productos.insert({
+     "location": {
+     "coordinates":[ -73.856077, 40.848447 ],
+     "type": "Point"
+     }
+ })
 ```
 - El orden de coordinates es longitud, latitud.
-- El type es de tipo punto, pero puedo hacer diferentes como polígonos, lineas, areas, zonas geográficas.
+- El type es de tipo punto (componentes geospeciales que quiere usar esta busqueda son puntos). 
+- Con esto tengo una pista de otro tipo de busquedas que puedo hacer por ejemplo hay polígonos, lineas, areas, zonas geográficas.
+
+Ejemplos de busqueda:
+- Puedo decir que busque por ejemplo hay un documento que se llama Arcanzas y tiene una propiedad Area que tiene las coordenadas del area de arcanzas y eso seria un polígono y esntonces tengo que hacer busqueda de tipo poligono. Digo te doy este punto y dime todos los poligonos que rodean a este punto o que lo tocan.
+
+- Oye te di una linea recta osea 2 pares de coordenadas y dime todos los poligonos que cruza esta linea recta. Si tuviera una lista de localidades en esa coleccion y le doy una linea recta ps me dara todas las localidades con las que pasa esa linea recta. Nos evita hacer ese trabajo. Esto lo hace automaticamente y rápido.
 
 #### Como hacemos la busqueda.
+¿Como se hace la busqueda de puntos de cercania?
+Por ejemplo: Recuperamos la longitud y latitud de express, desde el req.params los parseamos a un objeto.
 
 ```js
 const meters = parseFloat(req.params.meters); // 105 * 1000
@@ -699,16 +720,17 @@ const latitude = parsefloat(req.params.lat); // 40
 
 db.productos.find({
     location{
-        $nearSphere: {
-        $geometry: {
+        $nearSphere: { //cerca
+        $geometry: { //usando geometria de punto
                 type: 'Point',
-                coordinates: [longitude, latitude]
+                coordinates: [longitude, latitude] // de estas coordenadas
             },
-            $maxDistance: meters
+            $maxDistance: meters // y con una distancia maxima de  x metros
         }
     }
 })
 ```
+Va a usar el indice geografico, para hacer la busqueda muy rapido, yme la da ordenada por cercania al punto central, y con esa lista yo los puedo pintar en un mapa.
 
 ## Transacciones en MongoDB
 
