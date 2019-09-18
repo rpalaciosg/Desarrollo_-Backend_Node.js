@@ -33,13 +33,18 @@ const data = JSON.parse(fs.readFileSync(file, 'utf-8'));
 async function cargarAgentes() { 
     try {
        await Agente.insertMany(data);
-       console.log('Datos cargados.!');
+       console.log('Datos cargados.!', data);
        process.exit();
     } catch (err) {
         console.log('Error al cargar datos', e);
         process.exit();
     }
 }
+
+// Idea de crear los indice en la base, ver si es correcto crearlos aqui o en el esquema
+async function crearIndices() { 
+    // Agente.index({})
+} 
 
 console.log('\n * Inicio * \n');
 
@@ -53,8 +58,10 @@ conn.once('open', async () => {
     console.log('Conectado a MongoDB en ', mongoose.connection.name);
     console.log('Limpiar Base de datos..!');
     const resDel = await Agente.deleteMany();
-    console.log('Base de datos borrada!');
+    console.log('Base de datos borrada!', resDel);
 
     console.log('Cargando agentes.json!');
-    cargarAgentes();
+    await cargarAgentes();
+    console.log('Terminado..!');
+    
 });
