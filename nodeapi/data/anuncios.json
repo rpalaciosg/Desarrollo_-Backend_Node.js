@@ -1,0 +1,60 @@
+{
+    "anuncios": [
+    {
+        "nombre": "Bicicleta",
+        "venta": true,
+        "precio": 230.15,
+        "foto": "bici.jpg",
+        "tags": [ "lifestyle", "motor"]
+    },
+    {
+        "nombre": "iPhone 3GS",
+        "venta": false,
+        "precio": 50.00,
+        "foto": "iphone.png",
+        "tags": [ "lifestyle", "mobile"]
+    },
+    {
+        "nombre": "Teclado",
+        "venta" : true,
+        "precio": 65.00,
+        "foto": "teclado.png",
+        "tags": ["work", "lifestyle"]
+    },
+    {
+        "nombre": "Mouse",
+        "venta": false,
+        "precio": 29.00,
+        "foto": "mouse.png",
+        "tags": ["work", "lifestyle"]
+    },
+    {
+        "nombre": "Audifonos Sony",
+        "venta": true,
+        "precio": 79.00,
+        "foto": "audifonos.png",
+        "tags": ["lifestyle"]
+    },
+    {
+        "nombre": "Cubo rubik",
+        "venta": true,
+        "precio": 15.00,
+        "foto": "cubo_rubik.jpg",
+        "tags": ["lifestyle"]
+    },
+    {
+        "nombre": "Smartwatch",
+        "venta": true,
+        "precio": 40.00,
+        "foto": "smartwatch.png",
+        "tags": ["mobile", "lifestyle"]
+    },
+    {
+        "nombre": "Mochila",
+        "venta": false,
+        "precio": 40.00,
+        "foto": "mochila.png",
+        "tags": ["work", "lifestyle"]
+    }
+    ]
+}
