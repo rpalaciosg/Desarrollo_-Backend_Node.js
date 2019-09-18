@@ -50,7 +50,11 @@
 - Al crear o desarrollar un API se debe versionar desde el principio usando un Versionador como GIT, esto se lo podria hacer creando ramas para las diferentes versiones del API.
 
 - Documentar mientras se va desarrollando es una practica muy sana. Segun vaya metiendo o creando cosas, meterlas en el readme
+
+- Es bueno intentar crear modulos, o controladores para reusar el código.
   
+- No rayarse e intentar desacoplar todo el código para no reusar, si es que el reusar me causa mucha complejidad debo repetir código sin problema. Si es que debo duplicar código para evitar la complejidad ps lo puedo duplicar. Es una balanza con tal de dejar el código lo mas mantenible posible.
+
 ## Malas practicas
 
 - Seria una mala practica si en un middleware que atiende a una peticion GET, cambia el estado. Se refierea cambiar algo, x ejm. Crear un registro en la base de datos.
