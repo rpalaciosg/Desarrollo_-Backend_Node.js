@@ -9,8 +9,12 @@ return new Promise ((resolve, reject) => {
 - 'Await' consume la promesa, que resulve la expresiòn que tiene a la derecha. exec() devuelve una promesa.
 - Puedo usar el return new Promise o poner async a la funciòn, La funcion que tiene async tiene un return de algo, ese algo se envuelve en la promesa.
 
+## Resusar código con contraoladores.
+- Cuando tengo que reusar código, un buen sitio para tener ese código es en un módulo, o bien en un modelo. Lo importante es tenerlo en un sitio en común y tenerlo para las cosas que se necesitan.
+
 Un buen lugar para tener los middlewares de errores es el app.js
 
+## Error Handler - Validador para saber si los errores son generados por la vista o por el API
 **Validador para saber si son errores del API o de una vista**
 
 - crea unafunción `isAPI(req)` si devuelve true, es que se hizo en el APi.
