@@ -63,5 +63,6 @@ conn.once('open', async () => {
     console.log('Cargando agentes.json!');
     await cargarAgentes();
     console.log('Terminado..!');
-    
+    conn.close();
+    process.exit();
 });
