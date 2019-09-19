@@ -7,33 +7,17 @@ const Agente = require('../models/Agente');
 
 const file = '../data/anuncios.json';
 
-// console.log(fs.readFileSync(file, 'utf8'));
-// const anuncios = fs.readFileSync(file, 'utf8');
-// console.log(anuncios);
-
-
-// async function readInsert(filename) {
-//     let filehandle = null;
-//     try {
-//         filehandle = await fsPromises.open(filename);
-//         const data = JSON.parse(await fsPromises.readFile(filename, 'utf-8'));
-//         console.log(data);    
-//     } catch(err) {
-//         console.log('Error', err);   
-//         return; 
-//     } finally {
-//         if (filehandle) {
-//             await filehandle.close();
-//             console.log('Cierro archivo');
-//         }
-//     }
-// }
 
 const data = JSON.parse(fs.readFileSync(file, 'utf-8'));
-async function cargarAgentes() { 
+
+async function cargarAgentes() {     
+    // data.forEach( (a,i) => {
+    //     a.anuncios[i];
+    //     await Agente.insertMany()
+    // });
     try {
-       await Agente.insertMany(data);
-       console.log('Datos cargados.!', data);
+       await Agente.insertMany(data.anuncios);
+       console.log('Datos cargados.!', data.anuncios);
        process.exit();
     } catch (err) {
         console.log('Error al cargar datos', e);
@@ -58,7 +42,7 @@ conn.once('open', async () => {
     console.log('Conectado a MongoDB en ', mongoose.connection.name);
     console.log('Limpiar Base de datos..!');
     const resDel = await Agente.deleteMany();
-    console.log('Base de datos borrada!', resDel);
+    console.log('Base de datos borrada!', resDel.ok, resDel.deletedCount);
 
     console.log('Cargando agentes.json!');
     await cargarAgentes();
