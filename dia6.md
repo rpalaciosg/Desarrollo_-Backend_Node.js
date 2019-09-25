@@ -127,10 +127,59 @@ agenteSchema.methods.findSimilarAges = function (cb) {
 ```
 Se crea de forma muy similar, pero en lugar de status, uso `methods`, por ejemplo buscar agentes que sean de la misma edad, o un agente que se serialice a json, o cualquier cosa que nos pueda hacer falta.
 
+### Mover mètodo buscar agentes en route al modelo
 
-Para probar esto primero vamos a cambiar el query limits del método del middleware de agentes al modelo Agentes, como un método de clase o estático.
+Para probar esto primero vamos a cambiar el query limits del método del middleware del route agentes al modelo Agentes, como un método de clase o estático.
 
-Hay que recordar que al hacer o agregar métodos de instancia en el eschema, no debo usar `arrowFunctions` o `=>` porque después no va a funcionar, ya que mongoose pone un `this` implícito dentro del método.
+Luego en el esquema, antes de crear el modelo hacemos esto:
+
+```js
+agenteSchema.statics.list = function(filter, limit) {
+
+}
+```
+Hay que recordar que al hacer o agregar métodos de instancia en el eschema, no debo usar `arrowFunctions` o `=>` porque después no va a funcionar, ya que mongoose injecta un `this` sintètico dentro de ese mètodo que va a hacer implícito dentro del método. Es decir asigna el this al agente, porque sino lo hace el this seria de `.methods`, hay que mirar a la izquierda del punto para saber a quien pertenece el this. Por tanto si usa un arrow function => lo que hace es asignar el this sintactico de afuera del mètodo, y entonces impediriamos a mongoose hacer su labor y no seria lo que nosotros esperamos.
+
+En los métodos estáticos no pasa nada, pero mejor no usar arrowFunctions() en los modelos.
+
+```js
+agenteSchema.statics.list = function(filter, skip, limit) {
+  const query = Agente.find(filter);
+  query.limit(limit);
+  return query.exec();
+}
+```
+#### Paginacion en mongoose con skit y limit
+- El find() me devuelve un document Query, o una consulta sin ejecutar, esta se ejcutar recien cuando le ponga el .exec() o .then().
+- Como el exec() devuelve una promesa, entonces el list devuelve una promesa, que es la promesa del exec()
+- El orden en que se meta skip y limit dá igual o lo mismo.
+
+#### Seleccionar campos en mongoose con select()
+- Algo muy habitual es elegir que campos quiero ver en la respuesta de la consulta. Un filtro de campos. fields=name, aunque le pasemos un solo campo siempre debemos darle el_id, y tambien le daremos la opcion de que lo quite. En la url seria asì
+  `http://localhost:3000/apiv1/anuncios?skip=0&limit=2&fields=nombre` -> si quiero solo un campo
+  `http://localhost:3000/apiv1/anuncios?skip=0&limit=2&fields=nombre precio` -> si quiero mas campos los separo con un espacio, cuando se da enter pone %20 en lugar del espacio, es lo que hace el navegador  habitualmente.
+  En caso de que no quiera que me apareza el id, mongoose tiene eso contemplado, entonces ponemos espacio -_id en la url.
+  `http://localhost:3000/apiv1/anuncios?start=0&limit=2&fields=nombre precio -_id`, tambien podemos poner devuelvenos todo -id y -nombre
+  `http://localhost:3000/apiv1/anuncios?start=0&limit=2&fields=-id -nombre`
+
+#### Ordenar por campos en mongoose con sort()
+- Otra cosa muy habitual que puede necesita la persona que use nuestro APi, es que nos pida que nos devuelva ordenado por algun campo por ejemplo la edad.
+  `localhost:3000/apiv1/agentes?limit=2&sort=age` -> me va a ordenar por edades
+
+- Como vemos el patron que estamos siguiendo, nuestro midleware, la mision del controlador es actuar como traductor, porque el que piensa es el modelo. Y el controlador es un traductor. Yo no deberia a mi modelo o controlador pasarle actividades http porque eso es acoplamiento. ASi para que el modelo o controlador no dependa de una peticion. Eso seria limitar o acoplar mi modelo a una sola cosa, son puros. Estamos desenvolviendo los datos, dandoselos a un controlador limpios. Puedo ordenar por varios campos separados por un espacio: si pongo el signo menos (-) antes de un campo quiere decir que es ordenado descendentemente.
+  'http://localhost:3000/apiv1/anuncios?start=0&limit=2&fields=-id%20-nombre&sort=precio -nombre'
+
+#### Filtros en mongoose
+- Creo un objeto vacio llamado filter, al que le voy pasando los campos que obtenga de la url si es que no están vacios.
+
+
+- Estos serian los filtros bàsicos e impresindibles a plantearse en un API.
+- Cuando no se pasa alguno de estos parametros, son undefined, Es bueno pensar en controlarlo, pero mongoose esta pensado para eso y ahorrarnos muchas cosas.
+
+- Tambien podriamos hacer una busqueda fullText poniendo en la url una variable `search=pez` y ese parametro search lo usamos en una busqueda fulltext que buscara tanto en el nombre del agente, como en la direccion, la ciudad, como en otros campos y asi haría una busqueda en todos los campos de ese agente. Creando ese indice y haciendo una busqueda de tipo texto. Este search lo podemos usar tanto:
+  - Con query strings `localhost:3000/apiv1/agentes?search=pez` o
+  - Con path params  `localhost:3000/apiv1/agentes/search=pez`
+Esto ya es cuestion del que diseña el API.
 
 - Hemos hecho los filtros de un API GET/
 - Método de creación de agentes. POST/
