@@ -90,6 +90,17 @@ agente.save(function(err, agenteCreado){
 ```
 Esta es la versiòn con callbacks, pero .save tambien devuelve una promesa. Pueso usar con async/await o then().
 
+## Eliminar reegistros con mongoose
+Eliminar registros:
+
+```js
+Agente.deleteMany({ [filters] }, function(err){
+  if (err) return cb(err);
+  cb(null);
+});
+```
+Esto es un mètodo de mongoose, pero lo podriamos hacer sin mongoose pero escribiriamos mas còdigo.
+
 ## Mongoose: Métodos de instancia o estáticos a un modelo.
 
 Para probar esto primero vamos a cambiar el query limits del método del middleware de agentes al modelo Agentes, como un método de clase o estático.
