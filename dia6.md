@@ -103,6 +103,22 @@ Esto es un mètodo de mongoose, pero lo podriamos hacer sin mongoose pero escrib
 
 ## Mongoose: Métodos de instancia o estáticos a un modelo.
 
+- El método de instancia es el usado en Crear un registro, porque creamos un objeto o instancia de agente;
+- El mètodo de clase o método estático, porque son métodos que se le crearn a un modelo, esto se crean en el modelo. por ejem
+  
+### Crear un método estático a un modelo:  
+```js
+agenteSchema.statics.deleteAll = function(cb) {
+  Agente.remove({}, function(err) {
+    if (err) return cb(err);
+    cb(null);
+  });
+};
+```
+Podemos crearnos los que queramos o necesitemos. 
+
+
+
 Para probar esto primero vamos a cambiar el query limits del método del middleware de agentes al modelo Agentes, como un método de clase o estático.
 
 Hay que recordar que al hacer o agregar métodos de instancia en el eschema, no debo usar `arrowFunctions` o `=>` porque después no va a funcionar, ya que mongoose pone un `this` implícito dentro del método.
