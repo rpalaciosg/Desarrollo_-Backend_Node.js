@@ -55,6 +55,9 @@
   
 - No rayarse e intentar desacoplar todo el código para no reusar, si es que el reusar me causa mucha complejidad debo repetir código sin problema. Si es que debo duplicar código para evitar la complejidad ps lo puedo duplicar. Es una balanza con tal de dejar el código lo mas mantenible posible.
 
+- En un API debemos devolver nuestros errores tambien en un json.
+- Es buena practica aunque no habitual poner un queryparam en el url que se llame  'resultwithcount=1' esto para devolver un count(), con el número de registros a devolver.
+
 ## Malas practicas
 
 - Seria una mala practica si en un middleware que atiende a una peticion GET, cambia el estado. Se refierea cambiar algo, x ejm. Crear un registro en la base de datos.
