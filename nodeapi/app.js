@@ -70,7 +70,7 @@ app.use(function(err, req, res, next) {
       {message: 'Not valid', errors: err.mapped()} :
       `Not Valid - ${errInfo.param} ${errInfo.msg}`;
   }
-
+// si en la variable err viene una propiedad status ps la uso, y si no entonces es error 500 (error del servidor)
   res.status(err.status || 500);
 
   if (isAPI(req)) {
