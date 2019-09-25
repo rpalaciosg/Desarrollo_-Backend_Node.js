@@ -117,6 +117,15 @@ agenteSchema.statics.deleteAll = function(cb) {
 ```
 Podemos crearnos los que queramos o necesitemos. 
 
+### Crear un mètodo de instancia a un modelo:
+Tambien podemos crear métodos de instancia a un modelo, 
+
+```js
+agenteSchema.methods.findSimilarAges = function (cb) {
+  return this.model('Agente').find({ age: this.age }, cb);
+}
+```
+Se crea de forma muy similar, pero en lugar de status, uso `methods`, por ejemplo buscar agentes que sean de la misma edad, o un agente que se serialice a json, o cualquier cosa que nos pueda hacer falta.
 
 
 Para probar esto primero vamos a cambiar el query limits del método del middleware de agentes al modelo Agentes, como un método de clase o estático.
