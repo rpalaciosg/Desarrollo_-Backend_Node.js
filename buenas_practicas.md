@@ -57,6 +57,7 @@
 
 - En un API debemos devolver nuestros errores tambien en un json.
 - Es buena practica aunque no habitual poner un queryparam en el url que se llame  'resultwithcount=1' esto para devolver un count(), con el número de registros a devolver.
+- En los métodos de los modelos de mongoose, no usar arrow functions sino functions normales, para evitar el problema del this.
 
 ## Malas practicas
 
