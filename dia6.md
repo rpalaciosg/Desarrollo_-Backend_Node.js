@@ -77,6 +77,19 @@ router.get('/id', async(req, res, next) => {
 Es bueno ir documentando mientras se programa, es decir si agrego un nuevo filtro o parametro o neuvo endpoint lo debo ir documentando, ya sea poniendo sobre cada mètodo informaciòn que cumpla cierto formato, o en el README.md
 - IODOCS es muy facil usar para comenzar, hay otros que tienen una curva de aprendizaje mas elevada como swagger.
 
+## Crear un registro con mongoose
+guardar un registro:
+
+```js
+var agente = new Agente({name: 'Smith', age:43});
+
+agente.save(function(err, agenteCreado){
+  if (err) throw err;
+  console.log('Agente' + agenteCreado.name + ' creado');
+});
+```
+Esta es la versiòn con callbacks, pero .save tambien devuelve una promesa. Pueso usar con async/await o then().
+
 ## Mongoose: Métodos de instancia o estáticos a un modelo.
 
 Para probar esto primero vamos a cambiar el query limits del método del middleware de agentes al modelo Agentes, como un método de clase o estático.
