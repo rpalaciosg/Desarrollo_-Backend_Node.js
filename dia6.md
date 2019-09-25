@@ -14,22 +14,68 @@ return new Promise ((resolve, reject) => {
 
 Un buen lugar para tener los middlewares de errores es el app.js
 
-## Error Handler - Validador para saber si los errores son generados por la vista o por el API
-**Validador para saber si son errores del API o de una vista**
 
-- crea unafunción `isAPI(req)` si devuelve true, es que se hizo en el APi.
-- Se modifica el middleware de manejo de errores para mostrar errores en json o en html segun el tipo de error.
+## Error Handler - Validador para saber si los errores son generados por la vista o por el API
+Esto validara o detectará si esto es una peticion de APi o no es una peticion de API (es decir peticion de la vista.)
+
+- La primera forma con la que yo me puedo dar cuenta que es una peticion de un API, es con el directorio /APIv1, y el manejador de errores va a determinar.
+- Vamos a deterinar si una peticion req. es una peticion al API. Si vemos en lo que devuelve req , podemos usar req.originalUrl.indexOf('/apiv') === 0 si no ha encontrado el indexOf devuelve -1.
+- crea unafunción `isAPI(req)` si devuelve true, es que se hizo en el APi. 
+- Se modifica el middleware de manejo de errores para mostrar errores en json o en html segun el tipo de error. Expres validator me devuelve un err.mapped() es un vector con los errores.
+- A partir de ahora, el error handler, va devolver en html cuando detecte errores en la url del website, y en json cuando detecte errores en la url del API.
+
 
 ## Limitar resultados de un método del API
-Vamos a crear un método que devuelva un solo agente.
+Vamos a crear un método que devuelva un solo agente. 
 
-> Nota: Algo que ayuda mucho a los desarrolladores que consumen el APi que diseñe, es de ponerle un nombre unificado para todas las respuestas, es decir si devuelvo un solo objeto poner `result` al nombre del objeto que retorna en el json, en caso de ser varios objetos, o un vector de objetos puedo poner en plural `results`.
+Recordar: Todos los valores que se obtenga de una peticion cuando pasan datos, ya sea del req.query, del req.params o del req.body, como hicimos para recibir informaciòn desde afuera. Siempre son strings, siempre me van a devolver strings, porque el protocolo http trabaja con strings y despues nosotros tendremos que convertir eso a lo que queramos.
+
+- Para que no de error al hacer un limit, debemos parsearlo a Entero al recibirlo.
 
 Es muy habitual mostrar un count de cuantos registros me devuelve la solicitud.
 
 *Documentación:* Es habitual que mientras se va agregando funcionalidad se debe ir documentando, o usar alguna herramienta que lee los comentarios arriba de cada método del endpoint. Me puedo basar en la documentacion de SWAPI.
+Por lo general  se puede poner antes de cada endpotin algo como esto:
+```js
+/**
+ * GET /agentes
+ * Devuelve una lista de agentes.
+ */
+```
 
-Recordar: Todos los valores que se obtenga de una peticion cuand pasan datos, ya sea del re.query, del req.params o del req.body, como hicimos para recibir informaciòn desde afuera. Siempre son strings, siempre me van a devolver strings, porque el protocolo http trabaja con strings y despues nosotros tendremos que convertir eso a lo que queramos.
+Vamos a crear otro mètodo del APi, que mediante el id me devuelva un solo Agente,  para eso creamos otro endpoint en el router `agentes.js`.
+- Como saber cuando debe ser asincrono, cuando voy a hacer peticiones de entrada salida, como leer de un fichero (filesystem), hacer peticiones por la red, o por la base de datos cuando va por un puerto.
+
+```js
+/**
+ * GET /agentes:id
+ * Obtiene un agente
+ */
+router.get('/id', async(req, res, next) => {
+  try {
+    const _id = req.params.id;
+    const agente = await Agente.findById(_id).exec();
+    if(!agente) {
+      res.status(404).json({success: false});
+      return;
+    }
+    res.json({success:true, agente:agente});
+  } catch (err) {
+    
+  }
+});
+```
+- Aqui el .exec() no hace mucha falta porque el .findById ya es thenable()
+- Si !agente es false, es decir si no hay agente, entonces cambio el estatus a 404 y devuelvo en json el success:false
+- Devolvemos la respuesta correcta en formato json. Algo a recordar:
+  > Nota: Algo que ayuda mucho a los desarrolladores que consumen el APi que diseñe, es de ponerle un nombre unificado para todas las respuestas, es decir si devuelvo un solo objeto poner `result` al nombre del objeto que retorna en el json, en caso de ser varios objetos, o un vector o lista de objetos puedo devolver `results` en plural. Esto và en juicio de quien diseña el API.
+- Es una practica habitual tambien responder con el numero total de registros que va la consulta, es decir si estoy haciendo paginanciòn, y estoy devolviendo la pagina 1 de 10, el total de registros o count es 100. Es una buena practica que no se la hace por defecto ya que implicaría mandar a cada consulta con un count(), pero cuando se la usa, se suele usar un Queryparam en la url y se poner algo como esto ..?responsewithcount=1 lo que quiere decir que si ese parametro es igual a uno voy  a enviar añadido el count en la consulta:
+`localhost:3000/apiv1/agentes/5dahet465882j7728833?responsewithcount=1` o 
+`localhost:3000/apiv1/agentes/5dahet465882j7728833?responsewithcount=0` 
+
+## Documentar mientras de programa
+Es bueno ir documentando mientras se programa, es decir si agrego un nuevo filtro o parametro o neuvo endpoint lo debo ir documentando, ya sea poniendo sobre cada mètodo informaciòn que cumpla cierto formato, o en el README.md
+- IODOCS es muy facil usar para comenzar, hay otros que tienen una curva de aprendizaje mas elevada como swagger.
 
 ## Mongoose: Métodos de instancia o estáticos a un modelo.
 
