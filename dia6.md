@@ -181,6 +181,39 @@ agenteSchema.statics.list = function(filter, skip, limit) {
   - Con path params  `localhost:3000/apiv1/agentes/search=pez`
 Esto ya es cuestion del que diseña el API.
 
+#### Crear un agente usando Post
+Vamos a crear un agente. ver ejemplo en `nodeapi/routes/apiv1/agentes.js`
+
+```js
+/**
+ * POST /agentes
+ * Crear un agente
+ * url
+ */
+router.post('/', async (req, res, next) => {
+  try{
+    const data = req.body;
+    const agente = new Agente(data);
+    const agenteGuardado = await agente.save();
+    res.json({success:true, result: agenteGuardado});
+  } catch(err) {
+    next(err);
+  }
+});
+```
+
+- Usamos el mètodo `POST`, esto es en la raìz de este.
+- Un middleware async, con un try catch()
+- Voy a usar POSTMAN para hacer el POST.
+- En el body es donde espero recibir la representación de un agente.
+- En Postman en el Body en el formato x-www-form-urlencoded agregamos los parametros a eviar. Y si se queda en loading, es porque no hemos llamado a next() en el middleware.
+- creamos una constante data para guardar el req.body, luego creo un Agente con los datos de req.body o data.
+- Hago agente.save(), este save me devuelve una Promesa de un <Document> es decir me devuelve el objeto que se ha guardado. Lo usamos con await.
+- Devolvemos el succes, ademas en la propiedad result, devolvemos el recurso que he guardado.
+- El resultado al enviar este agente es success y el mismo agente guardado.
+
+
+
 - Hemos hecho los filtros de un API GET/
 - Método de creación de agentes. POST/
 - Método de actualización de un agente PUT/
