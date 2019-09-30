@@ -292,8 +292,6 @@ Ya no pasamos nada en el body.
 - El browser le dice en el request header, accept: text/html, y el servidor en vez de determinar que es una llamada de API por la URL lo ha determinado por la cabecera o header `accept` y devuelve una página. 
 - Es decir si el que te hace una petición te pone una cabecera `accepp: text/html` entonces puedo devolver una página html. Pero debo leer las cabeceras de la petición.
 
-- Hay una tecnología nueva que se llama GraphQL, la cual pasandole una especificacion en forma de json al hacer el request, de una sola request podemos pedir muchas cosas.
-
 - Hay relaciones entre entidades en un APi, se conoce como HATEOAS, es "Hypermedia as the Engine od Application State" .Se puede usar vínculos a otras cosas y puedo poner vínculos a otras cosas. 
 - Por ejemplo tambienel APi de Twitter devolvia las acciones que se podía hacer
 ```json
@@ -304,6 +302,33 @@ Ya no pasamos nada en el body.
 }
 ```
 La idea del HATEOAS, Con esto podría crear un cliente automático. para que automáticamente me cree una pantalla con los botones de cada una de las acciones de este Recurso.
+
+- Hay una tecnología nueva que se llama GraphQL, la cual pasandole una especificacion en forma de json al hacer el request, de una sola request podemos pedir muchas cosas.
+
+Lo que se le pasa no es una ruta si no una especificación que se parece a un json. En una sola petición pido varias cosas y recibo un json con la misma especificación que le dí.
+
+```json
+{
+  agentes: {
+    name,
+    planet.name
+  }, planets {
+    distance
+  },
+  user {
+    name,
+    permissions
+  }
+}
+```
+La gracia principal es que de una sola consulta obtengo muchas cosas. En cambio en rest tengo que hacer una peticion a los agentes, una peticion a los planetas, y una peticion al user.
+
+## Crear un modelo con datos geoespaciales
+```js
+var productoSchema = mongoose.Schema({
+  name: String,
+})
+```
 
 ## Consumir APIs de terceros
 
@@ -318,10 +343,16 @@ npm install request --save
 ```
 
 Hay una variante que se llama `request-promise` la cual usa promesas.
--> Tambien hay otra variante que es Axios, por que se puede usar tanto en frontend como en backend, soporta promesas
-Pero tambien hay un comando en javascript `fetch`, en frondtend se puede usar bastante bien.
+-> Tambien hay otra variante que es Axios, por que se puede usar tanto en frontend como en backend, soporta promesas.
+- Pero tambien hay un comando en javascript `fetch`, en frondtend se puede usar bastante bien.
 
-**Ejemplo de peticiona un API usando AXIOS**
+### Ejemplo de peticiona un API usando AXIOS
+Axios la puedo usar en backend como en frontend y tiene la misma sintaxis:
+- Soporta promesas.
+- tiene intercept, en todas las peticiones que yo haga vas a sacar esta propiedad.
+- Puedes cancelar peticiones, si es que esta tardando demasiado.
+- Tiene compatibilidad con bastantes browsers.
+- Es sencillo crear un cliente con axios.
 
 El ejemplo se enceuntra en `ejemplos/ejemplo_request_axios`
 
@@ -330,9 +361,30 @@ El ejemplo se enceuntra en `ejemplos/ejemplo_request_axios`
   ```shell
     npm init -y 
   ```
-
   - Instalamos axios
   ```shell
     npm install axios
   ```
 - Creamos un fichero index.js
+
+```js
+'use strict';
+
+const axios = require('axios');
+
+//Se puede hacer de diferentes formas, puedo construir un objeto de opciones y despues dárselo o bien decirle de forma simplificada 
+// que quiero hacer una peticion GET, vamos a hacer una peticion a el api de startworks.
+
+//axios.get('https://swapi.co/api/starships/2/').then( httpResponse => {
+axios.get('http://localhost:3000/apiv1/agentes').then( httpResponse => {
+    if (!httpResponse.data.success) { 
+        //..hacer lo que el cliente quiera hacer en caso de error
+        return;//porque no quiero que se ejecute los de abajo
+    }
+    console.log(httpResponse.data.results[3]);
+}).catch(err=> {
+    console.log('Error:', err);
+});
+
+```
+- Si uso el success:true, pregunto si no es verdadero hago lo que quiera hacer el cliente en caso de que me de un success:false y return.
