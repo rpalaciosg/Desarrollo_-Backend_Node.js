@@ -212,14 +212,47 @@ router.post('/', async (req, res, next) => {
 - Devolvemos el succes, ademas en la propiedad result, devolvemos el recurso que he guardado.
 - El resultado al enviar este agente es success y el mismo agente guardado.
 
+#### Actualizar un agente usando PUT
+```js
+/**
+ * PUT /agentes:id
+ * Actualiza un agente
+ */
+router.put('/:id', async (req, res, next) => {
+  try {
+    const _id = req.params.id;
+    const data = req.body;
+
+    const agenteActualizado = await Agente.findByIdAndUpdate({_id:_id}, data, {new: true}).exec();
+    res.json({success: true, result: agenteActualizado});    
+  } catch (err) {
+    next(err);
+  }
+});
+```
+- Método de actualización de un agente PUT/ 
+- Para la actualización necesito el _id del agente que quiero actualizar y los cambios que quiero hacer y eso lo voy a recibir en el body de la petición.
+- Cuando se vaya a modificar un dato debemos usar `findOneAndUpdate` para que nos devuelva el objeto guardado.
+- Los que se hace en esta linea const Agente.findByIdAndUpdate({_id:_id}, data,).exec(); es:
+  - Primero pasamos el filtro,
+  - luego pasamos los datos,
+  - Y despúes ese objeto de opciones, en este caso la opción que me interesa {} si quiero que me devuelva la nueva version del agente, osea el modificado, se pone {new:true}. Esto hace que retorne la versión del agente guardada en la base de datos.
+- Cuando usamos ´findOneAndUpdate´ en consola sale un DeprecationWarning: Mongoose: ´findOneAndUpdate()´ and ´findOneAndDelete()´ sin  especificar la opción ´useFindAndModify()´. PAra corregir esto tenemos que poner un mongoose.set() en donde hacemos la conexión para que nos sirva para todo mongoose, entonces tenemos que poner en '/../nodeapi/lib/connectMongoose.js'  la siguiente línea para que no salga eso dnuevamente este warning mongoose.set('useFindAndModify', false);
+
+- Para probar esto en postman, lo que ahcemos es en el tipo de la petición escoger PUT y poner la sigueinte URL
+´PUT´ ´http://localhost:3000/apiv1/agentes/5d3a1a99f621fbb0c86eba0e´
+- Además en el Body en el formarto ´x-www-form-urlencoded´  escribimos los parametros o la data a actualizar.
+color: amarillo
+velocidad: 78.4
+name: otro agente modificado
+age: 21
+
+- Los campos que no corresponde, mongoose se encargará de obviarlos.
 
 
-- Hemos hecho los filtros de un API GET/
-- Método de creación de agentes. POST/
-- Método de actualización de un agente PUT/
-    - Cuando se vaya a modificar un dato debemos usar `findOneAndUpdate` para que nos devuelva el objeto guardado, en consola nos saldrá un warning, para que no salga eso debemos poner mongoose.set('useFindAndModify', false);
 
-- Método para eliminar un agente.
+
+#### Método para eliminar un agente.
 
 Notas Buenas práctiacas: Establecer un formato de errores estandar. Se empieza por la documentación
     - Standard Error Format: 
