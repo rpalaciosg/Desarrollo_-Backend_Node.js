@@ -237,10 +237,11 @@ router.put('/:id', async (req, res, next) => {
   - Primero pasamos el filtro,
   - luego pasamos los datos,
   - Y despúes ese objeto de opciones, en este caso la opción que me interesa {} si quiero que me devuelva la nueva version del agente, osea el modificado, se pone {new:true}. Esto hace que retorne la versión del agente guardada en la base de datos.
-- Cuando usamos ´findOneAndUpdate´ en consola sale un DeprecationWarning: Mongoose: ´findOneAndUpdate()´ and ´findOneAndDelete()´ sin  especificar la opción ´useFindAndModify()´. PAra corregir esto tenemos que poner un mongoose.set() en donde hacemos la conexión para que nos sirva para todo mongoose, entonces tenemos que poner en '/../nodeapi/lib/connectMongoose.js'  la siguiente línea para que no salga eso dnuevamente este warning mongoose.set('useFindAndModify', false);
+- Cuando usamos ´findOneAndUpdate´ en consola sale un DeprecationWarning: Mongoose: ´findOneAndUpdate()´ and ´findOneAndDelete()´ sin  especificar la opción ´useFindAndModify()´. PAra corregir esto tenemos que poner un mongoose.set() en donde hacemos la conexión para que nos sirva para todo mongoose, entonces tenemos que poner en '/../nodeapi/lib/connectMongoose.js'  la siguiente línea para que no salga eso dnuevamente este warning mongoose.set('useFindAndModify', false); 
+    > Esto para adaptarnos a este futuro cambio en la librería, es necesario no hacer estos cambios a ciegas, sino leer porque del cambio.
 
 - Para probar esto en postman, lo que ahcemos es en el tipo de la petición escoger PUT y poner la sigueinte URL
-´PUT´ ´http://localhost:3000/apiv1/agentes/5d3a1a99f621fbb0c86eba0e´
+`PUT` `http://localhost:3000/apiv1/agentes/5d3a1a99f621fbb0c86eba0e`
 - Además en el Body en el formarto ´x-www-form-urlencoded´  escribimos los parametros o la data a actualizar.
 color: amarillo
 velocidad: 78.4
@@ -249,20 +250,60 @@ age: 21
 
 - Los campos que no corresponde, mongoose se encargará de obviarlos.
 
-
-
-
 #### Método para eliminar un agente.
 
-Notas Buenas práctiacas: Establecer un formato de errores estandar. Se empieza por la documentación
+```js
+/**
+ * DELETE /agentes/:id
+ * Elimina un agente
+ */
+router.delete('/:id', async (req, res, next) => {
+  try {
+    const _id = req.params.id;
+    await Agente.deleteOne({_id: _id}).exec();
+    res.json({success: true});
+  } catch (err) {
+    next(err);
+  }
+});
+```
+
+Notas Buenas práctiacas: Establecer un formato de los errores estandar. Se empieza por la documentación
     - Standard Error Format: 
+
+- Como no hay que recuperar entonces no se puede dovolver el agente borrado. En caso de que no exista el agente, el resultado es igual.
+- Hay otros métodos para borrar tambien.
+
+- Para probarlo en postman, escogemos el método DELETE, y pasamos la url:
+  `DELETE` `http://localhost:3000/apiv1/agentes/5d3a1a99f621fbb0c86eba0e`
+
+Ya no pasamos nada en el body.
+- Cuando usamos  `Agente.remove()` Nos aparece en la consola otro warning:
+  - DeprecationWarning: collections.remove is deprecated. Use deleteOne, deleteMany, or bulkWrite insted.
+  - Para corregir esto debemos usar `Agente.deleteOne()`, con esto ya no aparece el warning.
+
+
+* Hasta aquí hemos hecho un recurso de agentes:
 
 - cuando hablamos de `resources`, en nuestro caso hablamos del recurso de agentes.js
 
-- Hay API's como la de SWAPI (la e stars war) que detecta si se le hace una petición desde navegador o browser y en vez de devolverme json me devuelve una página. PEro si la misma peticion la pongo en un postman, esta me devuelve json.
-- Esto como lo hace si la URL es la misma? Pues esto lo hace o lo detecta por las cabeceras o Headers. El browser le dice en el request header, accept: text/html, y el servidor en vez de determinar que es una llamada de API por la URL lo ha determinado por la cabecera o header `accept` y devuelve una página. 
+- Hay API's como la de SWAPI (la e stars war) que detecta si se le hace una petición desde navegador o browser y en vez de devolverme json me devuelve una página. Pero si escribo la misma peticion y la pongo en un postman, esta me devuelve json.
+- Esto como lo hace si la URL es la misma? Pues esto lo hace o lo detecta por las `cabeceras` o `Headers`. 
+- El browser le dice en el request header, accept: text/html, y el servidor en vez de determinar que es una llamada de API por la URL lo ha determinado por la cabecera o header `accept` y devuelve una página. 
+- Es decir si el que te hace una petición te pone una cabecera `accepp: text/html` entonces puedo devolver una página html. Pero debo leer las cabeceras de la petición.
 
 - Hay una tecnología nueva que se llama GraphQL, la cual pasandole una especificacion en forma de json al hacer el request, de una sola request podemos pedir muchas cosas.
+
+- Hay relaciones entre entidades en un APi, se conoce como HATEOAS, es "Hypermedia as the Engine od Application State" .Se puede usar vínculos a otras cosas y puedo poner vínculos a otras cosas. 
+- Por ejemplo tambienel APi de Twitter devolvia las acciones que se podía hacer
+```json
+...
+"actions": {
+  "update": "htpps://swapi.co/api/starships/9/",
+  "start": "https://swapi.co/api/starships/9/start"
+}
+```
+La idea del HATEOAS, Con esto podría crear un cliente automático. para que automáticamente me cree una pantalla con los botones de cada una de las acciones de este Recurso.
 
 ## Consumir APIs de terceros
 
