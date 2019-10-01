@@ -211,6 +211,7 @@ router.post('/', async (req, res, next) => {
 - Hago agente.save(), este save me devuelve una Promesa de un <Document> es decir me devuelve el objeto que se ha guardado. Lo usamos con await.
 - Devolvemos el succes, ademas en la propiedad result, devolvemos el recurso que he guardado.
 - El resultado al enviar este agente es success y el mismo agente guardado.
+- Mongoose tiene un método validate() que si no cumple un esquema antes de guardarlo. IGual si es un campo requerido y no se lo pasa ahi si da error.
 
 #### Actualizar un agente usando PUT
 ```js
